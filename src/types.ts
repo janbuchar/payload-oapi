@@ -1,6 +1,13 @@
-export interface PluginOptions {
-  openapiVersion?: '3.0' | '3.1'
-  specEndpoint?: string
+export type OpenAPIVersion = '3.0' | '3.1'
+
+export interface OpenAPIMetadata {
   title: string
-  description: string
+  version: string
+  description?: string
+}
+
+export interface PluginOptions {
+  openapiVersion?: OpenAPIVersion
+  specEndpoint?: string
+  metadata: OpenAPIMetadata
 }
