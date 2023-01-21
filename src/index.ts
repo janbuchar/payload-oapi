@@ -1,0 +1,1 @@
+export { openApi } from './plugin'

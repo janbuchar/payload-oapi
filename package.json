@@ -1,0 +1,37 @@
+{
+  "name": "payload-openapi",
+  "description": "An OpenAPI plugin for Payload CMS",
+  "version": "0.0.1",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "license": "SEE LICENSE IN LICENSE.MD",
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint src",
+    "lint:fix": "eslint --fix --ext .ts,.tsx src"
+  },
+  "prepublishOnly": "yarn build",
+  "files": [
+    "dist",
+    "*.js",
+    "*.d.ts",
+    "!.prettierrc.js"
+  ],
+  "devDependencies": {
+    "@types/express": "^4.17.9",
+    "@typescript-eslint/eslint-plugin": "5.12.1",
+    "@typescript-eslint/parser": "5.12.1",
+    "cross-env": "^7.0.3",
+    "dotenv": "^8.2.0",
+    "eslint": "^8.19.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "2.25.4",
+    "eslint-plugin-prettier": "^4.0.0",
+    "nodemon": "^2.0.6",
+    "payload": "https://github.com/payloadcms/payload.git#master",
+    "prettier": "^2.7.1",
+    "ts-node": "^9.1.1",
+    "typescript": "^4.1.3"
+  }
+}
