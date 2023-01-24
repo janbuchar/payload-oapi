@@ -1,10 +1,11 @@
 import { RequestHandler } from 'express'
 import type { Config } from 'payload/config'
+import type { Plugin } from 'payload/config'
 import { createOpenAPIRequestHandler } from './requestHandlers'
 import { PluginOptions } from './types'
 
 const openapi =
-  ({ specEndpoint = '/openapi.json', openapiVersion = '3.0', metadata }: PluginOptions) =>
+  ({ specEndpoint = '/openapi.json', openapiVersion = '3.0', metadata }: PluginOptions): Plugin =>
   ({ onInit = () => {}, ...config }: Config): Config => ({
     ...config,
     onInit: async payload => {

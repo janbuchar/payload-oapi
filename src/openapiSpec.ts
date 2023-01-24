@@ -5,7 +5,7 @@ import { getTranslation } from 'payload/dist/utilities/getTranslation'
 import { entityToJSONSchema } from 'payload/utilities'
 import { OpenAPIMetadata } from './types'
 
-const adjustRefTargets = (subject: unknown): void => {
+const adjustRefTargets = (subject: Record<string, unknown>): void => {
   const search = new RegExp('^#/definitions/')
 
   for (const [key, value] of Object.entries(subject)) {
@@ -14,7 +14,7 @@ const adjustRefTargets = (subject: unknown): void => {
     }
 
     if (typeof value === 'object' && value !== null && value !== null) {
-      adjustRefTargets(value)
+      adjustRefTargets(value as Record<string, unknown>)
     }
   }
 }
@@ -233,7 +233,7 @@ export const generateV30Spec = async (
                     schema: {
                       ...schema,
                       properties: Object.fromEntries(
-                        Object.entries(schema.properties).filter(
+                        Object.entries(schema.properties ?? {}).filter(
                           ([slug]) => !['id', 'createdAt', 'updatedAt'].includes(slug),
                         ),
                       ),
@@ -254,7 +254,10 @@ export const generateV30Spec = async (
 }
 
 // TODO
-export const generateV31Spec = async (req: PayloadRequest, metadata: OpenAPIMetadata): Promise<OpenAPIV3_1.Document> => {
+export const generateV31Spec = async (
+  req: PayloadRequest,
+  metadata: OpenAPIMetadata,
+): Promise<OpenAPIV3_1.Document> => {
   const spec = {
     openapi: '3.1.0',
     info: metadata,
