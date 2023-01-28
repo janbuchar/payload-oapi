@@ -3,7 +3,9 @@ import jsonSchemaToOpenapiSchema from '@openapi-contrib/json-schema-to-openapi-s
 import { PayloadRequest } from 'payload/dist/express/types'
 import { getTranslation } from 'payload/dist/utilities/getTranslation'
 import { entityToJSONSchema } from 'payload/utilities'
+import type { JSONSchema4 } from 'json-schema'
 import { OpenAPIMetadata } from './types'
+import { FieldBase, RadioField, SelectField } from 'payload/dist/fields/config/types'
 
 const adjustRefTargets = (subject: Record<string, unknown>): void => {
   const search = new RegExp('^#/definitions/')
@@ -100,6 +102,104 @@ export const generateV30Spec = async (
       },
     } satisfies OpenAPIV3.ResponsesObject
 
+    spec.components.schemas[`${slug}QueryOperations`] = await jsonSchemaToOpenapiSchema({
+      type: 'object',
+      properties: Object.fromEntries(
+        (
+          collection.config.fields.filter(({ type }) =>
+            ['number', 'text', 'email', 'date', 'radio', 'select'].includes(type),
+          ) as Array<
+            FieldBase & { type: 'number' | 'text' | 'email' | 'date' | 'radio' | 'select' }
+          >
+        ).map(field => {
+          const comparedValueSchema = (() => {
+            switch (field.type) {
+              case 'number':
+                return { type: 'number' } as const
+              case 'text':
+                return { type: 'string' } as const
+              case 'email':
+                return { type: 'string', format: 'email' } as const
+              case 'date':
+                return { type: 'string', format: 'date-time' } as const
+              case 'radio':
+              case 'select':
+                return {
+                  type: 'string',
+                  enum: (field as RadioField | SelectField).options.map(it =>
+                    typeof it === 'string' ? it : it.value,
+                  ),
+                } as const
+            }
+          })()
+
+          const properties: Record<string, JSONSchema4> = {
+            ['equals']: comparedValueSchema,
+            ['not_equals']: comparedValueSchema,
+            ['in']: { type: 'string' },
+            ['not_in']: { type: 'string' },
+          }
+
+          if (field.type === 'text') {
+            properties['like'] = comparedValueSchema
+          }
+
+          if (field.type === 'text' || field.type === 'email') {
+            properties['contains'] = comparedValueSchema
+          }
+
+          if (field.type === 'number' || field.type === 'date') {
+            properties['greater_than'] = comparedValueSchema
+            properties['greater_than_equal'] = comparedValueSchema
+            properties['less_than'] = comparedValueSchema
+            properties['less_than_equal'] = comparedValueSchema
+          }
+
+          return [
+            field.name,
+            {
+              type: 'object',
+              properties,
+            },
+          ]
+        }),
+      ),
+    })
+
+    spec.components.schemas[`${slug}QueryOperationsAnd`] = await jsonSchemaToOpenapiSchema({
+      type: 'object',
+      properties: {
+        and: {
+          type: 'array',
+          items: {
+            anyOf: [
+              { $ref: `#/components/schemas/${slug}QueryOperations` },
+              { $ref: `#/components/schemas/${slug}QueryOperationsAnd` },
+              { $ref: `#/components/schemas/${slug}QueryOperationsOr` },
+            ],
+          },
+        },
+      },
+      required: ['and'],
+    })
+
+    spec.components.schemas[`${slug}QueryOperationsOr`] = await jsonSchemaToOpenapiSchema({
+      type: 'object',
+      properties: {
+        or: {
+          type: 'array',
+          items: {
+            anyOf: [
+              { $ref: `#/components/schemas/${slug}QueryOperations` },
+              { $ref: `#/components/schemas/${slug}QueryOperationsAnd` },
+              { $ref: `#/components/schemas/${slug}QueryOperationsOr` },
+            ],
+          },
+        },
+      },
+      required: ['or'],
+    })
+
     spec.paths[`/api/${slug}`] = {
       get: {
         summary: `Retrieve a list of ${plural}`,
@@ -129,7 +229,18 @@ export const generateV30Spec = async (
             in: 'query',
             name: 'where',
             style: 'deepObject',
-            schema: { type: 'object', additionalProperties: true }, // TODO a more thorough description
+            schema: await jsonSchemaToOpenapiSchema({
+              allOf: [
+                { type: 'object' },
+                {
+                  anyOf: [
+                    { $ref: `#/components/schemas/${slug}QueryOperations` },
+                    { $ref: `#/components/schemas/${slug}QueryOperationsAnd` },
+                    { $ref: `#/components/schemas/${slug}QueryOperationsOr` },
+                  ],
+                },
+              ],
+            }),
           },
         ],
         responses: {
