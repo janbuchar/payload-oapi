@@ -12,7 +12,7 @@ export default buildConfig({
   typescript: {
     outputFile: path.resolve(__dirname, 'payload-types.ts'),
   },
-  plugins: [openapi({ metadata: { title: 'Dev API', version: '0.0.1' } })],
+  plugins: [openapi({ openapiVersion: '3.0', metadata: { title: 'Dev API', version: '0.0.1' } })],
   onInit: async payload => {
     await payload.create({
       collection: 'users',

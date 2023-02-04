@@ -6,6 +6,9 @@ import { entityToJSONSchema } from 'payload/utilities'
 import type { JSONSchema4 } from 'json-schema'
 import { OpenAPIMetadata } from './types'
 import { FieldBase, RadioField, SelectField } from 'payload/dist/fields/config/types'
+import { SanitizedConfig } from 'payload/config'
+import { Collection } from 'payload/dist/collections/config/types'
+import { i18n as Ii18n } from 'i18next'
 
 const adjustRefTargets = (subject: Record<string, unknown>): void => {
   const search = new RegExp('^#/definitions/')
@@ -21,88 +24,64 @@ const adjustRefTargets = (subject: Record<string, unknown>): void => {
   }
 }
 
-export const generateV30Spec = async (
-  req: PayloadRequest,
-  metadata: OpenAPIMetadata,
-): Promise<OpenAPIV3.Document> => {
-  const spec = {
-    openapi: '3.0.3',
-    info: metadata,
-    servers: [
-      {
-        url: `${req.secure ? 'https' : 'http'}://${req.header('host')}`,
+const mapValues = <T, U>(mapper: (value: T) => U, record: Record<string, T>): Record<string, U> =>
+  Object.fromEntries(Object.entries(record).map(([key, value]) => [key, mapper(value)]))
+
+const mapValuesAsync = async <T, U>(
+  mapper: (value: T) => Promise<U>,
+  record: Record<string, T>,
+): Promise<Record<string, U>> =>
+  Object.fromEntries(
+    await Promise.all(
+      Object.entries(record).map(async ([key, value]) => [key, await mapper(value)]),
+    ),
+  )
+
+const generateSchemaObject = (
+  config: SanitizedConfig,
+  collection: Collection,
+  i18n: Ii18n,
+): JSONSchema4 => {
+  const schema = entityToJSONSchema(config, collection.config)
+  return {
+    ...schema,
+    title: getTranslation(collection.config.labels.singular, i18n),
+  }
+}
+
+const generateRequestBodySchema = (
+  config: SanitizedConfig,
+  collection: Collection,
+  i18n: Ii18n,
+): OpenAPIV3_1.RequestBodyObject => {
+  const schema = entityToJSONSchema(config, collection.config)
+  return {
+    description: getTranslation(collection.config.labels.singular, i18n),
+    content: {
+      'text/json': {
+        schema: {
+          ...schema,
+          properties: Object.fromEntries(
+            Object.entries(schema.properties ?? {}).filter(
+              ([slug]) => !['id', 'createdAt', 'updatedAt'].includes(slug),
+            ),
+          ),
+        } as OpenAPIV3_1.SchemaObject,
       },
-    ],
-    paths: {} as OpenAPIV3.PathsObject,
-    components: {
-      schemas: Object.fromEntries(
-        await Promise.all(
-          Object.entries(req.payload.collections).map(async ([slug, collection]) => {
-            const schema = (await jsonSchemaToOpenapiSchema(
-              entityToJSONSchema(req.payload.config, collection.config),
-            )) as OpenAPIV3.SchemaObject
-
-            return [
-              slug,
-              {
-                ...schema,
-                title: getTranslation(collection.config.labels.singular, req.i18n),
-              } satisfies OpenAPIV3.SchemaObject,
-            ]
-          }),
-        ),
-      ),
-      requestBodies: Object.fromEntries(
-        await Promise.all(
-          Object.entries(req.payload.collections).map(async ([slug, collection]) => {
-            const schema = (await jsonSchemaToOpenapiSchema(
-              entityToJSONSchema(req.payload.config, collection.config),
-            )) as OpenAPIV3.SchemaObject
-
-            return [
-              slug,
-              {
-                description: getTranslation(collection.config.labels.singular, req.i18n),
-                content: {
-                  'text/json': {
-                    schema: {
-                      ...schema,
-                      properties: Object.fromEntries(
-                        Object.entries(schema.properties ?? {}).filter(
-                          ([slug]) => !['id', 'createdAt', 'updatedAt'].includes(slug),
-                        ),
-                      ),
-                    },
-                  },
-                },
-              } satisfies OpenAPIV3.RequestBodyObject,
-            ]
-          }),
-        ),
-      ),
     },
-  } satisfies OpenAPIV3.Document
+  }
+}
 
-  for (const [slug, collection] of Object.entries(req.payload.collections)) {
-    const singular = getTranslation(collection.config.labels.singular, req.i18n)
-    const plural = getTranslation(collection.config.labels.plural, req.i18n)
-    const tags = [plural]
+const generateQueryOperationSchemas = (
+  collection: Collection,
+  i18n: Ii18n,
+): Record<string, JSONSchema4> => {
+  const slug = collection.config.slug
+  const singular = getTranslation(collection.config.labels.singular, i18n)
 
-    const singleObjectResponses = {
-      200: {
-        description: `${singular} object`,
-        content: {
-          'text/json': {
-            schema: { $ref: `#/components/schemas/${slug}` },
-          },
-        },
-      },
-      404: {
-        description: `${singular} not found`,
-      },
-    } satisfies OpenAPIV3.ResponsesObject
-
-    spec.components.schemas[`${slug}QueryOperations`] = await jsonSchemaToOpenapiSchema({
+  return {
+    [`${slug}QueryOperations`]: {
+      title: `${singular} query operations`,
       type: 'object',
       properties: Object.fromEntries(
         (
@@ -164,9 +143,9 @@ export const generateV30Spec = async (
           ]
         }),
       ),
-    })
-
-    spec.components.schemas[`${slug}QueryOperationsAnd`] = await jsonSchemaToOpenapiSchema({
+    },
+    [`${slug}QueryOperationsAnd`]: {
+      title: `${singular} query conjunction`,
       type: 'object',
       properties: {
         and: {
@@ -181,9 +160,10 @@ export const generateV30Spec = async (
         },
       },
       required: ['and'],
-    })
+    },
 
-    spec.components.schemas[`${slug}QueryOperationsOr`] = await jsonSchemaToOpenapiSchema({
+    [`${slug}QueryOperationsOr`]: {
+      title: `${singular} query disjunction`,
       type: 'object',
       properties: {
         or: {
@@ -198,9 +178,124 @@ export const generateV30Spec = async (
         },
       },
       required: ['or'],
-    })
+    },
+  }
+}
 
-    spec.paths[`/api/${slug}`] = {
+const generateCollectionResponses = (
+  collection: Collection,
+  i18n: Ii18n,
+): Record<string, OpenAPIV3_1.ResponseObject & OpenAPIV3.ResponseObject> => {
+  const singular = getTranslation(collection.config.labels.singular, i18n)
+  const plural = getTranslation(collection.config.labels.plural, i18n)
+  const slug = collection.config.slug
+
+  return {
+    [`${slug}Response`]: {
+      description: `${singular} object`,
+      content: {
+        'text/json': {
+          schema: { $ref: `#/components/schemas/${slug}` },
+        },
+      },
+    },
+    [`New${slug}Response`]: {
+      description: `${singular} object`,
+      content: {
+        'text/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              message: { type: 'string' },
+              doc: {
+                allOf: [
+                  { $ref: `#/components/schemas/${slug}` },
+                  {
+                    type: 'object',
+                    properties: {
+                      id: { type: 'string' },
+                      createdAt: {
+                        type: 'string',
+                        format: 'date-time',
+                      },
+                      updatedAt: {
+                        type: 'string',
+                        format: 'date-time',
+                      },
+                    },
+                    required: ['id', 'createdAt', 'updatedAt'],
+                  },
+                ],
+              },
+            },
+            required: ['message', 'doc'],
+          },
+        },
+      },
+    },
+    [`${slug}NotFoundResponse`]: {
+      description: `${singular} not found`,
+    },
+    [`${slug}ListResponse`]: {
+      description: `List of ${plural}`,
+      content: {
+        'text/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              docs: {
+                type: 'array',
+                items: { $ref: `#/components/schemas/${slug}` },
+              },
+              totalDocs: { type: 'integer' },
+              limit: { type: 'integer' },
+              totalPages: { type: 'integer' },
+              page: { type: 'integer' },
+              pagingCounter: { type: 'integer' },
+              hasPrevPage: { type: 'boolean' },
+              hasNextPage: { type: 'boolean' },
+              prevPage: { type: ['integer', 'null'] },
+              nextPage: { type: ['integer', 'null'] },
+            },
+            required: [
+              'docs',
+              'totalDocs',
+              'limit',
+              'totalPages',
+              'page',
+              'pagingCounter',
+              'hasPrevPage',
+              'hasNextPage',
+              'prevPage',
+              'nextPage',
+            ],
+          } as OpenAPIV3_1.NonArraySchemaObject as any,
+        },
+      },
+    },
+  }
+}
+
+export const generateCollectionOperations = (
+  collection: Collection,
+  i18n: Ii18n,
+): Record<string, OpenAPIV3.PathItemObject & OpenAPIV3_1.PathItemObject> => {
+  const slug = collection.config.slug
+  const singular = getTranslation(collection.config.labels.singular, i18n)
+  const plural = getTranslation(collection.config.labels.plural, i18n)
+  const tags = [plural]
+
+  const singleObjectResponses = {
+    200: {
+      $ref: `#/components/responses/${slug}Response`,
+    },
+    404: {
+      $ref: `#/components/responses/${slug}NotFoundResponse`,
+    },
+  } satisfies OpenAPIV3_1.ResponsesObject & OpenAPIV3.ResponsesObject
+
+  return {
+    [`/api/${slug}`]: {
       get: {
         summary: `Retrieve a list of ${plural}`,
         tags,
@@ -229,7 +324,7 @@ export const generateV30Spec = async (
             in: 'query',
             name: 'where',
             style: 'deepObject',
-            schema: await jsonSchemaToOpenapiSchema({
+            schema: {
               allOf: [
                 { type: 'object' },
                 {
@@ -240,47 +335,11 @@ export const generateV30Spec = async (
                   ],
                 },
               ],
-            }),
+            },
           },
         ],
         responses: {
-          200: {
-            description: `List of ${plural}`,
-            content: {
-              'text/json': {
-                schema: await jsonSchemaToOpenapiSchema({
-                  type: 'object',
-                  properties: {
-                    docs: {
-                      type: 'array',
-                      items: { $ref: `#/components/schemas/${slug}` },
-                    },
-                    totalDocs: { type: 'number' },
-                    limit: { type: 'number' },
-                    totalPages: { type: 'number' },
-                    page: { type: 'number' },
-                    pagingCounter: { type: 'number' },
-                    hasPrevPage: { type: 'boolean' },
-                    hasNextPage: { type: 'boolean' },
-                    prevPage: { type: ['number', 'null'] },
-                    nextPage: { type: ['number', 'null'] },
-                  },
-                  required: [
-                    'docs',
-                    'totalDocs',
-                    'limit',
-                    'totalPages',
-                    'page',
-                    'pagingCounter',
-                    'hasPrevPage',
-                    'hasNextPage',
-                    'prevPage',
-                    'nextPage',
-                  ],
-                }),
-              },
-            },
-          },
+          200: { $ref: `#/components/responses/${slug}ListResponse` },
         },
       },
       post: {
@@ -288,40 +347,11 @@ export const generateV30Spec = async (
         tags,
         requestBody: { $ref: `#/components/requestBodies/${slug}` },
         responses: {
-          201: {
-            description: `${singular} created successfully`,
-            content: {
-              'text/json': {
-                schema: {
-                  type: 'object',
-                  properties: {
-                    message: { type: 'string' },
-                    doc: {
-                      type: 'object',
-                      properties: {
-                        id: { type: 'string' },
-                        createdAt: {
-                          type: 'string',
-                          format: 'date-time',
-                        },
-                        updatedAt: {
-                          type: 'string',
-                          format: 'date-time',
-                        },
-                      },
-                      required: ['id', 'createdAt', 'updatedAt'],
-                    },
-                  },
-                  required: ['message', 'doc'],
-                },
-              },
-            },
-          },
+          201: { $ref: `#/components/responses/New${slug}Response` },
         },
       },
-    } satisfies OpenAPIV3.PathItemObject
-
-    spec.paths[`/api/${slug}/{id}`] = {
+    },
+    [`/api/${slug}/{id}`]: {
       parameters: [
         {
           in: 'path',
@@ -348,15 +378,91 @@ export const generateV30Spec = async (
         tags,
         responses: singleObjectResponses,
       },
-    } satisfies OpenAPIV3.PathItemObject
+    },
   }
+}
+
+export const generateV30Spec = async (
+  req: PayloadRequest,
+  metadata: OpenAPIMetadata,
+): Promise<OpenAPIV3.Document> => {
+  const schemas: Record<string, JSONSchema4> = Object.assign(
+    {},
+    mapValues(
+      collection => generateSchemaObject(req.payload.config, collection, req.i18n),
+      req.payload.collections,
+    ),
+    ...Object.values(req.payload.collections).map(collection =>
+      generateQueryOperationSchemas(collection, req.i18n),
+    ),
+  )
+
+  const requestBodies = Object.assign(
+    {},
+    mapValues(
+      collection => generateRequestBodySchema(req.payload.config, collection, req.i18n),
+      req.payload.collections,
+    ),
+  )
+
+  const responses: Record<string, OpenAPIV3_1.ResponseObject> = Object.assign(
+    {},
+    ...Object.values(req.payload.collections).map(collection =>
+      generateCollectionResponses(collection, req.i18n),
+    ),
+  )
+
+  const spec = {
+    openapi: '3.0.3',
+    info: metadata,
+    paths: Object.assign(
+      {},
+      ...Object.values(req.payload.collections).map(collection =>
+        generateCollectionOperations(collection, req.i18n),
+      ),
+    ),
+    components: {
+      schemas: await mapValuesAsync(jsonSchemaToOpenapiSchema, schemas),
+      requestBodies: await mapValuesAsync(
+        async requestBody => ({
+          ...requestBody,
+          content: (await mapValuesAsync(
+            async contentItem => ({
+              ...contentItem,
+              schema: contentItem.schema
+                ? await jsonSchemaToOpenapiSchema(contentItem.schema as JSONSchema4)
+                : undefined,
+            }),
+            requestBody.content,
+          )) as Record<string, OpenAPIV3.MediaTypeObject>,
+        }),
+        requestBodies,
+      ),
+      responses: await mapValuesAsync(async response => {
+        return {
+          ...response,
+          content:
+            response.content !== undefined
+              ? ((await mapValuesAsync(
+                  async contentItem => ({
+                    ...contentItem,
+                    schema: contentItem.schema
+                      ? await jsonSchemaToOpenapiSchema(contentItem.schema as JSONSchema4)
+                      : undefined,
+                  }),
+                  response.content,
+                )) as Record<string, OpenAPIV3.MediaTypeObject>)
+              : {},
+        }
+      }, responses),
+    },
+  } satisfies OpenAPIV3.Document
 
   adjustRefTargets(spec)
 
   return spec
 }
 
-// TODO
 export const generateV31Spec = async (
   req: PayloadRequest,
   metadata: OpenAPIMetadata,
@@ -364,7 +470,47 @@ export const generateV31Spec = async (
   const spec = {
     openapi: '3.1.0',
     info: metadata,
-    components: {},
+    paths: Object.assign(
+      {},
+      ...Object.values(req.payload.collections).map(collection =>
+        generateCollectionOperations(collection, req.i18n),
+      ),
+    ),
+    components: {
+      schemas: Object.assign(
+        {},
+        mapValues(
+          collection =>
+            generateSchemaObject(
+              req.payload.config,
+              collection,
+              req.i18n,
+            ) as OpenAPIV3_1.SchemaObject,
+          req.payload.collections,
+        ),
+        ...Object.values(req.payload.collections).map(collection =>
+          generateQueryOperationSchemas(collection, req.i18n),
+        ),
+      ),
+      requestBodies: Object.assign(
+        {},
+        mapValues(
+          collection =>
+            generateRequestBodySchema(
+              req.payload.config,
+              collection,
+              req.i18n,
+            ) as OpenAPIV3_1.RequestBodyObject,
+          req.payload.collections,
+        ),
+      ),
+      responses: Object.assign(
+        {},
+        ...Object.values(req.payload.collections).map(collection =>
+          generateCollectionResponses(collection, req.i18n),
+        ),
+      ),
+    },
   } satisfies OpenAPIV3_1.Document
 
   adjustRefTargets(spec)

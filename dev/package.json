@@ -12,10 +12,11 @@
     "generate:types": "cross-env PAYLOAD_CONFIG_PATH=src/payload.config.ts payload generate:types"
   },
   "dependencies": {
+    "@hyperjump/oas-schema-validator": "^0.9.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "mongoose-aggregate-paginate-v2": "^1.0.6",
-    "payload": "1.5.15-canary.0"
+    "payload": "^1.6.3"
   },
   "devDependencies": {
     "@types/express": "^4.17.9",
