@@ -1,14 +1,15 @@
-import { OpenAPIV3, OpenAPIV3_1 } from 'openapi-types'
+import type { OpenAPIV3, OpenAPIV3_1 } from 'openapi-types'
+import type { PayloadRequest } from 'payload/dist/express/types'
+import type { JSONSchema4 } from 'json-schema'
+import type { OpenAPIMetadata } from './types'
+import type { FieldBase, RadioField, SelectField } from 'payload/dist/fields/config/types'
+import type { SanitizedConfig } from 'payload/config'
+import type { Collection } from 'payload/dist/collections/config/types'
+import type { i18n as Ii18n } from 'i18next'
+
 import jsonSchemaToOpenapiSchema from '@openapi-contrib/json-schema-to-openapi-schema'
-import { PayloadRequest } from 'payload/dist/express/types'
 import { getTranslation } from 'payload/dist/utilities/getTranslation'
 import { entityToJSONSchema } from 'payload/utilities'
-import type { JSONSchema4 } from 'json-schema'
-import { OpenAPIMetadata } from './types'
-import { FieldBase, RadioField, SelectField } from 'payload/dist/fields/config/types'
-import { SanitizedConfig } from 'payload/config'
-import { Collection } from 'payload/dist/collections/config/types'
-import { i18n as Ii18n } from 'i18next'
 
 const adjustRefTargets = (subject: Record<string, unknown>): void => {
   const search = new RegExp('^#/definitions/')

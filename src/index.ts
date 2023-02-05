@@ -1,1 +1,3 @@
-export { openApi } from './plugin'
+import openapi from './plugin'
+
+export { openapi }

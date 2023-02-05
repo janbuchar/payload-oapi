@@ -1,10 +1,10 @@
-import { Response, NextFunction } from 'express'
-import httpStatus from 'http-status'
-import { OpenAPIV3, OpenAPIV3_1 } from 'openapi-types'
-import { PayloadRequest } from 'payload/dist/express/types'
+import type { Response, NextFunction } from 'express'
+import type { OpenAPIV3, OpenAPIV3_1 } from 'openapi-types'
+import type { PayloadRequest } from 'payload/dist/express/types'
+import type { PluginOptions } from './types'
 
+import httpStatus from 'http-status'
 import { generateV30Spec, generateV31Spec } from './openapiSpec'
-import { PluginOptions } from './types'
 
 export const createOpenAPIRequestHandler =
   ({ openapiVersion, metadata }: Pick<PluginOptions, 'openapiVersion' | 'metadata'>) =>
