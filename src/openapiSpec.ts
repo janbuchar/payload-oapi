@@ -3,8 +3,9 @@ import type { PayloadRequest } from 'payload/dist/express/types'
 import type { JSONSchema4 } from 'json-schema'
 import type { OpenAPIMetadata } from './types'
 import type { FieldBase, RadioField, SelectField } from 'payload/dist/fields/config/types'
-import type { SanitizedConfig } from 'payload/config'
 import type { Collection } from 'payload/dist/collections/config/types'
+import type { SanitizedGlobalConfig } from 'payload/dist/globals/config/types'
+import type { SanitizedConfig } from 'payload/config'
 import type { i18n as Ii18n } from 'i18next'
 
 import jsonSchemaToOpenapiSchema from '@openapi-contrib/json-schema-to-openapi-schema'
@@ -277,7 +278,7 @@ const generateCollectionResponses = (
   }
 }
 
-export const generateCollectionOperations = (
+const generateCollectionOperations = (
   collection: Collection,
   i18n: Ii18n,
 ): Record<string, OpenAPIV3.PathItemObject & OpenAPIV3_1.PathItemObject> => {
@@ -383,6 +384,79 @@ export const generateCollectionOperations = (
   }
 }
 
+const generateGlobalResponse = (
+  global: SanitizedGlobalConfig,
+  i18n: Ii18n,
+): OpenAPIV3_1.ResponseObject & OpenAPIV3.ResponseObject => {
+  const slug = global.slug
+  const description = getTranslation(global.label, i18n)
+
+  return {
+    description,
+    content: {
+      'text/json': {
+        schema: {
+          $ref: `#/components/schemas/${slug}`,
+        },
+      },
+    },
+  }
+}
+
+const generateGlobalRequestBody = (
+  global: SanitizedGlobalConfig,
+  i18n: Ii18n,
+): OpenAPIV3_1.RequestBodyObject & OpenAPIV3.RequestBodyObject => {
+  const slug = global.slug
+  const description = getTranslation(global.label, i18n)
+
+  return {
+    description,
+    content: {
+      'text/json': {
+        schema: {
+          $ref: `#/components/schemas/${slug}`,
+        },
+      },
+    },
+  }
+}
+
+const generateGlobalSchema = (
+  config: SanitizedConfig,
+  global: SanitizedGlobalConfig,
+  i18n: Ii18n,
+): JSONSchema4 => {
+  const title = getTranslation(global.label, i18n)
+
+  return { ...entityToJSONSchema(config, global), title }
+}
+
+const generateGlobalOperations = (
+  global: SanitizedGlobalConfig,
+  i18n: Ii18n,
+): Record<string, OpenAPIV3.PathItemObject & OpenAPIV3_1.PathItemObject> => {
+  const slug = global.slug
+  const singular = getTranslation(global.label, i18n)
+  const tags = [singular]
+
+  return {
+    [`/api/globals/${slug}`]: {
+      get: {
+        summary: `Get the ${singular}`,
+        tags,
+        responses: { 200: { $ref: `#/components/responses/${slug}Response` } },
+      },
+      post: {
+        summary: `Update the ${singular}`,
+        tags,
+        requestBody: { $ref: `#/components/requestBodies/${slug}` },
+        responses: { 200: { $ref: `#/components/responses/${slug}Response` } },
+      },
+    },
+  }
+}
+
 export const generateV30Spec = async (
   req: PayloadRequest,
   metadata: OpenAPIMetadata,
@@ -396,6 +470,9 @@ export const generateV30Spec = async (
     ...Object.values(req.payload.collections).map(collection =>
       generateQueryOperationSchemas(collection, req.i18n),
     ),
+    ...req.payload.globals.config.map(global => ({
+      [global.slug]: generateGlobalSchema(req.payload.config, global, req.i18n),
+    })),
   )
 
   const requestBodies = Object.assign(
@@ -406,21 +483,30 @@ export const generateV30Spec = async (
     ),
   )
 
+  for (const global of req.payload.globals.config) {
+    requestBodies[global.slug] = generateGlobalRequestBody(global, req.i18n)
+  }
+
   const responses: Record<string, OpenAPIV3_1.ResponseObject> = Object.assign(
     {},
     ...Object.values(req.payload.collections).map(collection =>
       generateCollectionResponses(collection, req.i18n),
     ),
+    ...req.payload.globals.config.map(global => ({
+      [`${global.slug}Response`]: generateGlobalResponse(global, req.i18n),
+    })),
   )
 
   const spec = {
     openapi: '3.0.3',
     info: metadata,
+    servers: [{ url: `${req.protocol}://${req.header('host')}` }],
     paths: Object.assign(
       {},
       ...Object.values(req.payload.collections).map(collection =>
         generateCollectionOperations(collection, req.i18n),
       ),
+      ...req.payload.globals.config.map(global => generateGlobalOperations(global, req.i18n)),
     ),
     components: {
       schemas: await mapValuesAsync(jsonSchemaToOpenapiSchema, schemas),
@@ -471,11 +557,13 @@ export const generateV31Spec = async (
   const spec = {
     openapi: '3.1.0',
     info: metadata,
+    servers: [{ url: `${req.protocol}://${req.header('host')}` }],
     paths: Object.assign(
       {},
       ...Object.values(req.payload.collections).map(collection =>
         generateCollectionOperations(collection, req.i18n),
       ),
+      ...req.payload.globals.config.map(global => generateGlobalOperations(global, req.i18n)),
     ),
     components: {
       schemas: Object.assign(

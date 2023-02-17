@@ -4,10 +4,12 @@ import { Users } from './collections/Users'
 import { Pets, Categories } from './collections/Pets'
 
 import openapi from '../../src/plugin'
+import { FeaturedPet } from './globals/FeaturedPet'
 
 export default buildConfig({
   serverURL: 'http://localhost:3000',
   collections: [Users, Pets, Categories],
+  globals: [FeaturedPet],
   cors: '*',
   typescript: {
     outputFile: path.resolve(__dirname, 'payload-types.ts'),
