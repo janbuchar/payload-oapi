@@ -1,3 +1,4 @@
-import openapi from './plugin'
+import openapi from './openapiPlugin'
+import swaggerUI from './swaggerUIPlugin'
 
-export { openapi }
+export { openapi, swaggerUI }

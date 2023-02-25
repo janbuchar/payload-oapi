@@ -3,7 +3,8 @@ import path from 'path'
 import { Users } from './collections/Users'
 import { Pets, Categories } from './collections/Pets'
 
-import openapi from '../../src/plugin'
+import openapi from '../../src/openapiPlugin'
+import swaggerUI from '../../src/swaggerUIPlugin'
 import { FeaturedPet } from './globals/FeaturedPet'
 
 export default buildConfig({
@@ -14,7 +15,10 @@ export default buildConfig({
   typescript: {
     outputFile: path.resolve(__dirname, 'payload-types.ts'),
   },
-  plugins: [openapi({ openapiVersion: '3.0', metadata: { title: 'Dev API', version: '0.0.1' } })],
+  plugins: [
+    openapi({ openapiVersion: '3.0', metadata: { title: 'Dev API', version: '0.0.1' } }),
+    swaggerUI({}),
+  ],
   onInit: async payload => {
     await payload.create({
       collection: 'users',
