@@ -5,6 +5,7 @@ import { Pets, Categories } from './collections/Pets'
 
 import openapi from '../../src/openapiPlugin'
 import swaggerUI from '../../src/swaggerUIPlugin'
+import rapidoc from '../../src/rapidocPlugin'
 import { FeaturedPet } from './globals/FeaturedPet'
 
 export default buildConfig({
@@ -18,6 +19,7 @@ export default buildConfig({
   plugins: [
     openapi({ openapiVersion: '3.0', metadata: { title: 'Dev API', version: '0.0.1' } }),
     swaggerUI({}),
+    rapidoc({ docsUrl: '/rapidoc' }),
   ],
   onInit: async payload => {
     await payload.create({
