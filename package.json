@@ -1,5 +1,5 @@
 {
-  "name": "payload-openapi",
+  "name": "payload-oapi",
   "description": "An OpenAPI plugin for Payload CMS",
   "version": "0.0.1",
   "main": "dist/index.js",
