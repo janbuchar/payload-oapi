@@ -2,7 +2,7 @@ import { OpenAPIV3, OpenAPIV3_1 } from 'openapi-types'
 import type { PayloadRequest } from 'payload/dist/express/types'
 import type { JSONSchema4 } from 'json-schema'
 import type { OpenAPIMetadata } from './types'
-import type { FieldBase, RadioField, SelectField } from 'payload/dist/fields/config/types'
+import type { FieldBase, RadioField, SelectField, Field } from 'payload/dist/fields/config/types'
 import type { Collection } from 'payload/dist/collections/config/types'
 import type { SanitizedGlobalConfig } from 'payload/dist/globals/config/types'
 import type { SanitizedConfig } from 'payload/config'
@@ -122,6 +122,23 @@ const generateSchemaObject = (config: SanitizedConfig, collection: Collection): 
   }
 }
 
+const requestBodySchema = (fields: Array<Field>, schema: JSONSchema4): JSONSchema4 => ({
+  ...schema,
+  properties: Object.fromEntries(
+    Object.entries(schema.properties ?? {})
+      .filter(([slug]) => !['id', 'createdAt', 'updatedAt'].includes(slug))
+      .map(([fieldName, schema]) => {
+        const field = fields.find(field => (field as FieldBase).name === fieldName)
+        if (field?.type === 'relationship') {
+          const target = Array.isArray(field.relationTo) ? field.relationTo : [field.relationTo]
+          return [fieldName, { type: 'string', description: `ID of the ${target.join('/')}` }]
+        }
+
+        return [fieldName, schema]
+      }),
+  ),
+})
+
 const generateRequestBodySchema = (
   config: SanitizedConfig,
   collection: Collection,
@@ -131,14 +148,7 @@ const generateRequestBodySchema = (
     description: collectionName(collection).singular,
     content: {
       'text/json': {
-        schema: {
-          ...schema,
-          properties: Object.fromEntries(
-            Object.entries(schema.properties ?? {}).filter(
-              ([slug]) => !['id', 'createdAt', 'updatedAt'].includes(slug),
-            ),
-          ),
-        } as OpenAPIV3_1.SchemaObject,
+        schema: requestBodySchema(collection.config.fields, schema) as OpenAPIV3_1.SchemaObject,
       },
     },
   }
@@ -450,7 +460,7 @@ const generateGlobalResponse = (
     description: name,
     content: {
       'text/json': {
-        schema: composeRef('schemas', name),
+        schema: composeRef('schemas', name, { suffix: 'Read' }),
       },
     },
   }
@@ -465,16 +475,30 @@ const generateGlobalRequestBody = (
     description: name,
     content: {
       'text/json': {
-        schema: composeRef('schemas', name),
+        schema: composeRef('schemas', name, { suffix: 'Write' }),
       },
     },
   }
 }
 
-const generateGlobalSchema = (
+const generateGlobalSchemas = (
   config: SanitizedConfig,
   global: SanitizedGlobalConfig,
-): JSONSchema4 => ({ ...entityToJSONSchema(config, global), title: globalName(global) })
+): Record<string, JSONSchema4> => {
+  const schema = entityToJSONSchema(config, global)
+
+  return {
+    [componentName('schemas', globalName(global))]: { ...schema, title: globalName(global) },
+    [componentName('schemas', globalName(global), { suffix: 'Read' })]: {
+      title: `${globalName(global)} (if present)`,
+      oneOf: [schema, { type: 'object', properties: {} }],
+    },
+    [componentName('schemas', globalName(global), { suffix: 'Write' })]: {
+      ...requestBodySchema(global.fields, schema),
+      title: `${globalName(global)} (writable fields)`,
+    },
+  }
+}
 
 const generateGlobalOperations = (
   global: SanitizedGlobalConfig,
@@ -516,10 +540,7 @@ const generateComponents = (req: PayloadRequest) => {
   }
 
   for (const global of req.payload.globals.config) {
-    schemas[componentName('schemas', globalName(global))] = generateGlobalSchema(
-      req.payload.config,
-      global,
-    )
+    Object.assign(schemas, generateGlobalSchemas(req.payload.config, global))
   }
 
   const requestBodies: Record<string, OpenAPIV3_1.RequestBodyObject> = {}
