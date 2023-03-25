@@ -1,4 +1,4 @@
-import type { OpenAPIV3, OpenAPIV3_1 } from 'openapi-types'
+import { OpenAPIV3, OpenAPIV3_1 } from 'openapi-types'
 import type { PayloadRequest } from 'payload/dist/express/types'
 import type { JSONSchema4 } from 'json-schema'
 import type { OpenAPIMetadata } from './types'
@@ -6,28 +6,103 @@ import type { FieldBase, RadioField, SelectField } from 'payload/dist/fields/con
 import type { Collection } from 'payload/dist/collections/config/types'
 import type { SanitizedGlobalConfig } from 'payload/dist/globals/config/types'
 import type { SanitizedConfig } from 'payload/config'
-import type { i18n as Ii18n } from 'i18next'
 
 import jsonSchemaToOpenapiSchema from '@openapi-contrib/json-schema-to-openapi-schema'
-import { getTranslation } from 'payload/dist/utilities/getTranslation'
 import { entityToJSONSchema } from 'payload/utilities'
 
-const adjustRefTargets = (subject: Record<string, unknown>): void => {
-  const search = new RegExp('^#/definitions/')
+const upperFirst = (value: string) => value[0].toUpperCase() + value.slice(1)
+const camelize = (value: string) => value.split(/\s+/).map(upperFirst).join('')
+
+const collectionName = (collection: Collection): { singular: string; plural: string } => {
+  const labels = collection.config.labels
+
+  if (labels === undefined) {
+    return { singular: collection.config.slug, plural: collection.config.slug }
+  }
+
+  const label = (value: typeof labels.singular): string => {
+    if (typeof value === 'string') {
+      return value
+    }
+
+    return value['en']
+  }
+
+  return { singular: label(labels.singular), plural: label(labels.plural) }
+}
+
+const globalName = (global: SanitizedGlobalConfig): string => {
+  if (global.label === undefined) {
+    return global.slug
+  }
+  if (typeof global.label === 'string') {
+    return global.label
+  }
+
+  return global.label['en']
+}
+
+type ComponentType = 'schemas' | 'responses' | 'requestBodies'
+
+const componentName = (
+  type: ComponentType,
+  name: string,
+  { prefix, suffix }: { suffix?: string; prefix?: string } = {},
+): string => {
+  name = camelize(name)
+
+  if (prefix) {
+    name = prefix + name
+  }
+
+  if (suffix) {
+    name += suffix
+  }
+
+  if (type === 'responses') {
+    name += 'Response'
+  }
+
+  if (type === 'requestBodies') {
+    name += 'RequestBody'
+  }
+
+  return name
+}
+
+const composeRef = (
+  type: ComponentType,
+  name: string,
+  options?: { suffix?: string; prefix?: string },
+): OpenAPIV3_1.ReferenceObject & OpenAPIV3.ReferenceObject => ({
+  $ref: `#/components/${type}/${componentName(type, name, options)}`,
+})
+
+const adjustRefTargets = (req: PayloadRequest, subject: Record<string, unknown>): void => {
+  const search = new RegExp('^#/definitions/(.*)')
 
   for (const [key, value] of Object.entries(subject)) {
     if (key === '$ref' && typeof value === 'string') {
-      subject[key] = value.replace(search, '#/components/schemas/')
+      subject[key] = value.replace(search, (_match, name: string) => {
+        if (req.payload.collections[name] !== undefined) {
+          name = collectionName(req.payload.collections[name]).singular
+        } else {
+          const global = req.payload.globals.config.find(({ slug }) => slug === name)
+          if (global === undefined) {
+            throw new Error(`Unknown reference: ${name}`)
+          }
+          name = globalName(global)
+        }
+
+        return `#/components/schemas/${componentName('schemas', name)}`
+      })
     }
 
     if (typeof value === 'object' && value !== null && value !== null) {
-      adjustRefTargets(value as Record<string, unknown>)
+      adjustRefTargets(req, value as Record<string, unknown>)
     }
   }
 }
-
-const mapValues = <T, U>(mapper: (value: T) => U, record: Record<string, T>): Record<string, U> =>
-  Object.fromEntries(Object.entries(record).map(([key, value]) => [key, mapper(value)]))
 
 const mapValuesAsync = async <T, U>(
   mapper: (value: T) => Promise<U>,
@@ -39,26 +114,21 @@ const mapValuesAsync = async <T, U>(
     ),
   )
 
-const generateSchemaObject = (
-  config: SanitizedConfig,
-  collection: Collection,
-  i18n: Ii18n,
-): JSONSchema4 => {
+const generateSchemaObject = (config: SanitizedConfig, collection: Collection): JSONSchema4 => {
   const schema = entityToJSONSchema(config, collection.config)
   return {
     ...schema,
-    title: getTranslation(collection.config.labels.singular, i18n),
+    title: collectionName(collection).singular,
   }
 }
 
 const generateRequestBodySchema = (
   config: SanitizedConfig,
   collection: Collection,
-  i18n: Ii18n,
 ): OpenAPIV3_1.RequestBodyObject => {
   const schema = entityToJSONSchema(config, collection.config)
   return {
-    description: getTranslation(collection.config.labels.singular, i18n),
+    description: collectionName(collection).singular,
     content: {
       'text/json': {
         schema: {
@@ -74,15 +144,11 @@ const generateRequestBodySchema = (
   }
 }
 
-const generateQueryOperationSchemas = (
-  collection: Collection,
-  i18n: Ii18n,
-): Record<string, JSONSchema4> => {
-  const slug = collection.config.slug
-  const singular = getTranslation(collection.config.labels.singular, i18n)
+const generateQueryOperationSchemas = (collection: Collection): Record<string, JSONSchema4> => {
+  const { singular } = collectionName(collection)
 
   return {
-    [`${slug}QueryOperations`]: {
+    [componentName('schemas', singular, { suffix: 'QueryOperations' })]: {
       title: `${singular} query operations`,
       type: 'object',
       properties: Object.fromEntries(
@@ -146,7 +212,7 @@ const generateQueryOperationSchemas = (
         }),
       ),
     },
-    [`${slug}QueryOperationsAnd`]: {
+    [componentName('schemas', singular, { suffix: 'QueryOperationsAnd' })]: {
       title: `${singular} query conjunction`,
       type: 'object',
       properties: {
@@ -154,9 +220,9 @@ const generateQueryOperationSchemas = (
           type: 'array',
           items: {
             anyOf: [
-              { $ref: `#/components/schemas/${slug}QueryOperations` },
-              { $ref: `#/components/schemas/${slug}QueryOperationsAnd` },
-              { $ref: `#/components/schemas/${slug}QueryOperationsOr` },
+              composeRef('schemas', singular, { suffix: 'QueryOperations' }),
+              composeRef('schemas', singular, { suffix: 'QueryOperationsAnd' }),
+              composeRef('schemas', singular, { suffix: 'QueryOperationsOr' }),
             ],
           },
         },
@@ -164,7 +230,7 @@ const generateQueryOperationSchemas = (
       required: ['and'],
     },
 
-    [`${slug}QueryOperationsOr`]: {
+    [componentName('schemas', singular, { suffix: 'QueryOperationsOr' })]: {
       title: `${singular} query disjunction`,
       type: 'object',
       properties: {
@@ -172,9 +238,9 @@ const generateQueryOperationSchemas = (
           type: 'array',
           items: {
             anyOf: [
-              { $ref: `#/components/schemas/${slug}QueryOperations` },
-              { $ref: `#/components/schemas/${slug}QueryOperationsAnd` },
-              { $ref: `#/components/schemas/${slug}QueryOperationsOr` },
+              composeRef('schemas', singular, { suffix: 'QueryOperations' }),
+              composeRef('schemas', singular, { suffix: 'QueryOperationsAnd' }),
+              composeRef('schemas', singular, { suffix: 'QueryOperationsOr' }),
             ],
           },
         },
@@ -186,22 +252,19 @@ const generateQueryOperationSchemas = (
 
 const generateCollectionResponses = (
   collection: Collection,
-  i18n: Ii18n,
 ): Record<string, OpenAPIV3_1.ResponseObject & OpenAPIV3.ResponseObject> => {
-  const singular = getTranslation(collection.config.labels.singular, i18n)
-  const plural = getTranslation(collection.config.labels.plural, i18n)
-  const slug = collection.config.slug
+  const { singular, plural } = collectionName(collection)
 
   return {
-    [`${slug}Response`]: {
+    [componentName('responses', singular)]: {
       description: `${singular} object`,
       content: {
         'text/json': {
-          schema: { $ref: `#/components/schemas/${slug}` },
+          schema: composeRef('schemas', singular),
         },
       },
     },
-    [`New${slug}Response`]: {
+    [componentName('responses', singular, { prefix: 'New' })]: {
       description: `${singular} object`,
       content: {
         'text/json': {
@@ -211,7 +274,7 @@ const generateCollectionResponses = (
               message: { type: 'string' },
               doc: {
                 allOf: [
-                  { $ref: `#/components/schemas/${slug}` },
+                  composeRef('schemas', singular),
                   {
                     type: 'object',
                     properties: {
@@ -235,10 +298,10 @@ const generateCollectionResponses = (
         },
       },
     },
-    [`${slug}NotFoundResponse`]: {
+    [componentName('responses', singular, { suffix: 'NotFound' })]: {
       description: `${singular} not found`,
     },
-    [`${slug}ListResponse`]: {
+    [componentName('responses', singular, { suffix: 'List' })]: {
       description: `List of ${plural}`,
       content: {
         'text/json': {
@@ -247,7 +310,7 @@ const generateCollectionResponses = (
             properties: {
               docs: {
                 type: 'array',
-                items: { $ref: `#/components/schemas/${slug}` },
+                items: composeRef('responses', singular),
               },
               totalDocs: { type: 'integer' },
               limit: { type: 'integer' },
@@ -280,20 +343,14 @@ const generateCollectionResponses = (
 
 const generateCollectionOperations = (
   collection: Collection,
-  i18n: Ii18n,
 ): Record<string, OpenAPIV3.PathItemObject & OpenAPIV3_1.PathItemObject> => {
-  const slug = collection.config.slug
-  const singular = getTranslation(collection.config.labels.singular, i18n)
-  const plural = getTranslation(collection.config.labels.plural, i18n)
+  const { slug } = collection.config
+  const { singular, plural } = collectionName(collection)
   const tags = [plural]
 
   const singleObjectResponses = {
-    200: {
-      $ref: `#/components/responses/${slug}Response`,
-    },
-    404: {
-      $ref: `#/components/responses/${slug}NotFoundResponse`,
-    },
+    200: composeRef('responses', singular),
+    404: composeRef('responses', singular, { suffix: 'NotFound' }),
   } satisfies OpenAPIV3_1.ResponsesObject & OpenAPIV3.ResponsesObject
 
   return {
@@ -331,9 +388,9 @@ const generateCollectionOperations = (
                 { type: 'object' },
                 {
                   anyOf: [
-                    { $ref: `#/components/schemas/${slug}QueryOperations` },
-                    { $ref: `#/components/schemas/${slug}QueryOperationsAnd` },
-                    { $ref: `#/components/schemas/${slug}QueryOperationsOr` },
+                    composeRef('schemas', singular, { suffix: 'QueryOperations' }),
+                    composeRef('schemas', singular, { suffix: 'QueryOperationsAnd' }),
+                    composeRef('schemas', singular, { suffix: 'QueryOperationsOr' }),
                   ],
                 },
               ],
@@ -341,15 +398,15 @@ const generateCollectionOperations = (
           },
         ],
         responses: {
-          200: { $ref: `#/components/responses/${slug}ListResponse` },
+          200: composeRef('responses', singular, { suffix: 'List' }),
         },
       },
       post: {
         summary: `Create a new ${singular}`,
         tags,
-        requestBody: { $ref: `#/components/requestBodies/${slug}` },
+        requestBody: composeRef('requestBodies', singular),
         responses: {
-          201: { $ref: `#/components/responses/New${slug}Response` },
+          201: composeRef('responses', singular, { prefix: 'New' }),
         },
       },
     },
@@ -386,18 +443,14 @@ const generateCollectionOperations = (
 
 const generateGlobalResponse = (
   global: SanitizedGlobalConfig,
-  i18n: Ii18n,
 ): OpenAPIV3_1.ResponseObject & OpenAPIV3.ResponseObject => {
-  const slug = global.slug
-  const description = getTranslation(global.label, i18n)
+  const name = globalName(global)
 
   return {
-    description,
+    description: name,
     content: {
       'text/json': {
-        schema: {
-          $ref: `#/components/schemas/${slug}`,
-        },
+        schema: composeRef('schemas', name),
       },
     },
   }
@@ -405,18 +458,14 @@ const generateGlobalResponse = (
 
 const generateGlobalRequestBody = (
   global: SanitizedGlobalConfig,
-  i18n: Ii18n,
 ): OpenAPIV3_1.RequestBodyObject & OpenAPIV3.RequestBodyObject => {
-  const slug = global.slug
-  const description = getTranslation(global.label, i18n)
+  const name = globalName(global)
 
   return {
-    description,
+    description: name,
     content: {
       'text/json': {
-        schema: {
-          $ref: `#/components/schemas/${slug}`,
-        },
+        schema: composeRef('schemas', name),
       },
     },
   }
@@ -425,19 +474,13 @@ const generateGlobalRequestBody = (
 const generateGlobalSchema = (
   config: SanitizedConfig,
   global: SanitizedGlobalConfig,
-  i18n: Ii18n,
-): JSONSchema4 => {
-  const title = getTranslation(global.label, i18n)
-
-  return { ...entityToJSONSchema(config, global), title }
-}
+): JSONSchema4 => ({ ...entityToJSONSchema(config, global), title: globalName(global) })
 
 const generateGlobalOperations = (
   global: SanitizedGlobalConfig,
-  i18n: Ii18n,
 ): Record<string, OpenAPIV3.PathItemObject & OpenAPIV3_1.PathItemObject> => {
   const slug = global.slug
-  const singular = getTranslation(global.label, i18n)
+  const singular = globalName(global)
   const tags = [singular]
 
   return {
@@ -445,57 +488,71 @@ const generateGlobalOperations = (
       get: {
         summary: `Get the ${singular}`,
         tags,
-        responses: { 200: { $ref: `#/components/responses/${slug}Response` } },
+        responses: { 200: composeRef('responses', singular) },
       },
       post: {
         summary: `Update the ${singular}`,
         tags,
-        requestBody: { $ref: `#/components/requestBodies/${slug}` },
-        responses: { 200: { $ref: `#/components/responses/${slug}Response` } },
+        requestBody: composeRef('requestBodies', singular),
+        responses: { 200: composeRef('responses', singular) },
       },
     },
   }
+}
+
+const generateComponents = (req: PayloadRequest) => {
+  const schemas: Record<string, JSONSchema4> = {}
+
+  for (const collection of Object.values(req.payload.collections)) {
+    const { singular } = collectionName(collection)
+    schemas[componentName('schemas', singular)] = generateSchemaObject(
+      req.payload.config,
+      collection,
+    )
+  }
+
+  for (const collection of Object.values(req.payload.collections)) {
+    Object.assign(schemas, generateQueryOperationSchemas(collection))
+  }
+
+  for (const global of req.payload.globals.config) {
+    schemas[componentName('schemas', globalName(global))] = generateGlobalSchema(
+      req.payload.config,
+      global,
+    )
+  }
+
+  const requestBodies: Record<string, OpenAPIV3_1.RequestBodyObject> = {}
+
+  for (const collection of Object.values(req.payload.collections)) {
+    const { singular } = collectionName(collection)
+    requestBodies[componentName('requestBodies', singular)] = generateRequestBodySchema(
+      req.payload.config,
+      collection,
+    )
+  }
+
+  for (const global of req.payload.globals.config) {
+    requestBodies[componentName('requestBodies', globalName(global))] =
+      generateGlobalRequestBody(global)
+  }
+
+  const responses: Record<string, OpenAPIV3_1.ResponseObject> = Object.assign(
+    {},
+    ...Object.values(req.payload.collections).map(generateCollectionResponses),
+    ...req.payload.globals.config.map(global => ({
+      [componentName('responses', globalName(global))]: generateGlobalResponse(global),
+    })),
+  )
+
+  return { schemas, requestBodies, responses }
 }
 
 export const generateV30Spec = async (
   req: PayloadRequest,
   metadata: OpenAPIMetadata,
 ): Promise<OpenAPIV3.Document> => {
-  const schemas: Record<string, JSONSchema4> = Object.assign(
-    {},
-    mapValues(
-      collection => generateSchemaObject(req.payload.config, collection, req.i18n),
-      req.payload.collections,
-    ),
-    ...Object.values(req.payload.collections).map(collection =>
-      generateQueryOperationSchemas(collection, req.i18n),
-    ),
-    ...req.payload.globals.config.map(global => ({
-      [global.slug]: generateGlobalSchema(req.payload.config, global, req.i18n),
-    })),
-  )
-
-  const requestBodies = Object.assign(
-    {},
-    mapValues(
-      collection => generateRequestBodySchema(req.payload.config, collection, req.i18n),
-      req.payload.collections,
-    ),
-  )
-
-  for (const global of req.payload.globals.config) {
-    requestBodies[global.slug] = generateGlobalRequestBody(global, req.i18n)
-  }
-
-  const responses: Record<string, OpenAPIV3_1.ResponseObject> = Object.assign(
-    {},
-    ...Object.values(req.payload.collections).map(collection =>
-      generateCollectionResponses(collection, req.i18n),
-    ),
-    ...req.payload.globals.config.map(global => ({
-      [`${global.slug}Response`]: generateGlobalResponse(global, req.i18n),
-    })),
-  )
+  const { schemas, requestBodies, responses } = generateComponents(req)
 
   const spec = {
     openapi: '3.0.3',
@@ -503,10 +560,8 @@ export const generateV30Spec = async (
     servers: [{ url: `${req.protocol}://${req.header('host')}` }],
     paths: Object.assign(
       {},
-      ...Object.values(req.payload.collections).map(collection =>
-        generateCollectionOperations(collection, req.i18n),
-      ),
-      ...req.payload.globals.config.map(global => generateGlobalOperations(global, req.i18n)),
+      ...Object.values(req.payload.collections).map(generateCollectionOperations),
+      ...req.payload.globals.config.map(generateGlobalOperations),
     ),
     components: {
       schemas: await mapValuesAsync(jsonSchemaToOpenapiSchema, schemas),
@@ -545,7 +600,7 @@ export const generateV30Spec = async (
     },
   } satisfies OpenAPIV3.Document
 
-  adjustRefTargets(spec)
+  adjustRefTargets(req, spec)
 
   return spec
 }
@@ -554,55 +609,25 @@ export const generateV31Spec = async (
   req: PayloadRequest,
   metadata: OpenAPIMetadata,
 ): Promise<OpenAPIV3_1.Document> => {
+  const { schemas, requestBodies, responses } = generateComponents(req)
+
   const spec = {
     openapi: '3.1.0',
     info: metadata,
     servers: [{ url: `${req.protocol}://${req.header('host')}` }],
     paths: Object.assign(
       {},
-      ...Object.values(req.payload.collections).map(collection =>
-        generateCollectionOperations(collection, req.i18n),
-      ),
-      ...req.payload.globals.config.map(global => generateGlobalOperations(global, req.i18n)),
+      ...Object.values(req.payload.collections).map(generateCollectionOperations),
+      ...req.payload.globals.config.map(generateGlobalOperations),
     ),
     components: {
-      schemas: Object.assign(
-        {},
-        mapValues(
-          collection =>
-            generateSchemaObject(
-              req.payload.config,
-              collection,
-              req.i18n,
-            ) as OpenAPIV3_1.SchemaObject,
-          req.payload.collections,
-        ),
-        ...Object.values(req.payload.collections).map(collection =>
-          generateQueryOperationSchemas(collection, req.i18n),
-        ),
-      ),
-      requestBodies: Object.assign(
-        {},
-        mapValues(
-          collection =>
-            generateRequestBodySchema(
-              req.payload.config,
-              collection,
-              req.i18n,
-            ) as OpenAPIV3_1.RequestBodyObject,
-          req.payload.collections,
-        ),
-      ),
-      responses: Object.assign(
-        {},
-        ...Object.values(req.payload.collections).map(collection =>
-          generateCollectionResponses(collection, req.i18n),
-        ),
-      ),
+      schemas: schemas as Record<string, OpenAPIV3_1.SchemaObject>,
+      requestBodies,
+      responses,
     },
   } satisfies OpenAPIV3_1.Document
 
-  adjustRefTargets(spec)
+  adjustRefTargets(req, spec)
 
   return spec
 }
