@@ -11,6 +11,10 @@ Autogenerate an OpenAPI specification from your Payload CMS instance and use it 
 - [ ] Authentication endpoints and specification
 - [ ] Preferences endpoints
 
+# Installation
+
+Install the plugin from npm - `yarn add payload-oapi` or `npm i payload-oapi`.
+
 # Setup
 
 To add the OpenAPI specification endpoint to your Payload app, simply import the `openapi` plugin and add it to your payload configuration:
