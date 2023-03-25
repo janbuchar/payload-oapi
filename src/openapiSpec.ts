@@ -25,7 +25,7 @@ const collectionName = (collection: Collection): { singular: string; plural: str
       return value
     }
 
-    return value['en']
+    return value['en'] ?? collection.config.slug
   }
 
   return { singular: label(labels.singular), plural: label(labels.plural) }
