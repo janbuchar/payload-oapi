@@ -41,5 +41,9 @@
     "@openapi-contrib/json-schema-to-openapi-schema": "^2.2.4",
     "openapi-types": "^12.1.0",
     "util": "^0.12.5"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Teyras/payload-oapi.git"
   }
 }
