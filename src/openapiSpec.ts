@@ -310,7 +310,7 @@ const generateCollectionResponses = (
             properties: {
               docs: {
                 type: 'array',
-                items: composeRef('responses', singular),
+                items: composeRef('schemas', singular),
               },
               totalDocs: { type: 'integer' },
               limit: { type: 'integer' },
