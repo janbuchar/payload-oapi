@@ -1,5 +1,6 @@
 import openapi from './openapiPlugin'
-import swaggerUI from './swaggerUIPlugin'
 import rapidoc from './rapidocPlugin'
+import redoc from './redocPlugin'
+import swaggerUI from './swaggerUIPlugin'
 
-export { openapi, swaggerUI, rapidoc }
+export { openapi, swaggerUI, rapidoc, redoc }
