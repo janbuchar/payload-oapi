@@ -25,7 +25,6 @@ const redoc =
                 <!-- needed for adaptive design -->
                 <meta charset="utf-8"/>
                 <meta name="viewport" content="width=device-width, initial-scale=1">
-                <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,700|Roboto:300,400,700" rel="stylesheet">
             
                 <!--
                 Redoc doesn't change outer page styles
@@ -41,7 +40,7 @@ const redoc =
                 <redoc spec-url="${req.protocol}://${req.header(
             'host',
           )}/api${specEndpoint}"></redoc>
-                <script src="https://cdn.redoc.ly/redoc/latest/bundles/redoc.standalone.js"> </script>
+                <script src="https://unpkg.com/redoc@^2/bundles/redoc.standalone.js"></script>
               </body>
             </html>`,
         )) as unknown as RequestHandler)
