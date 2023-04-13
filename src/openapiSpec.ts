@@ -43,6 +43,12 @@ const globalName = (global: SanitizedGlobalConfig): string => {
 
 type ComponentType = 'schemas' | 'responses' | 'requestBodies'
 
+const baseQueryParams: Array<OpenAPIV3.ParameterObject & OpenAPIV3_1.ParameterObject> = [
+  { in: 'query', name: 'depth', schema: { type: 'number' } },
+  { in: 'query', name: 'locale', schema: { type: 'string' } },
+  { in: 'query', name: 'fallback-locale', schema: { type: 'string' } },
+]
+
 const componentName = (
   type: ComponentType,
   name: string,
@@ -374,6 +380,7 @@ const generateCollectionOperations = (
         parameters: [
           { in: 'query', name: 'page', schema: { type: 'number' } },
           { in: 'query', name: 'limit', schema: { type: 'number' } },
+          ...baseQueryParams,
           {
             in: 'query',
             name: 'sort',
@@ -425,6 +432,7 @@ const generateCollectionOperations = (
     },
     [`/api/${slug}/{id}`]: {
       parameters: [
+        ...baseQueryParams,
         {
           in: 'path',
           name: 'id',
@@ -515,6 +523,7 @@ const generateGlobalOperations = (
       get: {
         summary: `Get the ${singular}`,
         tags,
+        parameters: [...baseQueryParams],
         responses: { 200: composeRef('responses', singular) },
       },
       post: {
