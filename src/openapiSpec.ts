@@ -24,7 +24,7 @@ const collectionName = (collection: Collection): { singular: string; plural: str
       return value
     }
 
-    return value.en ?? collection.config.slug
+    return value['en'] ?? collection.config.slug
   }
 
   return { singular: label(labels.singular), plural: label(labels.plural) }
@@ -38,7 +38,7 @@ const globalName = (global: SanitizedGlobalConfig): string => {
     return global.label
   }
 
-  return global.label.en
+  return global.label['en']
 }
 
 type ComponentType = 'schemas' | 'responses' | 'requestBodies'
@@ -127,7 +127,7 @@ const generateSchemaObject = (config: SanitizedConfig, collection: Collection): 
   }
 }
 
-const requestBodySchema = (fields: Field[], schema: JSONSchema4): JSONSchema4 => ({
+const requestBodySchema = (fields: Array<Field>, schema: JSONSchema4): JSONSchema4 => ({
   ...schema,
   properties: Object.fromEntries(
     Object.entries(schema.properties ?? {})
@@ -200,25 +200,25 @@ const generateQueryOperationSchemas = (collection: Collection): Record<string, J
           })()
 
           const properties: Record<string, JSONSchema4> = {
-            equals: comparedValueSchema,
-            not_equals: comparedValueSchema,
-            in: { type: 'string' },
-            not_in: { type: 'string' },
+            ['equals']: comparedValueSchema,
+            ['not_equals']: comparedValueSchema,
+            ['in']: { type: 'string' },
+            ['not_in']: { type: 'string' },
           }
 
           if (field.type === 'text') {
-            properties.like = comparedValueSchema
+            properties['like'] = comparedValueSchema
           }
 
           if (field.type === 'text' || field.type === 'email') {
-            properties.contains = comparedValueSchema
+            properties['contains'] = comparedValueSchema
           }
 
           if (field.type === 'number' || field.type === 'date') {
-            properties.greater_than = comparedValueSchema
-            properties.greater_than_equal = comparedValueSchema
-            properties.less_than = comparedValueSchema
-            properties.less_than_equal = comparedValueSchema
+            properties['greater_than'] = comparedValueSchema
+            properties['greater_than_equal'] = comparedValueSchema
+            properties['less_than'] = comparedValueSchema
+            properties['less_than_equal'] = comparedValueSchema
           }
 
           return [
