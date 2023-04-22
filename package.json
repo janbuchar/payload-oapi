@@ -1,7 +1,7 @@
 {
   "name": "payload-oapi",
   "description": "An OpenAPI plugin for Payload CMS",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "license": "MIT",
