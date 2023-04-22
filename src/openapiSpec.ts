@@ -1,14 +1,13 @@
-import { OpenAPIV3, OpenAPIV3_1 } from 'openapi-types'
-import type { PayloadRequest } from 'payload/dist/express/types'
-import type { JSONSchema4 } from 'json-schema'
-import type { OpenAPIMetadata } from './types'
-import type { FieldBase, RadioField, SelectField, Field } from 'payload/dist/fields/config/types'
-import type { Collection } from 'payload/dist/collections/config/types'
-import type { SanitizedGlobalConfig } from 'payload/dist/globals/config/types'
-import type { SanitizedConfig } from 'payload/config'
-
 import jsonSchemaToOpenapiSchema from '@openapi-contrib/json-schema-to-openapi-schema'
+import type { JSONSchema4 } from 'json-schema'
+import { OpenAPIV3, OpenAPIV3_1 } from 'openapi-types'
+import type { SanitizedConfig } from 'payload/config'
+import type { Collection } from 'payload/dist/collections/config/types'
+import type { PayloadRequest } from 'payload/dist/express/types'
+import type { Field, FieldBase, RadioField, SelectField } from 'payload/dist/fields/config/types'
+import type { SanitizedGlobalConfig } from 'payload/dist/globals/config/types'
 import { entityToJSONSchema } from 'payload/utilities'
+import type { OpenAPIMetadata } from './types'
 
 const upperFirst = (value: string) => value[0].toUpperCase() + value.slice(1)
 const camelize = (value: string) => value.split(/\s+/).map(upperFirst).join('')
@@ -43,6 +42,12 @@ const globalName = (global: SanitizedGlobalConfig): string => {
 }
 
 type ComponentType = 'schemas' | 'responses' | 'requestBodies'
+
+const baseQueryParams: Array<OpenAPIV3.ParameterObject & OpenAPIV3_1.ParameterObject> = [
+  { in: 'query', name: 'depth', schema: { type: 'number' } },
+  { in: 'query', name: 'locale', schema: { type: 'string' } },
+  { in: 'query', name: 'fallback-locale', schema: { type: 'string' } },
+]
 
 const componentName = (
   type: ComponentType,
@@ -164,9 +169,11 @@ const generateQueryOperationSchemas = (collection: Collection): Record<string, J
       properties: Object.fromEntries(
         (
           collection.config.fields.filter(({ type }) =>
-            ['number', 'text', 'email', 'date', 'radio', 'select'].includes(type),
+            ['number', 'text', 'email', 'date', 'radio', 'checkbox', 'select'].includes(type),
           ) as Array<
-            FieldBase & { type: 'number' | 'text' | 'email' | 'date' | 'radio' | 'select' }
+            FieldBase & {
+              type: 'number' | 'text' | 'email' | 'date' | 'radio' | 'select' | 'checkbox'
+            }
           >
         ).map(field => {
           const comparedValueSchema = (() => {
@@ -179,6 +186,8 @@ const generateQueryOperationSchemas = (collection: Collection): Record<string, J
                 return { type: 'string', format: 'email' } as const
               case 'date':
                 return { type: 'string', format: 'date-time' } as const
+              case 'checkbox':
+                return { type: 'boolean' } as const
               case 'radio':
               case 'select':
                 return {
@@ -371,6 +380,7 @@ const generateCollectionOperations = (
         parameters: [
           { in: 'query', name: 'page', schema: { type: 'number' } },
           { in: 'query', name: 'limit', schema: { type: 'number' } },
+          ...baseQueryParams,
           {
             in: 'query',
             name: 'sort',
@@ -422,6 +432,7 @@ const generateCollectionOperations = (
     },
     [`/api/${slug}/{id}`]: {
       parameters: [
+        ...baseQueryParams,
         {
           in: 'path',
           name: 'id',
@@ -512,6 +523,7 @@ const generateGlobalOperations = (
       get: {
         summary: `Get the ${singular}`,
         tags,
+        parameters: [...baseQueryParams],
         responses: { 200: composeRef('responses', singular) },
       },
       post: {
