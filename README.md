@@ -1,5 +1,7 @@
 # Payload OpenAPI Plugin
 
+[![npm version](https://badge.fury.io/js/payload-oapi.svg)](https://www.npmjs.com/package/payload-oapi)
+
 Autogenerate an OpenAPI specification from your Payload CMS instance and use it for documentation or to generate client SDKs.
 
 # Roadmap
