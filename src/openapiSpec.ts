@@ -120,7 +120,7 @@ const mapValuesAsync = async <T, U>(
   )
 
 const generateSchemaObject = (config: SanitizedConfig, collection: Collection): JSONSchema4 => {
-  const schema = entityToJSONSchema(config, collection.config)
+  const schema = entityToJSONSchema(config, collection.config, new Map(), 'text', undefined)
   return {
     ...schema,
     title: collectionName(collection).singular,
@@ -148,7 +148,7 @@ const generateRequestBodySchema = (
   config: SanitizedConfig,
   collection: Collection,
 ): OpenAPIV3_1.RequestBodyObject => {
-  const schema = entityToJSONSchema(config, collection.config)
+  const schema = entityToJSONSchema(config, collection.config, new Map(), 'text', undefined)
   return {
     description: collectionName(collection).singular,
     content: {
@@ -496,7 +496,7 @@ const generateGlobalSchemas = (
   config: SanitizedConfig,
   global: SanitizedGlobalConfig,
 ): Record<string, JSONSchema4> => {
-  const schema = entityToJSONSchema(config, global)
+  const schema = entityToJSONSchema(config, global, new Map(), 'text', undefined)
 
   return {
     [componentName('schemas', globalName(global))]: { ...schema, title: globalName(global) },

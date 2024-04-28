@@ -7,6 +7,7 @@ export interface OpenAPIMetadata {
 }
 
 export interface PluginOptions {
+  enabled?: boolean
   openapiVersion?: OpenAPIVersion
   specEndpoint?: string
   metadata: OpenAPIMetadata

@@ -1,23 +1,26 @@
-import type { NextFunction, RequestHandler, Response } from 'express'
-
 import httpStatus from 'http-status'
-import type { Config, Plugin } from 'payload/config'
-import type { PayloadRequest } from 'payload/dist/express/types'
+import type { Plugin } from 'payload/config'
 
 const redoc =
   ({
     specEndpoint = '/openapi.json',
     docsUrl = '/docs',
+    enabled = true,
   }: {
     specEndpoint?: string
     docsUrl?: string
+    enabled?: boolean
   }): Plugin =>
-  ({ onInit = () => {}, ...config }: Config): Config => ({
-    ...config,
-    onInit: async payload => {
-      payload.router?.get(docsUrl, ((req: PayloadRequest, res: Response, next: NextFunction) =>
-        res.status(httpStatus.OK).send(
-          `
+  ({ onInit = () => {}, ...config }) => {
+    if (!enabled) {
+      return { ...config, onInit }
+    }
+    return {
+      ...config,
+      onInit: async payload => {
+        payload.express?.route(docsUrl).get((req, res) =>
+          res.status(httpStatus.OK).send(
+            `
             <!DOCTYPE html>
             <html lang="en">
               <head>
@@ -25,7 +28,7 @@ const redoc =
                 <!-- needed for adaptive design -->
                 <meta charset="utf-8"/>
                 <meta name="viewport" content="width=device-width, initial-scale=1">
-            
+
                 <!--
                 Redoc doesn't change outer page styles
                 -->
@@ -38,14 +41,16 @@ const redoc =
               </head>
               <body>
                 <redoc spec-url="${req.protocol}://${req.header(
-            'host',
-          )}/api${specEndpoint}"></redoc>
+              'host',
+            )}${specEndpoint}"></redoc>
                 <script src="https://unpkg.com/redoc@^2/bundles/redoc.standalone.js"></script>
               </body>
             </html>`,
-        )) as unknown as RequestHandler)
-      await onInit(payload)
-    },
-  })
+          ),
+        )
+        await onInit(payload)
+      },
+    }
+  }
 
 export default redoc
