@@ -1,64 +1,49 @@
 import { buildConfig } from 'payload/config'
 import path from 'path'
+import { Categories, Pets } from './collections/Pets'
 import { Users } from './collections/Users'
-import { Pets, Categories } from './collections/Pets'
-
-import openapi from '../../src/openapiPlugin'
-import swaggerUI from '../../src/swaggerUIPlugin'
-import rapidoc from '../../src/rapidocPlugin'
+import { mongooseAdapter } from '@payloadcms/db-mongodb'
+import { webpackBundler } from '@payloadcms/bundler-webpack'
+import { slateEditor } from '@payloadcms/richtext-slate'
+import { openapi, swaggerUI, redoc, rapidoc } from '../../src/index'
 import { FeaturedPet } from './globals/FeaturedPet'
 
 export default buildConfig({
-  serverURL: 'http://localhost:3000',
-  collections: [Users, Pets, Categories],
+  admin: {
+    user: Users.slug,
+    bundler: webpackBundler(),
+    webpack: config => {
+      const newConfig = {
+        ...config,
+        resolve: {
+          ...config.resolve,
+          alias: {
+            ...(config?.resolve?.alias || {}),
+            react: path.join(__dirname, '../node_modules/react'),
+            'react-dom': path.join(__dirname, '../node_modules/react-dom'),
+            payload: path.join(__dirname, '../node_modules/payload'),
+          },
+        },
+      }
+      return newConfig
+    },
+  },
+  editor: slateEditor({}),
+  collections: [Pets, Categories, Users],
   globals: [FeaturedPet],
-  cors: '*',
   typescript: {
     outputFile: path.resolve(__dirname, 'payload-types.ts'),
   },
+  graphQL: {
+    schemaOutputFile: path.resolve(__dirname, 'generated-schema.graphql'),
+  },
   plugins: [
     openapi({ openapiVersion: '3.0', metadata: { title: 'Dev API', version: '0.0.1' } }),
-    swaggerUI({}),
+    swaggerUI({ docsUrl: '/swagger-ui' }),
+    redoc({ docsUrl: '/redoc' }),
     rapidoc({ docsUrl: '/rapidoc' }),
   ],
-  onInit: async payload => {
-    await payload.create({
-      collection: 'users',
-      data: {
-        email: 'dev@payloadcms.com',
-        password: 'test',
-      },
-    })
-
-    const doggosCategory = await payload.create({
-      collection: 'petCategories',
-      data: {
-        name: 'Doggos',
-      },
-    })
-
-    await payload.create({
-      collection: 'petCategories',
-      data: {
-        name: 'Puppers',
-      },
-    })
-
-    await payload.create({
-      collection: 'pets',
-      data: {
-        name: 'Doggo McPupperton',
-        status: 'available',
-        category: doggosCategory.id,
-      },
-    })
-
-    await payload.create({
-      collection: 'pets',
-      data: {
-        name: 'Bubbles',
-        status: 'sold',
-      },
-    })
-  },
+  db: mongooseAdapter({
+    url: process.env.DATABASE_URI,
+  }),
 })

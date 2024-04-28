@@ -1,3 +1,6 @@
+dev/tmp
+dev/yarn.lock
+
 # Created by https://www.gitignore.io/api/node,macos,windows,webstorm,sublimetext,visualstudiocode
 
 ### macOS ###
@@ -235,14 +238,13 @@ components/index.js
 components/styles.css
 
 # Ignore generated
-demo/generated-types.ts
-demo/generated-schema.graphql
+dev/generated-types.ts
+dev/generated-schema.graphql
 
 # Ignore dist, no need for git
 dist
 
-# Ignore emulator volumes
-src/adapters/s3/emulator/.localstack/
-
-.nvimrc
+dev/src/uploads
 Session.vim
+.nvim.lua
+.envrc

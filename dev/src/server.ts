@@ -1,9 +1,8 @@
 import express from 'express'
 import payload from 'payload'
+import { InitOptions } from 'payload/config'
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 require('dotenv').config()
-
 const app = express()
 
 // Redirect root to Admin panel
@@ -11,16 +10,20 @@ app.get('/', (_, res) => {
   res.redirect('/admin')
 })
 
-// Initialize Payload
-payload.init({
-  secret: process.env.PAYLOAD_SECRET,
-  mongoURL: process.env.MONGODB_URI,
-  express: app,
-  onInit: () => {
-    payload.logger.info(`Payload Admin URL: ${payload.getAdminURL()}`)
-  },
-})
+export const start = async (args?: Partial<InitOptions>) => {
+  // Initialize Payload
+  await payload.init({
+    secret: process.env.PAYLOAD_SECRET,
+    express: app,
+    onInit: async () => {
+      payload.logger.info(`Payload Admin URL: ${payload.getAdminURL()}`)
+    },
+    ...(args || {}),
+  })
 
-// Add your own express routes here
+  // Add your own express routes here
 
-app.listen(3000)
+  app.listen(3000)
+}
+
+start()

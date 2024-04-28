@@ -1,6 +1,4 @@
 import type { Config, Plugin } from 'payload/config'
-import type { Response, NextFunction, RequestHandler } from 'express'
-import type { PayloadRequest } from 'payload/dist/express/types'
 
 import httpStatus from 'http-status'
 
@@ -8,16 +6,22 @@ const swaggerUI =
   ({
     specEndpoint = '/openapi.json',
     docsUrl = '/docs',
+    enabled = true,
   }: {
     specEndpoint?: string
     docsUrl?: string
+    enabled?: boolean
   }): Plugin =>
-  ({ onInit = () => {}, ...config }: Config): Config => ({
-    ...config,
-    onInit: async payload => {
-      payload.router?.get(docsUrl, ((req: PayloadRequest, res: Response, next: NextFunction) =>
-        res.status(httpStatus.OK).send(
-          `
+  ({ onInit = () => {}, ...config }: Config): Config => {
+    if (!enabled) {
+      return { ...config, onInit }
+    }
+    return {
+      ...config,
+      onInit: async payload => {
+        payload.express?.route(docsUrl).get((req, res) =>
+          res.status(httpStatus.OK).send(
+            `
           <!DOCTYPE html>
           <html lang="en">
           <head>
@@ -36,16 +40,18 @@ const swaggerUI =
           <script>
             window.onload = () => {
               window.ui = SwaggerUIBundle({
-                url: '${req.protocol}://${req.header('host')}/api${specEndpoint}',
+                url: '${req.protocol}://${req.header('host')}${specEndpoint}',
                 dom_id: '#swagger-ui',
               });
             };
           </script>
           </body>
           </html>`,
-        )) as unknown as RequestHandler)
-      await onInit(payload)
-    },
-  })
+          ),
+        )
+        await onInit(payload)
+      },
+    }
+  }
 
 export default swaggerUI
