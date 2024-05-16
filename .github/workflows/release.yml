@@ -26,21 +26,36 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Set up git
         run: |
           git config --global user.email "ci@bucharjan.cz"
           git config --global user.name "Jan Buchar"
+
       - name: Create branch
         run: |
           git switch -c ${{ env.PR_BRANCH }}
+
       - name: Bump version in package.json
         id: bump_version
         run: |
-          npm version ${{ github.event.inputs.release_type }}
+          npm version --no-git-tag-version ${{ github.event.inputs.release_type }}
           echo version=$( node -p "require('./package.json').version" ) >> "$GITHUB_OUTPUT"
-          git push --set-upstream origin ${{ env.PR_BRANCH }}
-      - name: Create PR
+
+      - name: Update changelog
+        uses: orhun/git-cliff-action@v3
+        with:
+          config: cliff.toml
+          args: --tag "release-${{ steps.bump_version.outputs.version }}"
+        env:
+          OUTPUT: CHANGELOG.md
+
+      - name: Push branch and create PR
         run: |
+          git commit -am "Release ${{ steps.bump_version.outputs.version }}"
+          git push --set-upstream origin ${{ env.PR_BRANCH }}
           gh pr create \
             --base master \
             --head ${{ env.PR_BRANCH }} \
@@ -48,10 +63,10 @@ jobs:
             --body "Automated pull request - update to ${{ steps.bump_version.outputs.version }}"
         env:
           GH_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
-      - name: Approve and merge PR
+
+      - name: Merge PR
         id: merge_pr
         run: |
-          # gh pr review --approve ${{ env.PR_BRANCH }}
           gh pr merge --squash --auto --delete-branch ${{ env.PR_BRANCH }}
           echo sha=$( gh pr view --json mergeCommit ${{ env.PR_BRANCH }} | jq --raw-output .mergeCommit.oid ) >> "$GITHUB_OUTPUT"
         env:
@@ -63,12 +78,24 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate release notes
+        uses: orhun/git-cliff-action@v3
+        with:
+          config: cliff.toml
+          args: --tag "release-${{ needs.prepare_metadata.outputs.version }}" --unreleased --strip all
+        env:
+          OUTPUT: release_notes.md
+
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: release-${{ needs.prepare_metadata.outputs.version }}
           name: Release ${{ needs.prepare_metadata.outputs.version }}
           target_commitish: ${{ needs.prepare_metadata.outputs.release_sha }}
+          body_path: release_notes.md
 
   npm_publish:
     runs-on: ubuntu-latest
