@@ -26,7 +26,6 @@
   },
   "dependencies": {
     "@openapi-contrib/json-schema-to-openapi-schema": "^3.0.1",
-    "conventional-changelog-cli": "^4.1.0",
     "openapi-types": "^12.1.0",
     "util": "^0.12.5"
   },
@@ -49,6 +48,7 @@
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-import": "2.25.4",
     "eslint-plugin-prettier": "^4.0.0",
+    "git-cliff": "^2.2.2",
     "payload": "^2.0.14",
     "prettier": "^2.7.1",
     "react": "^18.0.0",
