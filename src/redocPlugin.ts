@@ -40,9 +40,7 @@ const redoc =
                 </style>
               </head>
               <body>
-                <redoc spec-url="${req.protocol}://${req.header(
-              'host',
-            )}${specEndpoint}"></redoc>
+                <redoc spec-url="${req.protocol}://${req.header('host')}${specEndpoint}"></redoc>
                 <script src="https://unpkg.com/redoc@^2/bundles/redoc.standalone.js"></script>
               </body>
             </html>`,

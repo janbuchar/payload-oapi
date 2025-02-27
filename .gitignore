@@ -248,3 +248,4 @@ dev/src/uploads
 Session.vim
 .nvim.lua
 .envrc
+mise.toml
