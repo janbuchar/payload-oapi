@@ -5,7 +5,6 @@ module.exports = {
     require.resolve('./rules/style.js'),
     require.resolve('./rules/import.js'),
     require.resolve('./rules/typescript.js'),
-    require.resolve('./rules/prettier.js'),
   ],
   env: {
     es6: true,

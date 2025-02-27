@@ -18,6 +18,8 @@
     "build": "tsc",
     "lint": "eslint src",
     "lint:fix": "eslint --fix --ext .ts,.tsx src",
+    "format": "biome format --write",
+    "format:check": "biome format",
     "clean": "rimraf dist && rimraf dev/yarn.lock",
     "prepublishOnly": "yarn build"
   },
@@ -32,10 +34,10 @@
   "files": [
     "dist",
     "*.js",
-    "*.d.ts",
-    "!.prettierrc.js"
+    "*.d.ts"
   ],
   "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
     "@payloadcms/eslint-config": "^0.0.1",
     "@swc/jest": "^0.2.28",
     "@types/express": "^4.17.21",
@@ -45,14 +47,12 @@
     "dotenv": "^8.2.0",
     "eslint": "^8.19.0",
     "eslint-config-airbnb-base": "^14.2.1",
-    "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-import": "2.25.4",
-    "eslint-plugin-prettier": "^4.0.0",
     "git-cliff": "^2.2.2",
     "payload": "^2.0.14",
-    "prettier": "^2.7.1",
     "react": "^18.0.0",
     "typescript": "^4.8.4",
     "webpack": "^5.90.3"
-  }
+  },
+  "packageManager": "yarn@1.22.19+sha1.4ba7fc5c6e704fce2066ecbfb0b0d8976fe62447"
 }
