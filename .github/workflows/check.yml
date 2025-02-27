@@ -15,6 +15,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install dependencies
+        shell: bash
+        run: |
+          yarn install
+
       - name: Check format
         shell: bash
         run: |
@@ -31,6 +36,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          yarn install
 
       - name: Build
         shell: bash
