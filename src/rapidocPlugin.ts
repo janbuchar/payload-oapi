@@ -36,9 +36,7 @@ const rapidoc =
           </head>
           <body>
           <script src="https://unpkg.com/rapidoc@9.3.4/dist/rapidoc-min.js" type="module"></script>
-          <rapi-doc spec-url="${req.protocol}://${req.header(
-              'host',
-            )}${specEndpoint}"></rapi-doc>
+          <rapi-doc spec-url="${req.protocol}://${req.header('host')}${specEndpoint}"></rapi-doc>
           </body>
           </html>`,
           ),

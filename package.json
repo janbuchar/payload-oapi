@@ -7,13 +7,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "license": "MIT",
-  "keywords": [
-    "payload",
-    "cms",
-    "plugin",
-    "typescript",
-    "openapi"
-  ],
+  "keywords": ["payload", "cms", "plugin", "typescript", "openapi"],
   "scripts": {
     "build": "tsc",
     "lint": "eslint src",
@@ -31,11 +25,7 @@
     "openapi-types": "^12.1.0",
     "util": "^0.12.5"
   },
-  "files": [
-    "dist",
-    "*.js",
-    "*.d.ts"
-  ],
+  "files": ["dist", "*.js", "*.d.ts"],
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
     "@payloadcms/eslint-config": "^0.0.1",
