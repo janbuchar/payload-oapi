@@ -1,0 +1,38 @@
+name: Run code checks
+
+on:
+  pull_request:
+
+  push:
+    branches:
+      - master
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    name: Check code style
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check format
+        shell: bash
+        run: |
+          yarn format:check
+
+      - name: Run linter
+        shell: bash
+        run: |
+          yarn lint || true # TODO enable once errors are fixed
+
+  build:
+    runs-on: ubuntu-latest
+    name: Check if build works
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build
+        shell: bash
+        run: |
+          yarn build
