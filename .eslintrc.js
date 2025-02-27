@@ -11,5 +11,5 @@ module.exports = {
       },
     },
   ],
-  excludes: ['dev/plugin.spec.ts'],
+  ignorePatterns: ['dev/plugin.spec.ts'],
 }
