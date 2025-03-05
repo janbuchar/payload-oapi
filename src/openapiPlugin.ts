@@ -1,7 +1,7 @@
-import type { Plugin } from 'payload/config'
-import type { PluginOptions } from './types'
+import type { Plugin } from 'payload'
+import type { PluginOptions } from './types.js'
 
-import { createOpenAPIRequestHandler } from './requestHandlers'
+import { createOpenAPIRequestHandler } from './requestHandlers.js'
 
 const openapi =
   ({
@@ -10,20 +10,21 @@ const openapi =
     metadata,
     enabled = true,
   }: PluginOptions): Plugin =>
-  ({ onInit = () => {}, ...config }) => {
+  ({ endpoints = [], ...config }) => {
     if (!enabled) {
-      return config
+      return { ...config, endpoints }
     }
 
     return {
       ...config,
-      onInit: async payload => {
-        payload.express
-          ?.route(specEndpoint)
-          .get(createOpenAPIRequestHandler({ openapiVersion, metadata }))
-
-        await onInit(payload)
-      },
+      endpoints: [
+        ...endpoints,
+        {
+          method: 'get',
+          path: specEndpoint,
+          handler: createOpenAPIRequestHandler({ openapiVersion, metadata }),
+        },
+      ],
     }
   }
 
