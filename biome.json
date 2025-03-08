@@ -1,4 +1,7 @@
 {
+  "files": {
+    "ignore": ["dev/.next"]
+  },
   "formatter": {
     "indentStyle": "space",
     "indentWidth": 2,
