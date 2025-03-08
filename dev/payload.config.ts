@@ -1,10 +1,10 @@
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
-import path from 'path'
+import path from 'node:path'
 import { buildConfig } from 'payload'
 import { openapi, rapidoc, swaggerUI, redoc } from '@payload-oapi'
 import sharp from 'sharp'
-import { fileURLToPath } from 'url'
+import { fileURLToPath } from 'node:url'
 
 import { devUser } from './helpers/credentials.js'
 import { testEmailAdapter } from './helpers/testEmailAdapter.js'

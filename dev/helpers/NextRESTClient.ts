@@ -78,7 +78,7 @@ export class NextRESTClient {
 
   private token?: string
 
-  serverURL: string = 'http://localhost:3000'
+  serverURL = 'http://localhost:3000'
 
   constructor(config: SanitizedConfig) {
     this.config = config

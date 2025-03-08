@@ -9,9 +9,9 @@ import type { Payload } from 'payload'
 
 import dotenv from 'dotenv'
 import { MongoMemoryReplSet } from 'mongodb-memory-server'
-import path from 'path'
+import path from 'node:path'
 import { getPayload } from 'payload'
-import { fileURLToPath } from 'url'
+import { fileURLToPath } from 'node:url'
 
 import { NextRESTClient } from './helpers/NextRESTClient.js'
 

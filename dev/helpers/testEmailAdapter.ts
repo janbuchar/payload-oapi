@@ -25,7 +25,8 @@ function getStringifiedToAddress(message: SendEmailOptions): string | undefined 
       .map((to: { address: string } | string) => {
         if (typeof to === 'string') {
           return to
-        } else if (to.address) {
+        }
+        if (to.address) {
           return to.address
         }
         return ''

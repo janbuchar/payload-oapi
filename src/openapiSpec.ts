@@ -1,6 +1,6 @@
 import _jsonSchemaToOpenapiSchema from '@openapi-contrib/json-schema-to-openapi-schema'
 import type { JSONSchema4 } from 'json-schema'
-import { OpenAPIV3, OpenAPIV3_1 } from 'openapi-types'
+import type { OpenAPIV3, OpenAPIV3_1 } from 'openapi-types'
 import type {
   SanitizedConfig,
   SanitizedGlobalConfig,
@@ -102,7 +102,7 @@ const composeRef = (
 })
 
 const adjustRefTargets = (req: PayloadRequest, subject: Record<string, unknown>): void => {
-  const search = new RegExp('^#/definitions/(.*)')
+  const search = /^#\/definitions\/(.*)/
 
   for (const [key, value] of Object.entries(subject)) {
     if (key === '$ref' && typeof value === 'string') {

@@ -11,8 +11,8 @@
   "keywords": ["payload", "cms", "plugin", "typescript", "openapi"],
   "scripts": {
     "build": "tsc",
-    "lint": "eslint src",
-    "lint:fix": "eslint --fix --ext .ts,.tsx src",
+    "lint": "biome lint",
+    "lint:fix": "biome lint --fix",
     "format": "biome format --write",
     "format:check": "biome format",
     "clean": "rimraf dist && rimraf dev/yarn.lock",
