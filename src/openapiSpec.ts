@@ -170,7 +170,7 @@ const generateRequestBodySchema = (
   return {
     description: collectionName(collection).singular,
     content: {
-      'text/json': {
+      'application/json': {
         schema: requestBodySchema(collection.config.fields, schema) as OpenAPIV3_1.SchemaObject,
       },
     },
@@ -296,7 +296,7 @@ const generateCollectionResponses = (
     [componentName('responses', singular)]: {
       description: `${singular} object`,
       content: {
-        'text/json': {
+        'application/json': {
           schema: composeRef('schemas', singular),
         },
       },
@@ -304,7 +304,7 @@ const generateCollectionResponses = (
     [componentName('responses', singular, { prefix: 'New' })]: {
       description: `${singular} object`,
       content: {
-        'text/json': {
+        'application/json': {
           schema: {
             type: 'object',
             properties: {
@@ -341,7 +341,7 @@ const generateCollectionResponses = (
     [componentName('responses', singular, { suffix: 'List' })]: {
       description: `List of ${plural}`,
       content: {
-        'text/json': {
+        'application/json': {
           schema: {
             type: 'object',
             properties: {
@@ -488,7 +488,7 @@ const generateGlobalResponse = (
   return {
     description: name,
     content: {
-      'text/json': {
+      'application/json': {
         schema: composeRef('schemas', name, { suffix: 'Read' }),
       },
     },
@@ -503,7 +503,7 @@ const generateGlobalRequestBody = (
   return {
     description: name,
     content: {
-      'text/json': {
+      'application/json': {
         schema: composeRef('schemas', name, { suffix: 'Write' }),
       },
     },
