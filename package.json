@@ -1,14 +1,20 @@
 {
   "name": "payload-oapi",
   "description": "An OpenAPI plugin for Payload CMS",
-  "version": "0.1.0",
+  "version": "0.2.0-b.0",
   "homepage:": "https://github.com/janbuchar/payload-oapi",
   "repository:": "https://github.com/janbuchar/payload-oapi",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
   "license": "MIT",
-  "keywords": ["payload", "cms", "plugin", "typescript", "openapi"],
+  "keywords": [
+    "payload",
+    "cms",
+    "plugin",
+    "typescript",
+    "openapi"
+  ],
   "scripts": {
     "build": "tsc",
     "lint": "eslint src",
@@ -30,7 +36,11 @@
     "openapi-types": "^12.1.0",
     "util": "^0.12.5"
   },
-  "files": ["dist", "*.js", "*.d.ts"],
+  "files": [
+    "dist",
+    "*.js",
+    "*.d.ts"
+  ],
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
     "@payloadcms/db-mongodb": "^3.27.0",
