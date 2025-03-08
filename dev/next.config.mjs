@@ -1,6 +1,6 @@
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { withPayload } from '@payloadcms/next/withPayload'
-import { fileURLToPath } from 'url'
-import path from 'path'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 

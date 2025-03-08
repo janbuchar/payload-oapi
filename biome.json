@@ -1,6 +1,21 @@
 {
   "files": {
-    "ignore": ["dev/.next", "importMap.js"]
+    "ignore": ["dev/.next", "importMap.js", "dist"]
+  },
+  "linter": {
+    "ignore": ["dev/payload-types.ts"],
+    "rules": {
+      "complexity": {
+        "useLiteralKeys": "off"
+      },
+      "style": {
+        "noParameterAssign": "off",
+        "noNonNullAssertion": "off"
+      },
+      "suspicious": {
+        "noExplicitAny": "off"
+      }
+    }
   },
   "formatter": {
     "indentStyle": "space",
