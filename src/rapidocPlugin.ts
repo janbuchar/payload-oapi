@@ -23,7 +23,8 @@ const rapidoc =
           method: 'get',
           path: docsUrl,
           handler: async req =>
-            new Response(`
+            new Response(
+              `
               <!DOCTYPE html>
               <html lang="en">
               <head>
@@ -37,9 +38,11 @@ const rapidoc =
               </head>
               <body>
               <script src="https://unpkg.com/rapidoc@9.3.4/dist/rapidoc-min.js" type="module"></script>
-              <rapi-doc spec-url="${req.protocol}://${req.headers.get('host')}${specEndpoint}"></rapi-doc>
+              <rapi-doc spec-url="${req.protocol}//${req.headers.get('host')}/api${specEndpoint}"></rapi-doc>
               </body>
-              </html>`),
+              </html>`,
+              { headers: { 'content-type': 'text/html' } },
+            ),
         },
       ],
     }

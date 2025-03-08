@@ -608,7 +608,7 @@ export const generateV30Spec = async (
   const spec = {
     openapi: '3.0.3',
     info: metadata,
-    servers: [{ url: `${req.protocol}://${req.headers.get('host')}` }],
+    servers: [{ url: `${req.protocol}//${req.headers.get('host')}` }],
     paths: Object.assign(
       {},
       ...Object.values(req.payload.collections).map(generateCollectionOperations),
@@ -665,7 +665,7 @@ export const generateV31Spec = async (
   const spec = {
     openapi: '3.1.0',
     info: metadata,
-    servers: [{ url: `${req.protocol}://${req.headers.get('host')}` }],
+    servers: [{ url: `${req.protocol}//${req.headers.get('host')}` }],
     paths: Object.assign(
       {},
       ...Object.values(req.payload.collections).map(generateCollectionOperations),

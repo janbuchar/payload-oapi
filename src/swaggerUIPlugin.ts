@@ -22,7 +22,8 @@ const swaggerUI =
           method: 'get',
           path: docsUrl,
           handler: async req =>
-            new Response(`
+            new Response(
+              `
               <!DOCTYPE html>
               <html lang="en">
               <head>
@@ -41,13 +42,15 @@ const swaggerUI =
               <script>
                 window.onload = () => {
                   window.ui = SwaggerUIBundle({
-                    url: '${req.protocol}://${req.headers.get('host')}${specEndpoint}',
+                    url: '${req.protocol}//${req.headers.get('host')}/api${specEndpoint}',
                     dom_id: '#swagger-ui',
                   });
                 };
               </script>
               </body>
-              </html>`),
+              </html>`,
+              { headers: { 'content-type': 'text/html' } },
+            ),
         },
       ],
     }

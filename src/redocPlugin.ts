@@ -22,7 +22,8 @@ const redoc =
           method: 'get',
           path: docsUrl,
           handler: async req =>
-            new Response(`
+            new Response(
+              `
               <!DOCTYPE html>
               <html lang="en">
                 <head>
@@ -42,10 +43,12 @@ const redoc =
                   </style>
                 </head>
                 <body>
-                  <redoc spec-url="${req.protocol}://${req.headers.get('host')}${specEndpoint}"></redoc>
+                  <redoc spec-url="${req.protocol}//${req.headers.get('host')}/api${specEndpoint}"></redoc>
                   <script src="https://unpkg.com/redoc@^2/bundles/redoc.standalone.js"></script>
                 </body>
-              </html>`),
+              </html>`,
+              { headers: { 'content-type': 'text/html' } },
+            ),
         },
       ],
     }
