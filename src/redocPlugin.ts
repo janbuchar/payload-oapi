@@ -1,5 +1,4 @@
-import httpStatus from 'http-status'
-import type { Plugin } from 'payload/config'
+import type { Plugin } from 'payload'
 
 const redoc =
   ({
@@ -11,43 +10,47 @@ const redoc =
     docsUrl?: string
     enabled?: boolean
   }): Plugin =>
-  ({ onInit = () => {}, ...config }) => {
+  ({ endpoints = [], ...config }) => {
     if (!enabled) {
-      return { ...config, onInit }
+      return { ...config, endpoints }
     }
     return {
       ...config,
-      onInit: async payload => {
-        payload.express?.route(docsUrl).get((req, res) =>
-          res.status(httpStatus.OK).send(
-            `
-            <!DOCTYPE html>
-            <html lang="en">
-              <head>
-                <title>Redoc</title>
-                <!-- needed for adaptive design -->
-                <meta charset="utf-8"/>
-                <meta name="viewport" content="width=device-width, initial-scale=1">
+      endpoints: [
+        ...endpoints,
+        {
+          method: 'get',
+          path: docsUrl,
+          handler: async req =>
+            new Response(
+              `
+              <!DOCTYPE html>
+              <html lang="en">
+                <head>
+                  <title>Redoc</title>
+                  <!-- needed for adaptive design -->
+                  <meta charset="utf-8"/>
+                  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-                <!--
-                Redoc doesn't change outer page styles
-                -->
-                <style>
-                  body {
-                    margin: 0;
-                    padding: 0;
-                  }
-                </style>
-              </head>
-              <body>
-                <redoc spec-url="${req.protocol}://${req.header('host')}${specEndpoint}"></redoc>
-                <script src="https://unpkg.com/redoc@^2/bundles/redoc.standalone.js"></script>
-              </body>
-            </html>`,
-          ),
-        )
-        await onInit(payload)
-      },
+                  <!--
+                  Redoc doesn't change outer page styles
+                  -->
+                  <style>
+                    body {
+                      margin: 0;
+                      padding: 0;
+                    }
+                  </style>
+                </head>
+                <body>
+                  <redoc spec-url="${req.protocol}//${req.headers.get('host')}/api${specEndpoint}"></redoc>
+                  <script src="https://unpkg.com/redoc@^2/bundles/redoc.standalone.js"></script>
+                </body>
+              </html>`,
+              { headers: { 'content-type': 'text/html' } },
+            ),
+        },
+      ],
     }
   }
 

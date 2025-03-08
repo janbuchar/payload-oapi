@@ -1,16 +1,25 @@
-import jsonSchemaToOpenapiSchema from '@openapi-contrib/json-schema-to-openapi-schema'
+import _jsonSchemaToOpenapiSchema from '@openapi-contrib/json-schema-to-openapi-schema'
 import type { JSONSchema4 } from 'json-schema'
 import { OpenAPIV3, OpenAPIV3_1 } from 'openapi-types'
-import type { SanitizedConfig } from 'payload/config'
-import type { Collection } from 'payload/dist/collections/config/types'
-import type { PayloadRequest } from 'payload/dist/express/types'
-import type { Field, FieldBase, RadioField, SelectField } from 'payload/dist/fields/config/types'
-import type { SanitizedGlobalConfig } from 'payload/dist/globals/config/types'
-import { entityToJSONSchema } from 'payload/utilities'
-import type { OpenAPIMetadata } from './types'
+import type {
+  SanitizedConfig,
+  SanitizedGlobalConfig,
+  Collection,
+  PayloadRequest,
+  Field,
+  FieldBase,
+  RadioField,
+  SelectField,
+} from 'payload'
+import { entityToJSONSchema } from 'payload'
+import type { OpenAPIMetadata } from './types.js'
 
 const upperFirst = (value: string) => value[0].toUpperCase() + value.slice(1)
 const camelize = (value: string) => value.split(/\s+/).map(upperFirst).join('')
+
+async function jsonSchemaToOpenapiSchema(schema: JSONSchema4): Promise<OpenAPIV3.Document> {
+  return await (_jsonSchemaToOpenapiSchema as any)(schema)
+}
 
 const collectionName = (collection: Collection): { singular: string; plural: string } => {
   const labels = collection.config.labels
@@ -24,6 +33,10 @@ const collectionName = (collection: Collection): { singular: string; plural: str
       return value
     }
 
+    if (typeof value === 'function') {
+      return collection.config.slug // TODO actually use the label function
+    }
+
     return value['en'] ?? collection.config.slug
   }
 
@@ -34,8 +47,13 @@ const globalName = (global: SanitizedGlobalConfig): string => {
   if (global.label === undefined) {
     return global.slug
   }
+
   if (typeof global.label === 'string') {
     return global.label
+  }
+
+  if (typeof global.label === 'function') {
+    return global.slug // TODO actually use the label function
   }
 
   return global.label['en']
@@ -152,7 +170,7 @@ const generateRequestBodySchema = (
   return {
     description: collectionName(collection).singular,
     content: {
-      'text/json': {
+      'application/json': {
         schema: requestBodySchema(collection.config.fields, schema) as OpenAPIV3_1.SchemaObject,
       },
     },
@@ -278,7 +296,7 @@ const generateCollectionResponses = (
     [componentName('responses', singular)]: {
       description: `${singular} object`,
       content: {
-        'text/json': {
+        'application/json': {
           schema: composeRef('schemas', singular),
         },
       },
@@ -286,7 +304,7 @@ const generateCollectionResponses = (
     [componentName('responses', singular, { prefix: 'New' })]: {
       description: `${singular} object`,
       content: {
-        'text/json': {
+        'application/json': {
           schema: {
             type: 'object',
             properties: {
@@ -323,7 +341,7 @@ const generateCollectionResponses = (
     [componentName('responses', singular, { suffix: 'List' })]: {
       description: `List of ${plural}`,
       content: {
-        'text/json': {
+        'application/json': {
           schema: {
             type: 'object',
             properties: {
@@ -470,7 +488,7 @@ const generateGlobalResponse = (
   return {
     description: name,
     content: {
-      'text/json': {
+      'application/json': {
         schema: composeRef('schemas', name, { suffix: 'Read' }),
       },
     },
@@ -485,7 +503,7 @@ const generateGlobalRequestBody = (
   return {
     description: name,
     content: {
-      'text/json': {
+      'application/json': {
         schema: composeRef('schemas', name, { suffix: 'Write' }),
       },
     },
@@ -590,7 +608,7 @@ export const generateV30Spec = async (
   const spec = {
     openapi: '3.0.3',
     info: metadata,
-    servers: [{ url: `${req.protocol}://${req.header('host')}` }],
+    servers: [{ url: `${req.protocol}//${req.headers.get('host')}` }],
     paths: Object.assign(
       {},
       ...Object.values(req.payload.collections).map(generateCollectionOperations),
@@ -647,7 +665,7 @@ export const generateV31Spec = async (
   const spec = {
     openapi: '3.1.0',
     info: metadata,
-    servers: [{ url: `${req.protocol}://${req.header('host')}` }],
+    servers: [{ url: `${req.protocol}//${req.headers.get('host')}` }],
     paths: Object.assign(
       {},
       ...Object.values(req.payload.collections).map(generateCollectionOperations),

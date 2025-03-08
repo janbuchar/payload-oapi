@@ -1,4 +1,7 @@
 {
+  "files": {
+    "ignore": ["dev/.next", "importMap.js"]
+  },
   "formatter": {
     "indentStyle": "space",
     "indentWidth": 2,

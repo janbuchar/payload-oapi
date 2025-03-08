@@ -1,17 +1,22 @@
 {
   "compilerOptions": {
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "target": "es5",
+    "lib": ["dom", "dom.iterable", "es2022"],
+    "target": "es2022",
     "outDir": "./dist",
     "allowJs": true,
-    "module": "commonjs",
+    "module": "nodenext",
     "sourceMap": true,
-    "jsx": "react",
+    "jsx": "preserve",
     "esModuleInterop": true,
     "declaration": true,
     "declarationDir": "./dist",
     "skipLibCheck": true,
-    "strict": true
+    "strict": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
   },
   "include": ["src/**/*"]
 }
