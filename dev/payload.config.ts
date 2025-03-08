@@ -1,16 +1,16 @@
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+import { openapi, rapidoc, redoc, swaggerUI } from '@payload-oapi'
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
-import path from 'node:path'
 import { buildConfig } from 'payload'
-import { openapi, rapidoc, swaggerUI, redoc } from '@payload-oapi'
 import sharp from 'sharp'
-import { fileURLToPath } from 'node:url'
 
 import { devUser } from './helpers/credentials.js'
 import { testEmailAdapter } from './helpers/testEmailAdapter.js'
 import { seed } from './seed.js'
 
-import { Pets, Categories } from './collections/Pets.js'
+import { Categories, Pets } from './collections/Pets.js'
 import { Users } from './collections/Users.js'
 import { FeaturedPet } from './globals/FeaturedPet.js'
 

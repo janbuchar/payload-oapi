@@ -2,13 +2,13 @@ import _jsonSchemaToOpenapiSchema from '@openapi-contrib/json-schema-to-openapi-
 import type { JSONSchema4 } from 'json-schema'
 import type { OpenAPIV3, OpenAPIV3_1 } from 'openapi-types'
 import type {
-  SanitizedConfig,
-  SanitizedGlobalConfig,
   Collection,
-  PayloadRequest,
   Field,
   FieldBase,
+  PayloadRequest,
   RadioField,
+  SanitizedConfig,
+  SanitizedGlobalConfig,
   SelectField,
 } from 'payload'
 import { entityToJSONSchema } from 'payload'

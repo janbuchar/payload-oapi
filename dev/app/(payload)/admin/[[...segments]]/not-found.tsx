@@ -3,7 +3,7 @@
 import type { Metadata } from 'next'
 
 import config from '@payload-config'
-import { generatePageMetadata, NotFoundPage } from '@payloadcms/next/views'
+import { NotFoundPage, generatePageMetadata } from '@payloadcms/next/views'
 
 import { importMap } from '../importMap.js'
 
