@@ -12,54 +12,9 @@ import type {
   SelectField,
 } from 'payload'
 import { entityToJSONSchema } from 'payload'
-import type { OpenAPIMetadata } from './types.js'
-
-const upperFirst = (value: string) => value[0].toUpperCase() + value.slice(1)
-const camelize = (value: string) => value.split(/\s+/).map(upperFirst).join('')
-
-async function jsonSchemaToOpenapiSchema(schema: JSONSchema4): Promise<OpenAPIV3.Document> {
-  return await (_jsonSchemaToOpenapiSchema as any)(schema)
-}
-
-const collectionName = (collection: Collection): { singular: string; plural: string } => {
-  const labels = collection.config.labels
-
-  if (labels === undefined) {
-    return { singular: collection.config.slug, plural: collection.config.slug }
-  }
-
-  const label = (value: typeof labels.singular): string => {
-    if (typeof value === 'string') {
-      return value
-    }
-
-    if (typeof value === 'function') {
-      return collection.config.slug // TODO actually use the label function
-    }
-
-    return value['en'] ?? collection.config.slug
-  }
-
-  return { singular: label(labels.singular), plural: label(labels.plural) }
-}
-
-const globalName = (global: SanitizedGlobalConfig): string => {
-  if (global.label === undefined) {
-    return global.slug
-  }
-
-  if (typeof global.label === 'string') {
-    return global.label
-  }
-
-  if (typeof global.label === 'function') {
-    return global.slug // TODO actually use the label function
-  }
-
-  return global.label['en']
-}
-
-type ComponentType = 'schemas' | 'responses' | 'requestBodies'
+import type { OpenAPIMetadata } from '../types.js'
+import { mapValuesAsync } from '../utils/objects.js'
+import { type ComponentType, collectionName, componentName, globalName } from './naming.js'
 
 const baseQueryParams: Array<OpenAPIV3.ParameterObject & OpenAPIV3_1.ParameterObject> = [
   { in: 'query', name: 'depth', schema: { type: 'number' } },
@@ -67,39 +22,9 @@ const baseQueryParams: Array<OpenAPIV3.ParameterObject & OpenAPIV3_1.ParameterOb
   { in: 'query', name: 'fallback-locale', schema: { type: 'string' } },
 ]
 
-const componentName = (
-  type: ComponentType,
-  name: string,
-  { prefix, suffix }: { suffix?: string; prefix?: string } = {},
-): string => {
-  name = camelize(name)
-
-  if (prefix) {
-    name = prefix + name
-  }
-
-  if (suffix) {
-    name += suffix
-  }
-
-  if (type === 'responses') {
-    name += 'Response'
-  }
-
-  if (type === 'requestBodies') {
-    name += 'RequestBody'
-  }
-
-  return name
+async function jsonSchemaToOpenapiSchema(schema: JSONSchema4): Promise<OpenAPIV3.Document> {
+  return await (_jsonSchemaToOpenapiSchema as any)(schema)
 }
-
-const composeRef = (
-  type: ComponentType,
-  name: string,
-  options?: { suffix?: string; prefix?: string },
-): OpenAPIV3_1.ReferenceObject & OpenAPIV3.ReferenceObject => ({
-  $ref: `#/components/${type}/${componentName(type, name, options)}`,
-})
 
 const adjustRefTargets = (req: PayloadRequest, subject: Record<string, unknown>): void => {
   const search = /^#\/definitions\/(.*)/
@@ -127,15 +52,13 @@ const adjustRefTargets = (req: PayloadRequest, subject: Record<string, unknown>)
   }
 }
 
-const mapValuesAsync = async <T, U>(
-  mapper: (value: T) => Promise<U>,
-  record: Record<string, T>,
-): Promise<Record<string, U>> =>
-  Object.fromEntries(
-    await Promise.all(
-      Object.entries(record).map(async ([key, value]) => [key, await mapper(value)]),
-    ),
-  )
+const composeRef = (
+  type: ComponentType,
+  name: string,
+  options?: { suffix?: string; prefix?: string },
+): OpenAPIV3_1.ReferenceObject & OpenAPIV3.ReferenceObject => ({
+  $ref: `#/components/${type}/${componentName(type, name, options)}`,
+})
 
 const generateSchemaObject = (config: SanitizedConfig, collection: Collection): JSONSchema4 => {
   const schema = entityToJSONSchema(config, collection.config, new Map(), 'text', undefined)
