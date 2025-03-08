@@ -1,7 +1,7 @@
 import type { PayloadRequest } from 'payload'
 import type { PluginOptions } from './types.js'
 
-import { generateV30Spec, generateV31Spec } from './openapiSpec.js'
+import { generateV30Spec, generateV31Spec } from './openapi/generators.js'
 
 export const createOpenAPIRequestHandler =
   ({ openapiVersion, metadata }: Pick<PluginOptions, 'openapiVersion' | 'metadata'>) =>
