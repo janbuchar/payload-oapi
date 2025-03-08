@@ -23,12 +23,7 @@ jobs:
       - name: Check format
         shell: bash
         run: |
-          yarn format:check
-
-      - name: Run linter
-        shell: bash
-        run: |
-          yarn lint || true # TODO enable once errors are fixed
+          yarn ci
 
   build:
     runs-on: ubuntu-latest

@@ -11,10 +11,9 @@
   "keywords": ["payload", "cms", "plugin", "typescript", "openapi"],
   "scripts": {
     "build": "tsc",
-    "lint": "biome lint",
-    "lint:fix": "biome lint --fix",
-    "format": "biome format --write",
-    "format:check": "biome format",
+    "ci": "biome ci",
+    "lint": "biome check",
+    "lint:fix": "biome check --fix",
     "clean": "rimraf dist && rimraf dev/yarn.lock",
     "prepublishOnly": "yarn build",
     "dev": "payload run ./dev/server.ts",
