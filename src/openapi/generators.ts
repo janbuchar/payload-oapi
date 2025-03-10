@@ -2,6 +2,8 @@ import _jsonSchemaToOpenapiSchema from '@openapi-contrib/json-schema-to-openapi-
 import type { JSONSchema4 } from 'json-schema'
 import type { OpenAPIV3, OpenAPIV3_1 } from 'openapi-types'
 import type {
+  Access,
+  AccessArgs,
   Collection,
   Field,
   FieldBase,
@@ -12,9 +14,10 @@ import type {
   SelectField,
 } from 'payload'
 import { entityToJSONSchema } from 'payload'
-import type { OpenAPIMetadata } from '../types.js'
+import type { SanitizedPluginOptions } from '../types.js'
 import { mapValuesAsync } from '../utils/objects.js'
 import { type ComponentType, collectionName, componentName, globalName } from './naming.js'
+import { apiKeySecurity, generateSecuritySchemes } from './securitySchemes.js'
 
 const baseQueryParams: Array<OpenAPIV3.ParameterObject & OpenAPIV3_1.ParameterObject> = [
   { in: 'query', name: 'depth', schema: { type: 'number' } },
@@ -301,9 +304,27 @@ const generateCollectionResponses = (
   }
 }
 
-const generateCollectionOperations = (
+const isOpenToPublic = async (checker: Access): Promise<boolean> => {
+  try {
+    const result = await checker(
+      new Proxy({} as unknown as AccessArgs, {
+        get(target, p, receiver) {
+          if (p === 'req') {
+            throw new Error()
+          }
+          return Reflect.get(target, p, receiver)
+        },
+      }),
+    )
+    return result === true
+  } catch {
+    return false
+  }
+}
+
+const generateCollectionOperations = async (
   collection: Collection,
-): Record<string, OpenAPIV3.PathItemObject & OpenAPIV3_1.PathItemObject> => {
+): Promise<Record<string, OpenAPIV3.PathItemObject & OpenAPIV3_1.PathItemObject>> => {
   const { slug } = collection.config
   const { singular, plural } = collectionName(collection)
   const tags = [plural]
@@ -361,6 +382,7 @@ const generateCollectionOperations = (
         responses: {
           200: composeRef('responses', singular, { suffix: 'List' }),
         },
+        security: (await isOpenToPublic(collection.config.access.read)) ? [] : [apiKeySecurity],
       },
       post: {
         summary: `Create a new ${singular}`,
@@ -369,6 +391,7 @@ const generateCollectionOperations = (
         responses: {
           201: composeRef('responses', singular, { prefix: 'New' }),
         },
+        security: (await isOpenToPublic(collection.config.access.create)) ? [] : [apiKeySecurity],
       },
     },
     [`/api/${slug}/{id}`]: {
@@ -388,16 +411,19 @@ const generateCollectionOperations = (
         summary: `Find a ${singular} by ID`,
         tags,
         responses: singleObjectResponses,
+        security: (await isOpenToPublic(collection.config.access.read)) ? [] : [apiKeySecurity],
       },
       patch: {
         summary: `Update a ${singular}`,
         tags,
         responses: singleObjectResponses,
+        security: (await isOpenToPublic(collection.config.access.update)) ? [] : [apiKeySecurity],
       },
       delete: {
         summary: `Delete a ${singular}`,
         tags,
         responses: singleObjectResponses,
+        security: (await isOpenToPublic(collection.config.access.delete)) ? [] : [apiKeySecurity],
       },
     },
   }
@@ -452,9 +478,9 @@ const generateGlobalSchemas = (
   }
 }
 
-const generateGlobalOperations = (
+const generateGlobalOperations = async (
   global: SanitizedGlobalConfig,
-): Record<string, OpenAPIV3.PathItemObject & OpenAPIV3_1.PathItemObject> => {
+): Promise<Record<string, OpenAPIV3.PathItemObject & OpenAPIV3_1.PathItemObject>> => {
   const slug = global.slug
   const singular = globalName(global)
   const tags = [singular]
@@ -466,12 +492,14 @@ const generateGlobalOperations = (
         tags,
         parameters: [...baseQueryParams],
         responses: { 200: composeRef('responses', singular) },
+        security: (await isOpenToPublic(global.access.read)) ? [] : [apiKeySecurity],
       },
       post: {
         summary: `Update the ${singular}`,
         tags,
         requestBody: composeRef('requestBodies', singular),
         responses: { 200: composeRef('responses', singular) },
+        security: (await isOpenToPublic(global.access.update)) ? [] : [apiKeySecurity],
       },
     },
   }
@@ -524,20 +552,23 @@ const generateComponents = (req: PayloadRequest) => {
 
 export const generateV30Spec = async (
   req: PayloadRequest,
-  metadata: OpenAPIMetadata,
+  options: SanitizedPluginOptions,
 ): Promise<OpenAPIV3.Document> => {
   const { schemas, requestBodies, responses } = generateComponents(req)
 
   const spec = {
     openapi: '3.0.3',
-    info: metadata,
+    info: options.metadata,
     servers: [{ url: `${req.protocol}//${req.headers.get('host')}` }],
     paths: Object.assign(
       {},
-      ...Object.values(req.payload.collections).map(generateCollectionOperations),
-      ...req.payload.globals.config.map(generateGlobalOperations),
+      ...(await Promise.all(
+        Object.values(req.payload.collections).map(generateCollectionOperations),
+      )),
+      ...(await Promise.all(req.payload.globals.config.map(generateGlobalOperations))),
     ),
     components: {
+      securitySchemes: generateSecuritySchemes(options.authEndpoint),
       schemas: await mapValuesAsync(jsonSchemaToOpenapiSchema, schemas),
       requestBodies: await mapValuesAsync(
         async requestBody => ({
@@ -581,13 +612,13 @@ export const generateV30Spec = async (
 
 export const generateV31Spec = async (
   req: PayloadRequest,
-  metadata: OpenAPIMetadata,
+  options: SanitizedPluginOptions,
 ): Promise<OpenAPIV3_1.Document> => {
   const { schemas, requestBodies, responses } = generateComponents(req)
 
   const spec = {
     openapi: '3.1.0',
-    info: metadata,
+    info: options.metadata,
     servers: [{ url: `${req.protocol}//${req.headers.get('host')}` }],
     paths: Object.assign(
       {},
@@ -595,6 +626,7 @@ export const generateV31Spec = async (
       ...req.payload.globals.config.map(generateGlobalOperations),
     ),
     components: {
+      securitySchemes: generateSecuritySchemes(options.authEndpoint),
       schemas: schemas as Record<string, OpenAPIV3_1.SchemaObject>,
       requestBodies,
       responses,
