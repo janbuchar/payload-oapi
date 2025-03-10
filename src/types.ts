@@ -14,4 +14,4 @@ export interface PluginOptions {
   metadata: OpenAPIMetadata
 }
 
-export type SanitizedPluginOptions = Required<Omit<PluginOptions, "enabled" | "specEndpoint">>;
+export type SanitizedPluginOptions = Required<Omit<PluginOptions, 'enabled' | 'specEndpoint'>>
