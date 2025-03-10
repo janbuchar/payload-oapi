@@ -1,11 +1,12 @@
 import type { Plugin } from 'payload'
 import type { PluginOptions } from './types.js'
 
-import { createOpenAPIRequestHandler } from './requestHandlers.js'
+import { createOAuthPasswordFlowHandler, createOpenAPIRequestHandler } from './requestHandlers.js'
 
 const openapi =
   ({
     specEndpoint = '/openapi.json',
+    authEndpoint = '/openapi-auth',
     openapiVersion = '3.0',
     metadata,
     enabled = true,
@@ -22,7 +23,16 @@ const openapi =
         {
           method: 'get',
           path: specEndpoint,
-          handler: createOpenAPIRequestHandler({ openapiVersion, metadata }),
+          handler: createOpenAPIRequestHandler({
+            openapiVersion,
+            metadata,
+            authEndpoint,
+          }),
+        },
+        {
+          method: 'post',
+          path: authEndpoint,
+          handler: createOAuthPasswordFlowHandler(),
         },
       ],
     }

@@ -6,7 +6,6 @@ import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { buildConfig } from 'payload'
 import sharp from 'sharp'
 
-import { devUser } from './helpers/credentials.js'
 import { testEmailAdapter } from './helpers/testEmailAdapter.js'
 import { seed } from './seed.js'
 
@@ -24,7 +23,6 @@ if (!process.env.ROOT_DIR) {
 export default buildConfig({
   admin: {
     user: Users.slug,
-    autoLogin: devUser,
     importMap: {
       baseDir: path.resolve(dirname),
     },
