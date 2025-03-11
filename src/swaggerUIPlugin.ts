@@ -34,11 +34,11 @@ const swaggerUI =
                   content="SwaggerUI"
                 />
                 <title>SwaggerUI</title>
-                <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@4.16.1/swagger-ui.css" />
+                <link href="https://cdn.jsdelivr.net/npm/swagger-ui@5.20.0/dist/swagger-ui.min.css" rel="stylesheet">
               </head>
               <body>
               <div id="swagger-ui"></div>
-              <script src="https://unpkg.com/swagger-ui-dist@4.16.1/swagger-ui-bundle.js" crossorigin></script>
+              <script src="https://cdn.jsdelivr.net/npm/swagger-ui@5.20.0/dist/swagger-ui-bundle.min.js"></script>
               <script>
                 window.onload = () => {
                   window.ui = SwaggerUIBundle({
