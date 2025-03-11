@@ -44,7 +44,7 @@ const redoc =
                 </head>
                 <body>
                   <redoc spec-url="${req.protocol}//${req.headers.get('host')}/api${specEndpoint}"></redoc>
-                  <script src="https://unpkg.com/redoc@^2/bundles/redoc.standalone.js"></script>
+                  <script src="https://cdn.jsdelivr.net/npm/redoc@2.4.0/bundles/redoc.standalone.js"></script>
                 </body>
               </html>`,
               { headers: { 'content-type': 'text/html' } },

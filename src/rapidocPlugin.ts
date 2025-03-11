@@ -37,7 +37,7 @@ const rapidoc =
                 <title>Rapidoc</title>
               </head>
               <body>
-              <script src="https://unpkg.com/rapidoc@9.3.4/dist/rapidoc-min.js" type="module"></script>
+              <script src="https://cdn.jsdelivr.net/npm/rapidoc@9.3.8/dist/rapidoc-min.js" type="module"></script>
               <rapi-doc spec-url="${req.protocol}//${req.headers.get('host')}/api${specEndpoint}"></rapi-doc>
               </body>
               </html>`,
