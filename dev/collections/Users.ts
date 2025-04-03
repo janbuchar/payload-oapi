@@ -9,5 +9,16 @@ export const Users: CollectionConfig = {
   fields: [
     { name: 'firstName', type: 'text' },
     { name: 'lastName', type: 'text' },
+    {
+      type: 'array',
+      interfaceName: 'roles',
+      name: 'roles',
+      fields: [
+        {
+          type: 'text',
+          name: 'name',
+        },
+      ],
+    },
   ],
 }

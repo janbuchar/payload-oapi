@@ -43,12 +43,14 @@
     "dotenv": "^8.2.0",
     "git-cliff": "^2.2.2",
     "graphql": "^16.10.0",
+    "mongodb-memory-server": "^10.1.4",
     "next": "^15.2.1",
     "open": "^10.1.0",
     "payload": "^3.27.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "typescript": "^5.8.2",
+    "vitest": "^3.1.1",
     "webpack": "^5.90.3"
   },
   "packageManager": "yarn@1.22.19+sha1.4ba7fc5c6e704fce2066ecbfb0b0d8976fe62447"
