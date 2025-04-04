@@ -1,5 +1,5 @@
 import _jsonSchemaToOpenapiSchema from '@openapi-contrib/json-schema-to-openapi-schema'
-import { produce } from 'immer'
+import { create } from 'mutative'
 import type { JSONSchema4 } from 'json-schema'
 import type { OpenAPIV3, OpenAPIV3_1 } from 'openapi-types'
 import type {
@@ -61,7 +61,7 @@ const adjustRefTargets = (
 }
 
 const removeInterfaceNames = (target: SanitizedCollectionConfig) =>
-  produce(target, draft =>
+  create(target, draft =>
     visitObjectNodes(draft, (subject, key) => {
       if (key === 'interfaceName') {
         subject[key] = undefined
