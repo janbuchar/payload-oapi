@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "@openapi-contrib/json-schema-to-openapi-schema": "^3.0.3",
+    "immer": "^10.1.1",
     "openapi-types": "^12.1.0",
     "util": "^0.12.5"
   },

@@ -24,13 +24,18 @@ describe('openapi generators', () => {
     mongo = await MongoMemoryServer.create()
   })
 
-  const buildPayload = async (inputConfig: Omit<Config, 'db' | 'secret'>): Promise<Payload> => {
+  const buildPayload = async (
+    inputConfig: Omit<Config, 'db' | 'secret' | 'typescript'>,
+  ): Promise<Payload> => {
     const config = await buildConfig({
       ...inputConfig,
       db: mongooseAdapter({
         url: mongo.getUri(),
       }),
       secret: '1234',
+      typescript: {
+        autoGenerate: false,
+      },
     })
 
     return await new BasePayload().init({ config })
