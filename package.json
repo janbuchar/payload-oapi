@@ -8,13 +8,7 @@
   "types": "dist/index.d.ts",
   "type": "module",
   "license": "MIT",
-  "keywords": [
-    "payload",
-    "cms",
-    "plugin",
-    "typescript",
-    "openapi"
-  ],
+  "keywords": ["payload", "cms", "plugin", "typescript", "openapi"],
   "scripts": {
     "build": "tsc",
     "ci": "biome ci",
@@ -37,11 +31,7 @@
     "openapi-types": "^12.1.0",
     "util": "^0.12.5"
   },
-  "files": [
-    "dist",
-    "*.js",
-    "*.d.ts"
-  ],
+  "files": ["dist", "*.js", "*.d.ts"],
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
     "@payloadcms/db-mongodb": "^3.27.0",
