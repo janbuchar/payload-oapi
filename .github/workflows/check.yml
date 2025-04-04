@@ -42,7 +42,7 @@ jobs:
         run: |
           yarn build
 
-  build:
+  test:
     runs-on: ubuntu-latest
     name: Run tests
     steps:
