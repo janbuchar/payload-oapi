@@ -1,4 +1,5 @@
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
+import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { MongoMemoryServer } from 'mongodb-memory-server'
 import mongoose from 'mongoose'
 import { BasePayload, type CollectionConfig, type Config, type Payload, buildConfig } from 'payload'
@@ -7,9 +8,6 @@ import { generateV30Spec } from '../src/openapi/generators'
 
 const Posts: CollectionConfig = {
   slug: 'posts',
-  admin: {
-    useAsTitle: 'title',
-  },
   fields: [{ type: 'text', name: 'title' }],
 }
 
@@ -60,6 +58,8 @@ describe('openapi generators', () => {
       },
     )
 
+    expect(spec).toMatchSnapshot()
+
     expect(new Set(Object.keys(spec.paths))).toEqual(
       new Set([
         '/api/users',
@@ -88,6 +88,8 @@ describe('openapi generators', () => {
       },
     )
 
+    expect(spec).toMatchSnapshot()
+
     expect(new Set(Object.keys(spec.paths))).toEqual(
       new Set([
         '/api/posts',
@@ -107,9 +109,6 @@ describe('openapi generators', () => {
   test('handles interfaceName correctly', async () => {
     const Users: CollectionConfig = {
       slug: 'users',
-      admin: {
-        useAsTitle: 'email',
-      },
       auth: true,
       fields: [
         {
@@ -129,7 +128,7 @@ describe('openapi generators', () => {
       collections: [Users],
     })
 
-    await generateV30Spec(
+    const spec = await generateV30Spec(
       { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
       {
         openapiVersion: '3.0',
@@ -137,5 +136,40 @@ describe('openapi generators', () => {
         metadata: { title: 'Test API', version: '1.0' },
       },
     )
+
+    expect(spec).toMatchSnapshot()
+  })
+
+  test('handles block editor fields correctly', async () => {
+    const Page: CollectionConfig = {
+      slug: 'pages',
+      fields: [
+        {
+          name: 'content',
+          type: 'blocks',
+          blocks: [
+            {
+              slug: 'pageContent',
+              interfaceName: 'PageContentBlock',
+              fields: [{ name: 'richText', type: 'richText', editor: lexicalEditor() }],
+            },
+          ],
+        },
+      ],
+    }
+    const payload = await buildPayload({
+      collections: [Page],
+    })
+
+    const spec = await generateV30Spec(
+      { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
+      {
+        openapiVersion: '3.0',
+        authEndpoint: '/api/auth',
+        metadata: { title: 'Test API', version: '1.0' },
+      },
+    )
+
+    expect(spec).toMatchSnapshot()
   })
 })
