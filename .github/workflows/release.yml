@@ -10,6 +10,7 @@ on:
           - patch
           - minor
           - major
+          - none
       stability:
         required: true
         type: choice
@@ -38,12 +39,25 @@ jobs:
           git config --global user.email "ci@bucharjan.cz"
           git config --global user.name "Jan Buchar"
 
+      - name: Install dependencies
+        run: |
+          yarn install
+
       - name: Bump version in package.json
         id: bump_version
         run: |
           release_type=${{ github.event.inputs.release_type }}
           if [ "${{ github.event.inputs.stability }}" = "beta" ]; then
-            release_type=pre$release_type
+            if [ "${{ github.event.inputs.release_type }}" = "none" ]; then
+              release_type=prerelease
+            else
+              release_type=pre$release_type
+            fi
+          else
+            if [ "${{ github.event.inputs.release_type }}" = "none" ]; then
+              echo "Release type 'none' only works with 'beta' releases" >&2
+              exit 1
+            fi
           fi
           npm version --no-git-tag-version --preid b $release_type
           echo version=$( node -p "require('./package.json').version" ) >> "$GITHUB_OUTPUT"
@@ -56,6 +70,10 @@ jobs:
           args: --tag "release-${{ steps.bump_version.outputs.version }}"
         env:
           OUTPUT: CHANGELOG.md
+
+      - name: Fix formatting
+        run: |
+          yarn lint:fix
 
       - name: Commit changes
         id: commit
