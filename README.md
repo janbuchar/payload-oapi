@@ -9,9 +9,11 @@ Autogenerate an OpenAPI specification from your Payload CMS instance and use it 
 - [x] Complete description of collection CRUD endpoints
 - [x] Complete description of globals CRUD endpoints
 - [x] Integrated Swagger UI and Rapidoc
+- [x] Authentication endpoints and specification
+- [x] Preferences endpoints
+- [x] Support Payload CMS 3.x
+- [x] Support generating both OpenAPI 3.0 and 3.1
 - [ ] Custom endpoints
-- [ ] Authentication endpoints and specification
-- [ ] Preferences endpoints
 
 # Installation
 
@@ -46,3 +48,8 @@ buildConfig({
   // ...
 })
 ```
+
+# Usage
+
+Unless you configured it otherwise, your spec will be accessible via <https://your-payload.com/api/openapi.json>. If you
+added a documentation UI, that will be accessible via <https://your-payload.com/api/docs> (this is also configurable).
