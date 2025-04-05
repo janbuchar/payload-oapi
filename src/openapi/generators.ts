@@ -1,5 +1,6 @@
 import _jsonSchemaToOpenapiSchema from '@openapi-contrib/json-schema-to-openapi-schema'
 import type { JSONSchema4 } from 'json-schema'
+import { create } from 'mutative'
 import type { OpenAPIV3, OpenAPIV3_1 } from 'openapi-types'
 import type {
   Access,
@@ -9,13 +10,14 @@ import type {
   FieldBase,
   PayloadRequest,
   RadioField,
+  SanitizedCollectionConfig,
   SanitizedConfig,
   SanitizedGlobalConfig,
   SelectField,
 } from 'payload'
 import { entityToJSONSchema } from 'payload'
 import type { SanitizedPluginOptions } from '../types.js'
-import { mapValuesAsync } from '../utils/objects.js'
+import { mapValuesAsync, visitObjectNodes } from '../utils/objects.js'
 import { type ComponentType, collectionName, componentName, globalName } from './naming.js'
 import { apiKeySecurity, generateSecuritySchemes } from './securitySchemes.js'
 
@@ -29,31 +31,43 @@ async function jsonSchemaToOpenapiSchema(schema: JSONSchema4): Promise<OpenAPIV3
   return await (_jsonSchemaToOpenapiSchema as any)(schema)
 }
 
-const adjustRefTargets = (req: PayloadRequest, subject: Record<string, unknown>): void => {
+const adjustRefTargets = (
+  payload: PayloadRequest['payload'],
+  spec: Record<string, unknown>,
+): void => {
   const search = /^#\/definitions\/(.*)/
 
-  for (const [key, value] of Object.entries(subject)) {
-    if (key === '$ref' && typeof value === 'string') {
-      subject[key] = value.replace(search, (_match, name: string) => {
-        if (req.payload.collections[name] !== undefined) {
-          name = collectionName(req.payload.collections[name]).singular
-        } else {
-          const global = req.payload.globals.config.find(({ slug }) => slug === name)
-          if (global === undefined) {
-            throw new Error(`Unknown reference: ${name}`)
-          }
-          name = globalName(global)
+  visitObjectNodes(spec, (subject, key, value) => {
+    const isRef = key === '$ref' && typeof value === 'string'
+
+    if (!isRef) {
+      return
+    }
+
+    subject[key] = value.replace(search, (_match, name: string) => {
+      if (payload.collections[name] !== undefined) {
+        name = collectionName(payload.collections[name]).singular
+      } else {
+        const global = payload.globals.config.find(({ slug }) => slug === name)
+        if (global === undefined) {
+          throw new Error(`Unknown reference: ${name}`)
         }
+        name = globalName(global)
+      }
 
-        return `#/components/schemas/${componentName('schemas', name)}`
-      })
-    }
-
-    if (typeof value === 'object' && value !== null && value !== null) {
-      adjustRefTargets(req, value as Record<string, unknown>)
-    }
-  }
+      return `#/components/schemas/${componentName('schemas', name)}`
+    })
+  })
 }
+
+const removeInterfaceNames = (target: SanitizedCollectionConfig) =>
+  create(target, draft =>
+    visitObjectNodes(draft, (subject, key) => {
+      if (key === 'interfaceName') {
+        subject[key] = undefined
+      }
+    }),
+  )
 
 const composeRef = (
   type: ComponentType,
@@ -64,7 +78,13 @@ const composeRef = (
 })
 
 const generateSchemaObject = (config: SanitizedConfig, collection: Collection): JSONSchema4 => {
-  const schema = entityToJSONSchema(config, collection.config, new Map(), 'text', undefined)
+  const schema = entityToJSONSchema(
+    config,
+    removeInterfaceNames(collection.config), // the `interfaceName` option causes `entityToJSONSchema` to add a reference to a non-existing schema
+    new Map(),
+    'text',
+    undefined,
+  )
   return {
     ...schema,
     title: collectionName(collection).singular,
@@ -92,7 +112,13 @@ const generateRequestBodySchema = (
   config: SanitizedConfig,
   collection: Collection,
 ): OpenAPIV3_1.RequestBodyObject => {
-  const schema = entityToJSONSchema(config, collection.config, new Map(), 'text', undefined)
+  const schema = entityToJSONSchema(
+    config,
+    removeInterfaceNames(collection.config), // the `interfaceName` option causes `entityToJSONSchema` to add a reference to a non-existing schema
+    new Map(),
+    'text',
+    undefined,
+  )
   return {
     description: collectionName(collection).singular,
     content: {
@@ -505,7 +531,7 @@ const generateGlobalOperations = async (
   }
 }
 
-const generateComponents = (req: PayloadRequest) => {
+const generateComponents = (req: Pick<PayloadRequest, 'payload'>) => {
   const schemas: Record<string, JSONSchema4> = {}
 
   for (const collection of Object.values(req.payload.collections)) {
@@ -551,7 +577,7 @@ const generateComponents = (req: PayloadRequest) => {
 }
 
 export const generateV30Spec = async (
-  req: PayloadRequest,
+  req: Pick<PayloadRequest, 'payload' | 'protocol' | 'headers'>,
   options: SanitizedPluginOptions,
 ): Promise<OpenAPIV3.Document> => {
   const { schemas, requestBodies, responses } = generateComponents(req)
@@ -605,13 +631,13 @@ export const generateV30Spec = async (
     },
   } satisfies OpenAPIV3.Document
 
-  adjustRefTargets(req, spec)
+  adjustRefTargets(req.payload, spec)
 
   return spec
 }
 
 export const generateV31Spec = async (
-  req: PayloadRequest,
+  req: Pick<PayloadRequest, 'payload' | 'protocol' | 'headers'>,
   options: SanitizedPluginOptions,
 ): Promise<OpenAPIV3_1.Document> => {
   const { schemas, requestBodies, responses } = generateComponents(req)
@@ -633,7 +659,7 @@ export const generateV31Spec = async (
     },
   } satisfies OpenAPIV3_1.Document
 
-  adjustRefTargets(req, spec)
+  adjustRefTargets(req.payload, spec)
 
   return spec
 }
