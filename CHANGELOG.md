@@ -2,6 +2,39 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.0] - 2025-04-05
+
+### 🚀 Features
+
+- Migrate to payload 3.0 (#18)
+- Add security scheme for API authentication (#26)
+
+### 🐛 Bug Fixes
+
+- Unpkg script/css CORS/MIME errors in swaggerUIPlugin.ts (#24)
+- Handle the interfaceName field option (#31)
+
+### 🚜 Refactor
+
+- Split openapiSpec.ts into multiple files (#23)
+
+### 📚 Documentation
+
+- Add changelog
+- Update README
+
+### ⚙️ Miscellaneous Tasks
+
+- Generate changelog and release notes automatically (#15)
+- Update formatter and linter config (#17)
+- Add pre-release option (#19)
+- Simplify release (#21)
+- *(release)* 0.2.0-b.0 [skip ci]
+- Replace eslint with biome (#22)
+- Fix type import
+- Allow incrementing the beta release number
+- *(release)* 0.2.0-b.1 [skip ci]
+
 ## [0.1.0] - 2024-04-28
 
 ### 🚀 Features
