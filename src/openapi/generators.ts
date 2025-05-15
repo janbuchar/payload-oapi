@@ -46,7 +46,7 @@ const adjustRefTargets = (
 
     subject[key] = value.replace(search, (_match, name: string) => {
       if (name === 'supportedTimezones') {
-        return `#/components/schemas/supportedTimezones`
+        return '#/components/schemas/supportedTimezones'
       }
 
       const collection = payload.collections[name]
