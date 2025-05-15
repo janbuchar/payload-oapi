@@ -30,5 +30,6 @@ export const Pets: CollectionConfig = {
         { label: 'Sold', value: 'sold' },
       ],
     },
+    { name: 'lastUpdateAt', type: 'date', timezone: true },
   ],
 }
