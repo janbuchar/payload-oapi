@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.1] - 2025-05-18
+
+### 🐛 Bug Fixes
+
+- Correctly handle timezone-enabled date fields (#35)
+
 ## [0.2.0] - 2025-04-05
 
 ### 🚀 Features
@@ -34,6 +40,7 @@ All notable changes to this project will be documented in this file.
 - Fix type import
 - Allow incrementing the beta release number
 - *(release)* 0.2.0-b.1 [skip ci]
+- *(release)* 0.2.0 [skip ci]
 
 ## [0.1.0] - 2024-04-28
 
