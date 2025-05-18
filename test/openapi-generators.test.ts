@@ -172,4 +172,31 @@ describe('openapi generators', () => {
 
     expect(spec).toMatchSnapshot()
   })
+
+  test('handles datetime field with timezones correctly', async () => {
+    const Event: CollectionConfig = {
+      slug: 'events',
+      fields: [
+        {
+          name: 'startsAt',
+          type: 'date',
+          timezone: true,
+        },
+      ],
+    }
+    const payload = await buildPayload({
+      collections: [Event],
+    })
+
+    const spec = await generateV30Spec(
+      { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
+      {
+        openapiVersion: '3.0',
+        authEndpoint: '/api/auth',
+        metadata: { title: 'Test API', version: '1.0' },
+      },
+    )
+
+    expect(spec).toMatchSnapshot()
+  })
 })

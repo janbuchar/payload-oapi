@@ -45,17 +45,22 @@ const adjustRefTargets = (
     }
 
     subject[key] = value.replace(search, (_match, name: string) => {
-      if (payload.collections[name] !== undefined) {
-        name = collectionName(payload.collections[name]).singular
-      } else {
-        const global = payload.globals.config.find(({ slug }) => slug === name)
-        if (global === undefined) {
-          throw new Error(`Unknown reference: ${name}`)
-        }
-        name = globalName(global)
+      if (name === 'supportedTimezones') {
+        return '#/components/schemas/supportedTimezones'
       }
 
-      return `#/components/schemas/${componentName('schemas', name)}`
+      const collection = payload.collections[name]
+      if (collection !== undefined) {
+        name = collectionName(payload.collections[name]).singular
+        return `#/components/schemas/${componentName('schemas', name)}`
+      }
+
+      const global = payload.globals.config.find(({ slug }) => slug === name)
+      if (global !== undefined) {
+        return `#/components/schemas/${componentName('schemas', globalName(global))}`
+      }
+
+      throw new Error(`Unknown reference: ${name}`)
     })
   })
 }
@@ -532,7 +537,12 @@ const generateGlobalOperations = async (
 }
 
 const generateComponents = (req: Pick<PayloadRequest, 'payload'>) => {
-  const schemas: Record<string, JSONSchema4> = {}
+  const schemas: Record<string, JSONSchema4> = {
+    supportedTimezones: {
+      type: 'string',
+      example: 'Europe/Prague',
+    },
+  }
 
   for (const collection of Object.values(req.payload.collections)) {
     const { singular } = collectionName(collection)
