@@ -22,7 +22,7 @@ const scalar =
         {
           method: 'get',
           path: docsUrl,
-          handler: async (req) => {
+          handler: async req => {
             const fullSpecUrl = `${req.protocol}//${req.headers.get('host')}/api${specEndpoint}`
 
             const html = `
