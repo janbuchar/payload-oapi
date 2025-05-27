@@ -2,11 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.2] - 2025-05-27
+
+### 🚀 Features
+
+- Add Scalar plugin (#37)
+
 ## [0.2.1] - 2025-05-18
 
 ### 🐛 Bug Fixes
 
 - Correctly handle timezone-enabled date fields (#35)
+
+### ⚙️ Miscellaneous Tasks
+
+- *(release)* 0.2.1 [skip ci]
 
 ## [0.2.0] - 2025-04-05
 
