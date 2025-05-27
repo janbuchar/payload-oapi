@@ -35,7 +35,7 @@ buildConfig({
 })
 ```
 
-To add a documentation UI, use the `swaggerUI`, `rapidoc` or `redoc` plugins, respectively:
+To add a documentation UI, use the `scalar`, `swaggerUI`, `rapidoc` or `redoc` plugins, respectively:
 
 ```typescript
 import { openapi, swaggerUI } from 'payload-oapi'
