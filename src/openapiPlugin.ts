@@ -14,6 +14,9 @@ const openapi =
     excludeCollections,
     includeGlobals,
     excludeGlobals,
+    operations,
+    excludeFields,
+    hideInternalCollections,
   }: PluginOptions): Plugin =>
   ({ endpoints = [], ...config }) => {
     if (!enabled) {
@@ -35,6 +38,9 @@ const openapi =
             excludeCollections,
             includeGlobals,
             excludeGlobals,
+            operations,
+            excludeFields,
+            hideInternalCollections,
           }),
         },
         {

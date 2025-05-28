@@ -14,6 +14,8 @@ Autogenerate an OpenAPI specification from your Payload CMS instance and use it 
 - [x] Support Payload CMS 3.x
 - [x] Support generating both OpenAPI 3.0 and 3.1
 - [x] Collection and Global filtering options
+- [x] Operation-level filtering (CRUD operations)
+- [x] Field-level filtering
 - [ ] Custom endpoints
 
 # Installation
@@ -72,64 +74,197 @@ buildConfig({
 })
 ```
 
-## 3. Filtering Collections and Globals (optional)
+## 3. Filtering and Control Options
 
-You can control which collections and globals are included in the OpenAPI specification using filtering options:
+### Collection and Global Filtering
 
-### Include/Exclude by slug
+Control which collections and globals are included in the OpenAPI specification:
 
 ```typescript
 import { openapi } from 'payload-oapi'
 
+// Basic filtering with arrays
 buildConfig({
   plugins: [
     openapi({
       openapiVersion: '3.0',
-      metadata: { title: 'Dev API', version: '0.0.1' },
-      // Only include specific collections
-      includeCollections: ['posts', 'users'],
-      // Exclude specific globals
+      metadata: { title: 'Public API', version: '1.0.0' },
+      
+      // Include only specific collections
+      includeCollections: ['posts', 'categories'],
+      
+      // Exclude sensitive globals
       excludeGlobals: ['internal-settings'],
+      
+      // Hide internal Payload collections (payload-preferences, payload-migrations)
+      hideInternalCollections: true,
     }),
   ],
-  // ...
 })
-```
 
-### Custom filtering functions
-
-```typescript
-import { openapi } from 'payload-oapi'
-
+// Advanced filtering with functions
 buildConfig({
   plugins: [
     openapi({
       openapiVersion: '3.0',
-      metadata: { title: 'Dev API', version: '0.0.1' },
-      // Include collections based on custom logic
+      metadata: { title: 'Public API', version: '1.0.0' },
+      
+      // Custom filtering with functions
       includeCollections: ({ slug, config }) => {
-        // Only include collections that have auth enabled or are public
         return config.auth || config.access?.read === true
       },
-      // Exclude globals based on custom logic
-      excludeGlobals: ({ slug }) => {
-        // Exclude any globals that start with 'internal-'
+      
+      excludeGlobals: ({ slug, config }) => {
         return slug.startsWith('internal-')
       },
     }),
   ],
-  // ...
 })
 ```
 
+### Operation-Level Filtering
+
+Control which CRUD operations are included for collections:
+
+```typescript
+import { openapi } from 'payload-oapi'
+
+// Include only specific operations
+buildConfig({
+  plugins: [
+    openapi({
+      openapiVersion: '3.0',
+      metadata: { title: 'Read-Only API', version: '1.0.0' },
+      
+      operations: {
+        includeOperations: ['read', 'list'],
+      },
+    }),
+  ],
+})
+
+// Exclude dangerous operations
+buildConfig({
+  plugins: [
+    openapi({
+      openapiVersion: '3.0',
+      metadata: { title: 'Safe API', version: '1.0.0' },
+      
+      operations: {
+        excludeOperations: ['delete'],
+      },
+    }),
+  ],
+})
+
+// Custom operation filtering per collection
+buildConfig({
+  plugins: [
+    openapi({
+      openapiVersion: '3.0',
+      metadata: { title: 'Custom API', version: '1.0.0' },
+      
+      operations: {
+        operationFilter: (operation, collection) => {
+          // Only allow read operations for sensitive collections
+          if (collection.slug === 'users') {
+            return ['read', 'list'].includes(operation)
+          }
+          // Allow all operations for other collections
+          return true
+        }
+      },
+    }),
+  ],
+})
+```
+
+### Field-Level Filtering
+
+Control which fields are exposed in the documentation:
+
+```typescript
+import { openapi } from 'payload-oapi'
+
+// Exclude specific fields by name
+buildConfig({
+  plugins: [
+    openapi({
+      openapiVersion: '3.0',
+      metadata: { title: 'Clean API', version: '1.0.0' },
+      
+      excludeFields: ['internalNotes', 'adminComments'],
+    }),
+  ],
+})
+
+// Custom field filtering by type and name
+buildConfig({
+  plugins: [
+    openapi({
+      openapiVersion: '3.0',
+      metadata: { title: 'Secure API', version: '1.0.0' },
+      
+      excludeFields: ({ name, type }) => {
+        // Exclude all password-type fields and internal fields
+        return type === 'password' || name.startsWith('_')
+      },
+    }),
+  ],
+})
+
+// Advanced field filtering with collection context
+buildConfig({
+  plugins: [
+    openapi({
+      openapiVersion: '3.0',
+      metadata: { title: 'Context-Aware API', version: '1.0.0' },
+      
+      excludeFields: ({ name, type, collection }) => {
+        // Different filtering rules for different collections
+        if (collection.slug === 'users') {
+          // For users, exclude sensitive fields
+          return ['password', 'salt', 'hash', 'resetPasswordToken'].includes(name)
+        }
+        
+        if (collection.slug === 'posts') {
+          // For posts, exclude internal fields and drafts
+          return name.startsWith('_') || name === 'draft'
+        }
+        
+        // For other collections, only exclude password fields
+        return type === 'password'
+      },
+    }),
+  ],
+})
+```
+
+# Configuration Options Reference
+
+### Basic Options
+- `enabled?: boolean` - Enable/disable the plugin
+- `openapiVersion?: '3.0' | '3.1'` - OpenAPI specification version
+- `specEndpoint?: string` - Endpoint for the OpenAPI spec (default: `/openapi.json`)
+- `authEndpoint?: string` - Authentication endpoint (default: `/openapi-auth`)
+- `metadata: OpenAPIMetadata` - API metadata (title, version, description)
+
 ### Filtering Options
+- `includeCollections?: string[] | FilterFunction` - Collections to include
+- `excludeCollections?: string[] | FilterFunction` - Collections to exclude
+- `includeGlobals?: string[] | FilterFunction` - Globals to include
+- `excludeGlobals?: string[] | FilterFunction` - Globals to exclude
+- `hideInternalCollections?: boolean` - Hide payload-* collections
 
-- `includeCollections`: Array of collection slugs or a filter function. If specified, only these collections will be included.
-- `excludeCollections`: Array of collection slugs or a filter function. These collections will be excluded.
-- `includeGlobals`: Array of global slugs or a filter function. If specified, only these globals will be included.
-- `excludeGlobals`: Array of global slugs or a filter function. These globals will be excluded.
+### Operation Control
+- `operations?.includeOperations?: CRUDOperation[]` - Operations to include
+- `operations?.excludeOperations?: CRUDOperation[]` - Operations to exclude
+- `operations?.operationFilter?: Function` - Custom operation filtering
 
-**Note**: Include filters are applied first, then exclude filters. If both are specified, a collection/global must pass both filters to be included.
+### Field Control
+- `excludeFields?: string[] | FilterFunction` - Fields to exclude
+
+**Note**: Filters are applied in order: include → exclude. Custom functions take precedence over arrays.
 
 # Usage
 

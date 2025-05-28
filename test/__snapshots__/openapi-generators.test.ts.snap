@@ -1683,10 +1683,6 @@ exports[`openapi generators > converts empty config correctly 1`] = `
         "title": "users query disjunction",
         "type": "object",
       },
-      "supportedTimezones": {
-        "example": "Europe/Prague",
-        "type": "string",
-      },
     },
     "securitySchemes": {
       "ApiKey": {
@@ -1797,7 +1793,7 @@ exports[`openapi generators > converts empty config correctly 1`] = `
         ],
         "summary": "Retrieve a list of Payload Locked Documents",
         "tags": [
-          "Payload Locked Documents",
+          "Payload Locked Document",
         ],
       },
       "post": {
@@ -1806,7 +1802,7 @@ exports[`openapi generators > converts empty config correctly 1`] = `
         },
         "responses": {
           "201": {
-            "$ref": "#/components/responses/NewPayloadLockedDocumentResponse",
+            "$ref": "#/components/responses/PayloadLockedDocumentResponse",
           },
         },
         "security": [
@@ -1816,12 +1812,22 @@ exports[`openapi generators > converts empty config correctly 1`] = `
         ],
         "summary": "Create a new Payload Locked Document",
         "tags": [
-          "Payload Locked Documents",
+          "Payload Locked Document",
         ],
       },
     },
     "/api/payload-locked-documents/{id}": {
       "delete": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadLockedDocumentResponse",
@@ -1835,12 +1841,43 @@ exports[`openapi generators > converts empty config correctly 1`] = `
             "ApiKey": [],
           },
         ],
-        "summary": "Delete a Payload Locked Document",
+        "summary": "Delete a specific Payload Locked Document",
         "tags": [
-          "Payload Locked Documents",
+          "Payload Locked Document",
         ],
       },
       "get": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "in": "query",
+            "name": "depth",
+            "schema": {
+              "type": "number",
+            },
+          },
+          {
+            "in": "query",
+            "name": "locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "in": "query",
+            "name": "fallback-locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadLockedDocumentResponse",
@@ -1854,44 +1891,25 @@ exports[`openapi generators > converts empty config correctly 1`] = `
             "ApiKey": [],
           },
         ],
-        "summary": "Find a Payload Locked Document by ID",
+        "summary": "Retrieve a specific Payload Locked Document",
         "tags": [
-          "Payload Locked Documents",
+          "Payload Locked Document",
         ],
       },
-      "parameters": [
-        {
-          "in": "query",
-          "name": "depth",
-          "schema": {
-            "type": "number",
-          },
-        },
-        {
-          "in": "query",
-          "name": "locale",
-          "schema": {
-            "type": "string",
-          },
-        },
-        {
-          "in": "query",
-          "name": "fallback-locale",
-          "schema": {
-            "type": "string",
-          },
-        },
-        {
-          "description": "ID of the Payload Locked Document",
-          "in": "path",
-          "name": "id",
-          "required": true,
-          "schema": {
-            "type": "string",
-          },
-        },
-      ],
       "patch": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/PayloadLockedDocumentRequestBody",
+        },
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadLockedDocumentResponse",
@@ -1905,9 +1923,9 @@ exports[`openapi generators > converts empty config correctly 1`] = `
             "ApiKey": [],
           },
         ],
-        "summary": "Update a Payload Locked Document",
+        "summary": "Update a specific Payload Locked Document",
         "tags": [
-          "Payload Locked Documents",
+          "Payload Locked Document",
         ],
       },
     },
@@ -2004,7 +2022,7 @@ exports[`openapi generators > converts empty config correctly 1`] = `
         ],
         "summary": "Retrieve a list of Payload Migrations",
         "tags": [
-          "Payload Migrations",
+          "Payload Migration",
         ],
       },
       "post": {
@@ -2013,7 +2031,7 @@ exports[`openapi generators > converts empty config correctly 1`] = `
         },
         "responses": {
           "201": {
-            "$ref": "#/components/responses/NewPayloadMigrationResponse",
+            "$ref": "#/components/responses/PayloadMigrationResponse",
           },
         },
         "security": [
@@ -2023,12 +2041,22 @@ exports[`openapi generators > converts empty config correctly 1`] = `
         ],
         "summary": "Create a new Payload Migration",
         "tags": [
-          "Payload Migrations",
+          "Payload Migration",
         ],
       },
     },
     "/api/payload-migrations/{id}": {
       "delete": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadMigrationResponse",
@@ -2042,12 +2070,43 @@ exports[`openapi generators > converts empty config correctly 1`] = `
             "ApiKey": [],
           },
         ],
-        "summary": "Delete a Payload Migration",
+        "summary": "Delete a specific Payload Migration",
         "tags": [
-          "Payload Migrations",
+          "Payload Migration",
         ],
       },
       "get": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "in": "query",
+            "name": "depth",
+            "schema": {
+              "type": "number",
+            },
+          },
+          {
+            "in": "query",
+            "name": "locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "in": "query",
+            "name": "fallback-locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadMigrationResponse",
@@ -2061,44 +2120,25 @@ exports[`openapi generators > converts empty config correctly 1`] = `
             "ApiKey": [],
           },
         ],
-        "summary": "Find a Payload Migration by ID",
+        "summary": "Retrieve a specific Payload Migration",
         "tags": [
-          "Payload Migrations",
+          "Payload Migration",
         ],
       },
-      "parameters": [
-        {
-          "in": "query",
-          "name": "depth",
-          "schema": {
-            "type": "number",
-          },
-        },
-        {
-          "in": "query",
-          "name": "locale",
-          "schema": {
-            "type": "string",
-          },
-        },
-        {
-          "in": "query",
-          "name": "fallback-locale",
-          "schema": {
-            "type": "string",
-          },
-        },
-        {
-          "description": "ID of the Payload Migration",
-          "in": "path",
-          "name": "id",
-          "required": true,
-          "schema": {
-            "type": "string",
-          },
-        },
-      ],
       "patch": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/PayloadMigrationRequestBody",
+        },
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadMigrationResponse",
@@ -2112,9 +2152,9 @@ exports[`openapi generators > converts empty config correctly 1`] = `
             "ApiKey": [],
           },
         ],
-        "summary": "Update a Payload Migration",
+        "summary": "Update a specific Payload Migration",
         "tags": [
-          "Payload Migrations",
+          "Payload Migration",
         ],
       },
     },
@@ -2209,7 +2249,7 @@ exports[`openapi generators > converts empty config correctly 1`] = `
         ],
         "summary": "Retrieve a list of Payload Preferences",
         "tags": [
-          "Payload Preferences",
+          "Payload Preference",
         ],
       },
       "post": {
@@ -2218,7 +2258,7 @@ exports[`openapi generators > converts empty config correctly 1`] = `
         },
         "responses": {
           "201": {
-            "$ref": "#/components/responses/NewPayloadPreferenceResponse",
+            "$ref": "#/components/responses/PayloadPreferenceResponse",
           },
         },
         "security": [
@@ -2228,12 +2268,22 @@ exports[`openapi generators > converts empty config correctly 1`] = `
         ],
         "summary": "Create a new Payload Preference",
         "tags": [
-          "Payload Preferences",
+          "Payload Preference",
         ],
       },
     },
     "/api/payload-preferences/{id}": {
       "delete": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadPreferenceResponse",
@@ -2247,12 +2297,43 @@ exports[`openapi generators > converts empty config correctly 1`] = `
             "ApiKey": [],
           },
         ],
-        "summary": "Delete a Payload Preference",
+        "summary": "Delete a specific Payload Preference",
         "tags": [
-          "Payload Preferences",
+          "Payload Preference",
         ],
       },
       "get": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "in": "query",
+            "name": "depth",
+            "schema": {
+              "type": "number",
+            },
+          },
+          {
+            "in": "query",
+            "name": "locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "in": "query",
+            "name": "fallback-locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadPreferenceResponse",
@@ -2266,44 +2347,25 @@ exports[`openapi generators > converts empty config correctly 1`] = `
             "ApiKey": [],
           },
         ],
-        "summary": "Find a Payload Preference by ID",
+        "summary": "Retrieve a specific Payload Preference",
         "tags": [
-          "Payload Preferences",
+          "Payload Preference",
         ],
       },
-      "parameters": [
-        {
-          "in": "query",
-          "name": "depth",
-          "schema": {
-            "type": "number",
-          },
-        },
-        {
-          "in": "query",
-          "name": "locale",
-          "schema": {
-            "type": "string",
-          },
-        },
-        {
-          "in": "query",
-          "name": "fallback-locale",
-          "schema": {
-            "type": "string",
-          },
-        },
-        {
-          "description": "ID of the Payload Preference",
-          "in": "path",
-          "name": "id",
-          "required": true,
-          "schema": {
-            "type": "string",
-          },
-        },
-      ],
       "patch": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/PayloadPreferenceRequestBody",
+        },
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadPreferenceResponse",
@@ -2317,9 +2379,9 @@ exports[`openapi generators > converts empty config correctly 1`] = `
             "ApiKey": [],
           },
         ],
-        "summary": "Update a Payload Preference",
+        "summary": "Update a specific Payload Preference",
         "tags": [
-          "Payload Preferences",
+          "Payload Preference",
         ],
       },
     },
@@ -2435,7 +2497,7 @@ exports[`openapi generators > converts empty config correctly 1`] = `
         },
         "responses": {
           "201": {
-            "$ref": "#/components/responses/NewUsersResponse",
+            "$ref": "#/components/responses/UsersResponse",
           },
         },
         "security": [
@@ -2451,6 +2513,16 @@ exports[`openapi generators > converts empty config correctly 1`] = `
     },
     "/api/users/{id}": {
       "delete": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/UsersResponse",
@@ -2464,12 +2536,43 @@ exports[`openapi generators > converts empty config correctly 1`] = `
             "ApiKey": [],
           },
         ],
-        "summary": "Delete a users",
+        "summary": "Delete a specific users",
         "tags": [
           "users",
         ],
       },
       "get": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "in": "query",
+            "name": "depth",
+            "schema": {
+              "type": "number",
+            },
+          },
+          {
+            "in": "query",
+            "name": "locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "in": "query",
+            "name": "fallback-locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/UsersResponse",
@@ -2483,44 +2586,25 @@ exports[`openapi generators > converts empty config correctly 1`] = `
             "ApiKey": [],
           },
         ],
-        "summary": "Find a users by ID",
+        "summary": "Retrieve a specific users",
         "tags": [
           "users",
         ],
       },
-      "parameters": [
-        {
-          "in": "query",
-          "name": "depth",
-          "schema": {
-            "type": "number",
-          },
-        },
-        {
-          "in": "query",
-          "name": "locale",
-          "schema": {
-            "type": "string",
-          },
-        },
-        {
-          "in": "query",
-          "name": "fallback-locale",
-          "schema": {
-            "type": "string",
-          },
-        },
-        {
-          "description": "ID of the users",
-          "in": "path",
-          "name": "id",
-          "required": true,
-          "schema": {
-            "type": "string",
-          },
-        },
-      ],
       "patch": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersRequestBody",
+        },
         "responses": {
           "200": {
             "$ref": "#/components/responses/UsersResponse",
@@ -2534,7 +2618,7 @@ exports[`openapi generators > converts empty config correctly 1`] = `
             "ApiKey": [],
           },
         ],
-        "summary": "Update a users",
+        "summary": "Update a specific users",
         "tags": [
           "users",
         ],
@@ -4752,10 +4836,6 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         "title": "users query disjunction",
         "type": "object",
       },
-      "supportedTimezones": {
-        "example": "Europe/Prague",
-        "type": "string",
-      },
     },
     "securitySchemes": {
       "ApiKey": {
@@ -4864,7 +4944,7 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         ],
         "summary": "Retrieve a list of Pages",
         "tags": [
-          "Pages",
+          "Page",
         ],
       },
       "post": {
@@ -4873,7 +4953,7 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         },
         "responses": {
           "201": {
-            "$ref": "#/components/responses/NewPageResponse",
+            "$ref": "#/components/responses/PageResponse",
           },
         },
         "security": [
@@ -4883,12 +4963,22 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         ],
         "summary": "Create a new Page",
         "tags": [
-          "Pages",
+          "Page",
         ],
       },
     },
     "/api/pages/{id}": {
       "delete": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/PageResponse",
@@ -4902,12 +4992,43 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
             "ApiKey": [],
           },
         ],
-        "summary": "Delete a Page",
+        "summary": "Delete a specific Page",
         "tags": [
-          "Pages",
+          "Page",
         ],
       },
       "get": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "in": "query",
+            "name": "depth",
+            "schema": {
+              "type": "number",
+            },
+          },
+          {
+            "in": "query",
+            "name": "locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "in": "query",
+            "name": "fallback-locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/PageResponse",
@@ -4921,44 +5042,25 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
             "ApiKey": [],
           },
         ],
-        "summary": "Find a Page by ID",
+        "summary": "Retrieve a specific Page",
         "tags": [
-          "Pages",
+          "Page",
         ],
       },
-      "parameters": [
-        {
-          "in": "query",
-          "name": "depth",
-          "schema": {
-            "type": "number",
-          },
-        },
-        {
-          "in": "query",
-          "name": "locale",
-          "schema": {
-            "type": "string",
-          },
-        },
-        {
-          "in": "query",
-          "name": "fallback-locale",
-          "schema": {
-            "type": "string",
-          },
-        },
-        {
-          "description": "ID of the Page",
-          "in": "path",
-          "name": "id",
-          "required": true,
-          "schema": {
-            "type": "string",
-          },
-        },
-      ],
       "patch": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/PageRequestBody",
+        },
         "responses": {
           "200": {
             "$ref": "#/components/responses/PageResponse",
@@ -4972,9 +5074,9 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
             "ApiKey": [],
           },
         ],
-        "summary": "Update a Page",
+        "summary": "Update a specific Page",
         "tags": [
-          "Pages",
+          "Page",
         ],
       },
     },
@@ -5069,7 +5171,7 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         ],
         "summary": "Retrieve a list of Payload Locked Documents",
         "tags": [
-          "Payload Locked Documents",
+          "Payload Locked Document",
         ],
       },
       "post": {
@@ -5078,7 +5180,7 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         },
         "responses": {
           "201": {
-            "$ref": "#/components/responses/NewPayloadLockedDocumentResponse",
+            "$ref": "#/components/responses/PayloadLockedDocumentResponse",
           },
         },
         "security": [
@@ -5088,12 +5190,22 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         ],
         "summary": "Create a new Payload Locked Document",
         "tags": [
-          "Payload Locked Documents",
+          "Payload Locked Document",
         ],
       },
     },
     "/api/payload-locked-documents/{id}": {
       "delete": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadLockedDocumentResponse",
@@ -5107,12 +5219,43 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
             "ApiKey": [],
           },
         ],
-        "summary": "Delete a Payload Locked Document",
+        "summary": "Delete a specific Payload Locked Document",
         "tags": [
-          "Payload Locked Documents",
+          "Payload Locked Document",
         ],
       },
       "get": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "in": "query",
+            "name": "depth",
+            "schema": {
+              "type": "number",
+            },
+          },
+          {
+            "in": "query",
+            "name": "locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "in": "query",
+            "name": "fallback-locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadLockedDocumentResponse",
@@ -5126,44 +5269,25 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
             "ApiKey": [],
           },
         ],
-        "summary": "Find a Payload Locked Document by ID",
+        "summary": "Retrieve a specific Payload Locked Document",
         "tags": [
-          "Payload Locked Documents",
+          "Payload Locked Document",
         ],
       },
-      "parameters": [
-        {
-          "in": "query",
-          "name": "depth",
-          "schema": {
-            "type": "number",
-          },
-        },
-        {
-          "in": "query",
-          "name": "locale",
-          "schema": {
-            "type": "string",
-          },
-        },
-        {
-          "in": "query",
-          "name": "fallback-locale",
-          "schema": {
-            "type": "string",
-          },
-        },
-        {
-          "description": "ID of the Payload Locked Document",
-          "in": "path",
-          "name": "id",
-          "required": true,
-          "schema": {
-            "type": "string",
-          },
-        },
-      ],
       "patch": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/PayloadLockedDocumentRequestBody",
+        },
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadLockedDocumentResponse",
@@ -5177,9 +5301,9 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
             "ApiKey": [],
           },
         ],
-        "summary": "Update a Payload Locked Document",
+        "summary": "Update a specific Payload Locked Document",
         "tags": [
-          "Payload Locked Documents",
+          "Payload Locked Document",
         ],
       },
     },
@@ -5276,7 +5400,7 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         ],
         "summary": "Retrieve a list of Payload Migrations",
         "tags": [
-          "Payload Migrations",
+          "Payload Migration",
         ],
       },
       "post": {
@@ -5285,7 +5409,7 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         },
         "responses": {
           "201": {
-            "$ref": "#/components/responses/NewPayloadMigrationResponse",
+            "$ref": "#/components/responses/PayloadMigrationResponse",
           },
         },
         "security": [
@@ -5295,12 +5419,22 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         ],
         "summary": "Create a new Payload Migration",
         "tags": [
-          "Payload Migrations",
+          "Payload Migration",
         ],
       },
     },
     "/api/payload-migrations/{id}": {
       "delete": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadMigrationResponse",
@@ -5314,12 +5448,43 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
             "ApiKey": [],
           },
         ],
-        "summary": "Delete a Payload Migration",
+        "summary": "Delete a specific Payload Migration",
         "tags": [
-          "Payload Migrations",
+          "Payload Migration",
         ],
       },
       "get": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "in": "query",
+            "name": "depth",
+            "schema": {
+              "type": "number",
+            },
+          },
+          {
+            "in": "query",
+            "name": "locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "in": "query",
+            "name": "fallback-locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadMigrationResponse",
@@ -5333,44 +5498,25 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
             "ApiKey": [],
           },
         ],
-        "summary": "Find a Payload Migration by ID",
+        "summary": "Retrieve a specific Payload Migration",
         "tags": [
-          "Payload Migrations",
+          "Payload Migration",
         ],
       },
-      "parameters": [
-        {
-          "in": "query",
-          "name": "depth",
-          "schema": {
-            "type": "number",
-          },
-        },
-        {
-          "in": "query",
-          "name": "locale",
-          "schema": {
-            "type": "string",
-          },
-        },
-        {
-          "in": "query",
-          "name": "fallback-locale",
-          "schema": {
-            "type": "string",
-          },
-        },
-        {
-          "description": "ID of the Payload Migration",
-          "in": "path",
-          "name": "id",
-          "required": true,
-          "schema": {
-            "type": "string",
-          },
-        },
-      ],
       "patch": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/PayloadMigrationRequestBody",
+        },
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadMigrationResponse",
@@ -5384,9 +5530,9 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
             "ApiKey": [],
           },
         ],
-        "summary": "Update a Payload Migration",
+        "summary": "Update a specific Payload Migration",
         "tags": [
-          "Payload Migrations",
+          "Payload Migration",
         ],
       },
     },
@@ -5481,7 +5627,7 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         ],
         "summary": "Retrieve a list of Payload Preferences",
         "tags": [
-          "Payload Preferences",
+          "Payload Preference",
         ],
       },
       "post": {
@@ -5490,7 +5636,7 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         },
         "responses": {
           "201": {
-            "$ref": "#/components/responses/NewPayloadPreferenceResponse",
+            "$ref": "#/components/responses/PayloadPreferenceResponse",
           },
         },
         "security": [
@@ -5500,12 +5646,22 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         ],
         "summary": "Create a new Payload Preference",
         "tags": [
-          "Payload Preferences",
+          "Payload Preference",
         ],
       },
     },
     "/api/payload-preferences/{id}": {
       "delete": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadPreferenceResponse",
@@ -5519,12 +5675,43 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
             "ApiKey": [],
           },
         ],
-        "summary": "Delete a Payload Preference",
+        "summary": "Delete a specific Payload Preference",
         "tags": [
-          "Payload Preferences",
+          "Payload Preference",
         ],
       },
       "get": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "in": "query",
+            "name": "depth",
+            "schema": {
+              "type": "number",
+            },
+          },
+          {
+            "in": "query",
+            "name": "locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "in": "query",
+            "name": "fallback-locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadPreferenceResponse",
@@ -5538,44 +5725,25 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
             "ApiKey": [],
           },
         ],
-        "summary": "Find a Payload Preference by ID",
+        "summary": "Retrieve a specific Payload Preference",
         "tags": [
-          "Payload Preferences",
+          "Payload Preference",
         ],
       },
-      "parameters": [
-        {
-          "in": "query",
-          "name": "depth",
-          "schema": {
-            "type": "number",
-          },
-        },
-        {
-          "in": "query",
-          "name": "locale",
-          "schema": {
-            "type": "string",
-          },
-        },
-        {
-          "in": "query",
-          "name": "fallback-locale",
-          "schema": {
-            "type": "string",
-          },
-        },
-        {
-          "description": "ID of the Payload Preference",
-          "in": "path",
-          "name": "id",
-          "required": true,
-          "schema": {
-            "type": "string",
-          },
-        },
-      ],
       "patch": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/PayloadPreferenceRequestBody",
+        },
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadPreferenceResponse",
@@ -5589,9 +5757,9 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
             "ApiKey": [],
           },
         ],
-        "summary": "Update a Payload Preference",
+        "summary": "Update a specific Payload Preference",
         "tags": [
-          "Payload Preferences",
+          "Payload Preference",
         ],
       },
     },
@@ -5707,7 +5875,7 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         },
         "responses": {
           "201": {
-            "$ref": "#/components/responses/NewUsersResponse",
+            "$ref": "#/components/responses/UsersResponse",
           },
         },
         "security": [
@@ -5723,6 +5891,16 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
     },
     "/api/users/{id}": {
       "delete": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/UsersResponse",
@@ -5736,12 +5914,43 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
             "ApiKey": [],
           },
         ],
-        "summary": "Delete a users",
+        "summary": "Delete a specific users",
         "tags": [
           "users",
         ],
       },
       "get": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "in": "query",
+            "name": "depth",
+            "schema": {
+              "type": "number",
+            },
+          },
+          {
+            "in": "query",
+            "name": "locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "in": "query",
+            "name": "fallback-locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/UsersResponse",
@@ -5755,44 +5964,25 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
             "ApiKey": [],
           },
         ],
-        "summary": "Find a users by ID",
+        "summary": "Retrieve a specific users",
         "tags": [
           "users",
         ],
       },
-      "parameters": [
-        {
-          "in": "query",
-          "name": "depth",
-          "schema": {
-            "type": "number",
-          },
-        },
-        {
-          "in": "query",
-          "name": "locale",
-          "schema": {
-            "type": "string",
-          },
-        },
-        {
-          "in": "query",
-          "name": "fallback-locale",
-          "schema": {
-            "type": "string",
-          },
-        },
-        {
-          "description": "ID of the users",
-          "in": "path",
-          "name": "id",
-          "required": true,
-          "schema": {
-            "type": "string",
-          },
-        },
-      ],
       "patch": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersRequestBody",
+        },
         "responses": {
           "200": {
             "$ref": "#/components/responses/UsersResponse",
@@ -5806,7 +5996,7 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
             "ApiKey": [],
           },
         ],
-        "summary": "Update a users",
+        "summary": "Update a specific users",
         "tags": [
           "users",
         ],
@@ -7978,10 +8168,6 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         "title": "users query disjunction",
         "type": "object",
       },
-      "supportedTimezones": {
-        "example": "Europe/Prague",
-        "type": "string",
-      },
     },
     "securitySchemes": {
       "ApiKey": {
@@ -8092,7 +8278,7 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         ],
         "summary": "Retrieve a list of Events",
         "tags": [
-          "Events",
+          "Event",
         ],
       },
       "post": {
@@ -8101,7 +8287,7 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         },
         "responses": {
           "201": {
-            "$ref": "#/components/responses/NewEventResponse",
+            "$ref": "#/components/responses/EventResponse",
           },
         },
         "security": [
@@ -8111,12 +8297,22 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         ],
         "summary": "Create a new Event",
         "tags": [
-          "Events",
+          "Event",
         ],
       },
     },
     "/api/events/{id}": {
       "delete": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/EventResponse",
@@ -8130,12 +8326,43 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
             "ApiKey": [],
           },
         ],
-        "summary": "Delete a Event",
+        "summary": "Delete a specific Event",
         "tags": [
-          "Events",
+          "Event",
         ],
       },
       "get": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "in": "query",
+            "name": "depth",
+            "schema": {
+              "type": "number",
+            },
+          },
+          {
+            "in": "query",
+            "name": "locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "in": "query",
+            "name": "fallback-locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/EventResponse",
@@ -8149,44 +8376,25 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
             "ApiKey": [],
           },
         ],
-        "summary": "Find a Event by ID",
+        "summary": "Retrieve a specific Event",
         "tags": [
-          "Events",
+          "Event",
         ],
       },
-      "parameters": [
-        {
-          "in": "query",
-          "name": "depth",
-          "schema": {
-            "type": "number",
-          },
-        },
-        {
-          "in": "query",
-          "name": "locale",
-          "schema": {
-            "type": "string",
-          },
-        },
-        {
-          "in": "query",
-          "name": "fallback-locale",
-          "schema": {
-            "type": "string",
-          },
-        },
-        {
-          "description": "ID of the Event",
-          "in": "path",
-          "name": "id",
-          "required": true,
-          "schema": {
-            "type": "string",
-          },
-        },
-      ],
       "patch": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/EventRequestBody",
+        },
         "responses": {
           "200": {
             "$ref": "#/components/responses/EventResponse",
@@ -8200,9 +8408,9 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
             "ApiKey": [],
           },
         ],
-        "summary": "Update a Event",
+        "summary": "Update a specific Event",
         "tags": [
-          "Events",
+          "Event",
         ],
       },
     },
@@ -8297,7 +8505,7 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         ],
         "summary": "Retrieve a list of Payload Locked Documents",
         "tags": [
-          "Payload Locked Documents",
+          "Payload Locked Document",
         ],
       },
       "post": {
@@ -8306,7 +8514,7 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         },
         "responses": {
           "201": {
-            "$ref": "#/components/responses/NewPayloadLockedDocumentResponse",
+            "$ref": "#/components/responses/PayloadLockedDocumentResponse",
           },
         },
         "security": [
@@ -8316,12 +8524,22 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         ],
         "summary": "Create a new Payload Locked Document",
         "tags": [
-          "Payload Locked Documents",
+          "Payload Locked Document",
         ],
       },
     },
     "/api/payload-locked-documents/{id}": {
       "delete": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadLockedDocumentResponse",
@@ -8335,12 +8553,43 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
             "ApiKey": [],
           },
         ],
-        "summary": "Delete a Payload Locked Document",
+        "summary": "Delete a specific Payload Locked Document",
         "tags": [
-          "Payload Locked Documents",
+          "Payload Locked Document",
         ],
       },
       "get": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "in": "query",
+            "name": "depth",
+            "schema": {
+              "type": "number",
+            },
+          },
+          {
+            "in": "query",
+            "name": "locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "in": "query",
+            "name": "fallback-locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadLockedDocumentResponse",
@@ -8354,44 +8603,25 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
             "ApiKey": [],
           },
         ],
-        "summary": "Find a Payload Locked Document by ID",
+        "summary": "Retrieve a specific Payload Locked Document",
         "tags": [
-          "Payload Locked Documents",
+          "Payload Locked Document",
         ],
       },
-      "parameters": [
-        {
-          "in": "query",
-          "name": "depth",
-          "schema": {
-            "type": "number",
-          },
-        },
-        {
-          "in": "query",
-          "name": "locale",
-          "schema": {
-            "type": "string",
-          },
-        },
-        {
-          "in": "query",
-          "name": "fallback-locale",
-          "schema": {
-            "type": "string",
-          },
-        },
-        {
-          "description": "ID of the Payload Locked Document",
-          "in": "path",
-          "name": "id",
-          "required": true,
-          "schema": {
-            "type": "string",
-          },
-        },
-      ],
       "patch": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/PayloadLockedDocumentRequestBody",
+        },
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadLockedDocumentResponse",
@@ -8405,9 +8635,9 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
             "ApiKey": [],
           },
         ],
-        "summary": "Update a Payload Locked Document",
+        "summary": "Update a specific Payload Locked Document",
         "tags": [
-          "Payload Locked Documents",
+          "Payload Locked Document",
         ],
       },
     },
@@ -8504,7 +8734,7 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         ],
         "summary": "Retrieve a list of Payload Migrations",
         "tags": [
-          "Payload Migrations",
+          "Payload Migration",
         ],
       },
       "post": {
@@ -8513,7 +8743,7 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         },
         "responses": {
           "201": {
-            "$ref": "#/components/responses/NewPayloadMigrationResponse",
+            "$ref": "#/components/responses/PayloadMigrationResponse",
           },
         },
         "security": [
@@ -8523,12 +8753,22 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         ],
         "summary": "Create a new Payload Migration",
         "tags": [
-          "Payload Migrations",
+          "Payload Migration",
         ],
       },
     },
     "/api/payload-migrations/{id}": {
       "delete": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadMigrationResponse",
@@ -8542,12 +8782,43 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
             "ApiKey": [],
           },
         ],
-        "summary": "Delete a Payload Migration",
+        "summary": "Delete a specific Payload Migration",
         "tags": [
-          "Payload Migrations",
+          "Payload Migration",
         ],
       },
       "get": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "in": "query",
+            "name": "depth",
+            "schema": {
+              "type": "number",
+            },
+          },
+          {
+            "in": "query",
+            "name": "locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "in": "query",
+            "name": "fallback-locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadMigrationResponse",
@@ -8561,44 +8832,25 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
             "ApiKey": [],
           },
         ],
-        "summary": "Find a Payload Migration by ID",
+        "summary": "Retrieve a specific Payload Migration",
         "tags": [
-          "Payload Migrations",
+          "Payload Migration",
         ],
       },
-      "parameters": [
-        {
-          "in": "query",
-          "name": "depth",
-          "schema": {
-            "type": "number",
-          },
-        },
-        {
-          "in": "query",
-          "name": "locale",
-          "schema": {
-            "type": "string",
-          },
-        },
-        {
-          "in": "query",
-          "name": "fallback-locale",
-          "schema": {
-            "type": "string",
-          },
-        },
-        {
-          "description": "ID of the Payload Migration",
-          "in": "path",
-          "name": "id",
-          "required": true,
-          "schema": {
-            "type": "string",
-          },
-        },
-      ],
       "patch": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/PayloadMigrationRequestBody",
+        },
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadMigrationResponse",
@@ -8612,9 +8864,9 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
             "ApiKey": [],
           },
         ],
-        "summary": "Update a Payload Migration",
+        "summary": "Update a specific Payload Migration",
         "tags": [
-          "Payload Migrations",
+          "Payload Migration",
         ],
       },
     },
@@ -8709,7 +8961,7 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         ],
         "summary": "Retrieve a list of Payload Preferences",
         "tags": [
-          "Payload Preferences",
+          "Payload Preference",
         ],
       },
       "post": {
@@ -8718,7 +8970,7 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         },
         "responses": {
           "201": {
-            "$ref": "#/components/responses/NewPayloadPreferenceResponse",
+            "$ref": "#/components/responses/PayloadPreferenceResponse",
           },
         },
         "security": [
@@ -8728,12 +8980,22 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         ],
         "summary": "Create a new Payload Preference",
         "tags": [
-          "Payload Preferences",
+          "Payload Preference",
         ],
       },
     },
     "/api/payload-preferences/{id}": {
       "delete": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadPreferenceResponse",
@@ -8747,12 +9009,43 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
             "ApiKey": [],
           },
         ],
-        "summary": "Delete a Payload Preference",
+        "summary": "Delete a specific Payload Preference",
         "tags": [
-          "Payload Preferences",
+          "Payload Preference",
         ],
       },
       "get": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "in": "query",
+            "name": "depth",
+            "schema": {
+              "type": "number",
+            },
+          },
+          {
+            "in": "query",
+            "name": "locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "in": "query",
+            "name": "fallback-locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadPreferenceResponse",
@@ -8766,44 +9059,25 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
             "ApiKey": [],
           },
         ],
-        "summary": "Find a Payload Preference by ID",
+        "summary": "Retrieve a specific Payload Preference",
         "tags": [
-          "Payload Preferences",
+          "Payload Preference",
         ],
       },
-      "parameters": [
-        {
-          "in": "query",
-          "name": "depth",
-          "schema": {
-            "type": "number",
-          },
-        },
-        {
-          "in": "query",
-          "name": "locale",
-          "schema": {
-            "type": "string",
-          },
-        },
-        {
-          "in": "query",
-          "name": "fallback-locale",
-          "schema": {
-            "type": "string",
-          },
-        },
-        {
-          "description": "ID of the Payload Preference",
-          "in": "path",
-          "name": "id",
-          "required": true,
-          "schema": {
-            "type": "string",
-          },
-        },
-      ],
       "patch": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/PayloadPreferenceRequestBody",
+        },
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadPreferenceResponse",
@@ -8817,9 +9091,9 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
             "ApiKey": [],
           },
         ],
-        "summary": "Update a Payload Preference",
+        "summary": "Update a specific Payload Preference",
         "tags": [
-          "Payload Preferences",
+          "Payload Preference",
         ],
       },
     },
@@ -8935,7 +9209,7 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         },
         "responses": {
           "201": {
-            "$ref": "#/components/responses/NewUsersResponse",
+            "$ref": "#/components/responses/UsersResponse",
           },
         },
         "security": [
@@ -8951,6 +9225,16 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
     },
     "/api/users/{id}": {
       "delete": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/UsersResponse",
@@ -8964,12 +9248,43 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
             "ApiKey": [],
           },
         ],
-        "summary": "Delete a users",
+        "summary": "Delete a specific users",
         "tags": [
           "users",
         ],
       },
       "get": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "in": "query",
+            "name": "depth",
+            "schema": {
+              "type": "number",
+            },
+          },
+          {
+            "in": "query",
+            "name": "locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "in": "query",
+            "name": "fallback-locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/UsersResponse",
@@ -8983,44 +9298,25 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
             "ApiKey": [],
           },
         ],
-        "summary": "Find a users by ID",
+        "summary": "Retrieve a specific users",
         "tags": [
           "users",
         ],
       },
-      "parameters": [
-        {
-          "in": "query",
-          "name": "depth",
-          "schema": {
-            "type": "number",
-          },
-        },
-        {
-          "in": "query",
-          "name": "locale",
-          "schema": {
-            "type": "string",
-          },
-        },
-        {
-          "in": "query",
-          "name": "fallback-locale",
-          "schema": {
-            "type": "string",
-          },
-        },
-        {
-          "description": "ID of the users",
-          "in": "path",
-          "name": "id",
-          "required": true,
-          "schema": {
-            "type": "string",
-          },
-        },
-      ],
       "patch": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersRequestBody",
+        },
         "responses": {
           "200": {
             "$ref": "#/components/responses/UsersResponse",
@@ -9034,7 +9330,7 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
             "ApiKey": [],
           },
         ],
-        "summary": "Update a users",
+        "summary": "Update a specific users",
         "tags": [
           "users",
         ],
@@ -10770,10 +11066,6 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
         "title": "User query disjunction",
         "type": "object",
       },
-      "supportedTimezones": {
-        "example": "Europe/Prague",
-        "type": "string",
-      },
     },
     "securitySchemes": {
       "ApiKey": {
@@ -10884,7 +11176,7 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
         ],
         "summary": "Retrieve a list of Payload Locked Documents",
         "tags": [
-          "Payload Locked Documents",
+          "Payload Locked Document",
         ],
       },
       "post": {
@@ -10893,7 +11185,7 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
         },
         "responses": {
           "201": {
-            "$ref": "#/components/responses/NewPayloadLockedDocumentResponse",
+            "$ref": "#/components/responses/PayloadLockedDocumentResponse",
           },
         },
         "security": [
@@ -10903,12 +11195,22 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
         ],
         "summary": "Create a new Payload Locked Document",
         "tags": [
-          "Payload Locked Documents",
+          "Payload Locked Document",
         ],
       },
     },
     "/api/payload-locked-documents/{id}": {
       "delete": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadLockedDocumentResponse",
@@ -10922,12 +11224,43 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
             "ApiKey": [],
           },
         ],
-        "summary": "Delete a Payload Locked Document",
+        "summary": "Delete a specific Payload Locked Document",
         "tags": [
-          "Payload Locked Documents",
+          "Payload Locked Document",
         ],
       },
       "get": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "in": "query",
+            "name": "depth",
+            "schema": {
+              "type": "number",
+            },
+          },
+          {
+            "in": "query",
+            "name": "locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "in": "query",
+            "name": "fallback-locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadLockedDocumentResponse",
@@ -10941,44 +11274,25 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
             "ApiKey": [],
           },
         ],
-        "summary": "Find a Payload Locked Document by ID",
+        "summary": "Retrieve a specific Payload Locked Document",
         "tags": [
-          "Payload Locked Documents",
+          "Payload Locked Document",
         ],
       },
-      "parameters": [
-        {
-          "in": "query",
-          "name": "depth",
-          "schema": {
-            "type": "number",
-          },
-        },
-        {
-          "in": "query",
-          "name": "locale",
-          "schema": {
-            "type": "string",
-          },
-        },
-        {
-          "in": "query",
-          "name": "fallback-locale",
-          "schema": {
-            "type": "string",
-          },
-        },
-        {
-          "description": "ID of the Payload Locked Document",
-          "in": "path",
-          "name": "id",
-          "required": true,
-          "schema": {
-            "type": "string",
-          },
-        },
-      ],
       "patch": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/PayloadLockedDocumentRequestBody",
+        },
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadLockedDocumentResponse",
@@ -10992,9 +11306,9 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
             "ApiKey": [],
           },
         ],
-        "summary": "Update a Payload Locked Document",
+        "summary": "Update a specific Payload Locked Document",
         "tags": [
-          "Payload Locked Documents",
+          "Payload Locked Document",
         ],
       },
     },
@@ -11091,7 +11405,7 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
         ],
         "summary": "Retrieve a list of Payload Migrations",
         "tags": [
-          "Payload Migrations",
+          "Payload Migration",
         ],
       },
       "post": {
@@ -11100,7 +11414,7 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
         },
         "responses": {
           "201": {
-            "$ref": "#/components/responses/NewPayloadMigrationResponse",
+            "$ref": "#/components/responses/PayloadMigrationResponse",
           },
         },
         "security": [
@@ -11110,12 +11424,22 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
         ],
         "summary": "Create a new Payload Migration",
         "tags": [
-          "Payload Migrations",
+          "Payload Migration",
         ],
       },
     },
     "/api/payload-migrations/{id}": {
       "delete": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadMigrationResponse",
@@ -11129,12 +11453,43 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
             "ApiKey": [],
           },
         ],
-        "summary": "Delete a Payload Migration",
+        "summary": "Delete a specific Payload Migration",
         "tags": [
-          "Payload Migrations",
+          "Payload Migration",
         ],
       },
       "get": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "in": "query",
+            "name": "depth",
+            "schema": {
+              "type": "number",
+            },
+          },
+          {
+            "in": "query",
+            "name": "locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "in": "query",
+            "name": "fallback-locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadMigrationResponse",
@@ -11148,44 +11503,25 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
             "ApiKey": [],
           },
         ],
-        "summary": "Find a Payload Migration by ID",
+        "summary": "Retrieve a specific Payload Migration",
         "tags": [
-          "Payload Migrations",
+          "Payload Migration",
         ],
       },
-      "parameters": [
-        {
-          "in": "query",
-          "name": "depth",
-          "schema": {
-            "type": "number",
-          },
-        },
-        {
-          "in": "query",
-          "name": "locale",
-          "schema": {
-            "type": "string",
-          },
-        },
-        {
-          "in": "query",
-          "name": "fallback-locale",
-          "schema": {
-            "type": "string",
-          },
-        },
-        {
-          "description": "ID of the Payload Migration",
-          "in": "path",
-          "name": "id",
-          "required": true,
-          "schema": {
-            "type": "string",
-          },
-        },
-      ],
       "patch": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/PayloadMigrationRequestBody",
+        },
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadMigrationResponse",
@@ -11199,9 +11535,9 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
             "ApiKey": [],
           },
         ],
-        "summary": "Update a Payload Migration",
+        "summary": "Update a specific Payload Migration",
         "tags": [
-          "Payload Migrations",
+          "Payload Migration",
         ],
       },
     },
@@ -11296,7 +11632,7 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
         ],
         "summary": "Retrieve a list of Payload Preferences",
         "tags": [
-          "Payload Preferences",
+          "Payload Preference",
         ],
       },
       "post": {
@@ -11305,7 +11641,7 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
         },
         "responses": {
           "201": {
-            "$ref": "#/components/responses/NewPayloadPreferenceResponse",
+            "$ref": "#/components/responses/PayloadPreferenceResponse",
           },
         },
         "security": [
@@ -11315,12 +11651,22 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
         ],
         "summary": "Create a new Payload Preference",
         "tags": [
-          "Payload Preferences",
+          "Payload Preference",
         ],
       },
     },
     "/api/payload-preferences/{id}": {
       "delete": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadPreferenceResponse",
@@ -11334,12 +11680,43 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
             "ApiKey": [],
           },
         ],
-        "summary": "Delete a Payload Preference",
+        "summary": "Delete a specific Payload Preference",
         "tags": [
-          "Payload Preferences",
+          "Payload Preference",
         ],
       },
       "get": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "in": "query",
+            "name": "depth",
+            "schema": {
+              "type": "number",
+            },
+          },
+          {
+            "in": "query",
+            "name": "locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "in": "query",
+            "name": "fallback-locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadPreferenceResponse",
@@ -11353,44 +11730,25 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
             "ApiKey": [],
           },
         ],
-        "summary": "Find a Payload Preference by ID",
+        "summary": "Retrieve a specific Payload Preference",
         "tags": [
-          "Payload Preferences",
+          "Payload Preference",
         ],
       },
-      "parameters": [
-        {
-          "in": "query",
-          "name": "depth",
-          "schema": {
-            "type": "number",
-          },
-        },
-        {
-          "in": "query",
-          "name": "locale",
-          "schema": {
-            "type": "string",
-          },
-        },
-        {
-          "in": "query",
-          "name": "fallback-locale",
-          "schema": {
-            "type": "string",
-          },
-        },
-        {
-          "description": "ID of the Payload Preference",
-          "in": "path",
-          "name": "id",
-          "required": true,
-          "schema": {
-            "type": "string",
-          },
-        },
-      ],
       "patch": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/PayloadPreferenceRequestBody",
+        },
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadPreferenceResponse",
@@ -11404,9 +11762,9 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
             "ApiKey": [],
           },
         ],
-        "summary": "Update a Payload Preference",
+        "summary": "Update a specific Payload Preference",
         "tags": [
-          "Payload Preferences",
+          "Payload Preference",
         ],
       },
     },
@@ -11513,7 +11871,7 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
         ],
         "summary": "Retrieve a list of Users",
         "tags": [
-          "Users",
+          "User",
         ],
       },
       "post": {
@@ -11522,7 +11880,7 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
         },
         "responses": {
           "201": {
-            "$ref": "#/components/responses/NewUserResponse",
+            "$ref": "#/components/responses/UserResponse",
           },
         },
         "security": [
@@ -11532,12 +11890,22 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
         ],
         "summary": "Create a new User",
         "tags": [
-          "Users",
+          "User",
         ],
       },
     },
     "/api/users/{id}": {
       "delete": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/UserResponse",
@@ -11551,12 +11919,43 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
             "ApiKey": [],
           },
         ],
-        "summary": "Delete a User",
+        "summary": "Delete a specific User",
         "tags": [
-          "Users",
+          "User",
         ],
       },
       "get": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "in": "query",
+            "name": "depth",
+            "schema": {
+              "type": "number",
+            },
+          },
+          {
+            "in": "query",
+            "name": "locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "in": "query",
+            "name": "fallback-locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/UserResponse",
@@ -11570,44 +11969,25 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
             "ApiKey": [],
           },
         ],
-        "summary": "Find a User by ID",
+        "summary": "Retrieve a specific User",
         "tags": [
-          "Users",
+          "User",
         ],
       },
-      "parameters": [
-        {
-          "in": "query",
-          "name": "depth",
-          "schema": {
-            "type": "number",
-          },
-        },
-        {
-          "in": "query",
-          "name": "locale",
-          "schema": {
-            "type": "string",
-          },
-        },
-        {
-          "in": "query",
-          "name": "fallback-locale",
-          "schema": {
-            "type": "string",
-          },
-        },
-        {
-          "description": "ID of the User",
-          "in": "path",
-          "name": "id",
-          "required": true,
-          "schema": {
-            "type": "string",
-          },
-        },
-      ],
       "patch": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UserRequestBody",
+        },
         "responses": {
           "200": {
             "$ref": "#/components/responses/UserResponse",
@@ -11621,9 +12001,9 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
             "ApiKey": [],
           },
         ],
-        "summary": "Update a User",
+        "summary": "Update a specific User",
         "tags": [
-          "Users",
+          "User",
         ],
       },
     },
@@ -13662,10 +14042,6 @@ exports[`openapi generators > handles non-default collection 1`] = `
         "title": "users query disjunction",
         "type": "object",
       },
-      "supportedTimezones": {
-        "example": "Europe/Prague",
-        "type": "string",
-      },
     },
     "securitySchemes": {
       "ApiKey": {
@@ -13776,7 +14152,7 @@ exports[`openapi generators > handles non-default collection 1`] = `
         ],
         "summary": "Retrieve a list of Payload Locked Documents",
         "tags": [
-          "Payload Locked Documents",
+          "Payload Locked Document",
         ],
       },
       "post": {
@@ -13785,7 +14161,7 @@ exports[`openapi generators > handles non-default collection 1`] = `
         },
         "responses": {
           "201": {
-            "$ref": "#/components/responses/NewPayloadLockedDocumentResponse",
+            "$ref": "#/components/responses/PayloadLockedDocumentResponse",
           },
         },
         "security": [
@@ -13795,12 +14171,22 @@ exports[`openapi generators > handles non-default collection 1`] = `
         ],
         "summary": "Create a new Payload Locked Document",
         "tags": [
-          "Payload Locked Documents",
+          "Payload Locked Document",
         ],
       },
     },
     "/api/payload-locked-documents/{id}": {
       "delete": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadLockedDocumentResponse",
@@ -13814,12 +14200,43 @@ exports[`openapi generators > handles non-default collection 1`] = `
             "ApiKey": [],
           },
         ],
-        "summary": "Delete a Payload Locked Document",
+        "summary": "Delete a specific Payload Locked Document",
         "tags": [
-          "Payload Locked Documents",
+          "Payload Locked Document",
         ],
       },
       "get": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "in": "query",
+            "name": "depth",
+            "schema": {
+              "type": "number",
+            },
+          },
+          {
+            "in": "query",
+            "name": "locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "in": "query",
+            "name": "fallback-locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadLockedDocumentResponse",
@@ -13833,44 +14250,25 @@ exports[`openapi generators > handles non-default collection 1`] = `
             "ApiKey": [],
           },
         ],
-        "summary": "Find a Payload Locked Document by ID",
+        "summary": "Retrieve a specific Payload Locked Document",
         "tags": [
-          "Payload Locked Documents",
+          "Payload Locked Document",
         ],
       },
-      "parameters": [
-        {
-          "in": "query",
-          "name": "depth",
-          "schema": {
-            "type": "number",
-          },
-        },
-        {
-          "in": "query",
-          "name": "locale",
-          "schema": {
-            "type": "string",
-          },
-        },
-        {
-          "in": "query",
-          "name": "fallback-locale",
-          "schema": {
-            "type": "string",
-          },
-        },
-        {
-          "description": "ID of the Payload Locked Document",
-          "in": "path",
-          "name": "id",
-          "required": true,
-          "schema": {
-            "type": "string",
-          },
-        },
-      ],
       "patch": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/PayloadLockedDocumentRequestBody",
+        },
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadLockedDocumentResponse",
@@ -13884,9 +14282,9 @@ exports[`openapi generators > handles non-default collection 1`] = `
             "ApiKey": [],
           },
         ],
-        "summary": "Update a Payload Locked Document",
+        "summary": "Update a specific Payload Locked Document",
         "tags": [
-          "Payload Locked Documents",
+          "Payload Locked Document",
         ],
       },
     },
@@ -13983,7 +14381,7 @@ exports[`openapi generators > handles non-default collection 1`] = `
         ],
         "summary": "Retrieve a list of Payload Migrations",
         "tags": [
-          "Payload Migrations",
+          "Payload Migration",
         ],
       },
       "post": {
@@ -13992,7 +14390,7 @@ exports[`openapi generators > handles non-default collection 1`] = `
         },
         "responses": {
           "201": {
-            "$ref": "#/components/responses/NewPayloadMigrationResponse",
+            "$ref": "#/components/responses/PayloadMigrationResponse",
           },
         },
         "security": [
@@ -14002,12 +14400,22 @@ exports[`openapi generators > handles non-default collection 1`] = `
         ],
         "summary": "Create a new Payload Migration",
         "tags": [
-          "Payload Migrations",
+          "Payload Migration",
         ],
       },
     },
     "/api/payload-migrations/{id}": {
       "delete": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadMigrationResponse",
@@ -14021,12 +14429,43 @@ exports[`openapi generators > handles non-default collection 1`] = `
             "ApiKey": [],
           },
         ],
-        "summary": "Delete a Payload Migration",
+        "summary": "Delete a specific Payload Migration",
         "tags": [
-          "Payload Migrations",
+          "Payload Migration",
         ],
       },
       "get": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "in": "query",
+            "name": "depth",
+            "schema": {
+              "type": "number",
+            },
+          },
+          {
+            "in": "query",
+            "name": "locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "in": "query",
+            "name": "fallback-locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadMigrationResponse",
@@ -14040,44 +14479,25 @@ exports[`openapi generators > handles non-default collection 1`] = `
             "ApiKey": [],
           },
         ],
-        "summary": "Find a Payload Migration by ID",
+        "summary": "Retrieve a specific Payload Migration",
         "tags": [
-          "Payload Migrations",
+          "Payload Migration",
         ],
       },
-      "parameters": [
-        {
-          "in": "query",
-          "name": "depth",
-          "schema": {
-            "type": "number",
-          },
-        },
-        {
-          "in": "query",
-          "name": "locale",
-          "schema": {
-            "type": "string",
-          },
-        },
-        {
-          "in": "query",
-          "name": "fallback-locale",
-          "schema": {
-            "type": "string",
-          },
-        },
-        {
-          "description": "ID of the Payload Migration",
-          "in": "path",
-          "name": "id",
-          "required": true,
-          "schema": {
-            "type": "string",
-          },
-        },
-      ],
       "patch": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/PayloadMigrationRequestBody",
+        },
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadMigrationResponse",
@@ -14091,9 +14511,9 @@ exports[`openapi generators > handles non-default collection 1`] = `
             "ApiKey": [],
           },
         ],
-        "summary": "Update a Payload Migration",
+        "summary": "Update a specific Payload Migration",
         "tags": [
-          "Payload Migrations",
+          "Payload Migration",
         ],
       },
     },
@@ -14188,7 +14608,7 @@ exports[`openapi generators > handles non-default collection 1`] = `
         ],
         "summary": "Retrieve a list of Payload Preferences",
         "tags": [
-          "Payload Preferences",
+          "Payload Preference",
         ],
       },
       "post": {
@@ -14197,7 +14617,7 @@ exports[`openapi generators > handles non-default collection 1`] = `
         },
         "responses": {
           "201": {
-            "$ref": "#/components/responses/NewPayloadPreferenceResponse",
+            "$ref": "#/components/responses/PayloadPreferenceResponse",
           },
         },
         "security": [
@@ -14207,12 +14627,22 @@ exports[`openapi generators > handles non-default collection 1`] = `
         ],
         "summary": "Create a new Payload Preference",
         "tags": [
-          "Payload Preferences",
+          "Payload Preference",
         ],
       },
     },
     "/api/payload-preferences/{id}": {
       "delete": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadPreferenceResponse",
@@ -14226,12 +14656,43 @@ exports[`openapi generators > handles non-default collection 1`] = `
             "ApiKey": [],
           },
         ],
-        "summary": "Delete a Payload Preference",
+        "summary": "Delete a specific Payload Preference",
         "tags": [
-          "Payload Preferences",
+          "Payload Preference",
         ],
       },
       "get": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "in": "query",
+            "name": "depth",
+            "schema": {
+              "type": "number",
+            },
+          },
+          {
+            "in": "query",
+            "name": "locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "in": "query",
+            "name": "fallback-locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadPreferenceResponse",
@@ -14245,44 +14706,25 @@ exports[`openapi generators > handles non-default collection 1`] = `
             "ApiKey": [],
           },
         ],
-        "summary": "Find a Payload Preference by ID",
+        "summary": "Retrieve a specific Payload Preference",
         "tags": [
-          "Payload Preferences",
+          "Payload Preference",
         ],
       },
-      "parameters": [
-        {
-          "in": "query",
-          "name": "depth",
-          "schema": {
-            "type": "number",
-          },
-        },
-        {
-          "in": "query",
-          "name": "locale",
-          "schema": {
-            "type": "string",
-          },
-        },
-        {
-          "in": "query",
-          "name": "fallback-locale",
-          "schema": {
-            "type": "string",
-          },
-        },
-        {
-          "description": "ID of the Payload Preference",
-          "in": "path",
-          "name": "id",
-          "required": true,
-          "schema": {
-            "type": "string",
-          },
-        },
-      ],
       "patch": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/PayloadPreferenceRequestBody",
+        },
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadPreferenceResponse",
@@ -14296,9 +14738,9 @@ exports[`openapi generators > handles non-default collection 1`] = `
             "ApiKey": [],
           },
         ],
-        "summary": "Update a Payload Preference",
+        "summary": "Update a specific Payload Preference",
         "tags": [
-          "Payload Preferences",
+          "Payload Preference",
         ],
       },
     },
@@ -14393,7 +14835,7 @@ exports[`openapi generators > handles non-default collection 1`] = `
         ],
         "summary": "Retrieve a list of Posts",
         "tags": [
-          "Posts",
+          "Post",
         ],
       },
       "post": {
@@ -14402,7 +14844,7 @@ exports[`openapi generators > handles non-default collection 1`] = `
         },
         "responses": {
           "201": {
-            "$ref": "#/components/responses/NewPostResponse",
+            "$ref": "#/components/responses/PostResponse",
           },
         },
         "security": [
@@ -14412,12 +14854,22 @@ exports[`openapi generators > handles non-default collection 1`] = `
         ],
         "summary": "Create a new Post",
         "tags": [
-          "Posts",
+          "Post",
         ],
       },
     },
     "/api/posts/{id}": {
       "delete": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/PostResponse",
@@ -14431,12 +14883,43 @@ exports[`openapi generators > handles non-default collection 1`] = `
             "ApiKey": [],
           },
         ],
-        "summary": "Delete a Post",
+        "summary": "Delete a specific Post",
         "tags": [
-          "Posts",
+          "Post",
         ],
       },
       "get": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "in": "query",
+            "name": "depth",
+            "schema": {
+              "type": "number",
+            },
+          },
+          {
+            "in": "query",
+            "name": "locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "in": "query",
+            "name": "fallback-locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/PostResponse",
@@ -14450,44 +14933,25 @@ exports[`openapi generators > handles non-default collection 1`] = `
             "ApiKey": [],
           },
         ],
-        "summary": "Find a Post by ID",
+        "summary": "Retrieve a specific Post",
         "tags": [
-          "Posts",
+          "Post",
         ],
       },
-      "parameters": [
-        {
-          "in": "query",
-          "name": "depth",
-          "schema": {
-            "type": "number",
-          },
-        },
-        {
-          "in": "query",
-          "name": "locale",
-          "schema": {
-            "type": "string",
-          },
-        },
-        {
-          "in": "query",
-          "name": "fallback-locale",
-          "schema": {
-            "type": "string",
-          },
-        },
-        {
-          "description": "ID of the Post",
-          "in": "path",
-          "name": "id",
-          "required": true,
-          "schema": {
-            "type": "string",
-          },
-        },
-      ],
       "patch": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/PostRequestBody",
+        },
         "responses": {
           "200": {
             "$ref": "#/components/responses/PostResponse",
@@ -14501,9 +14965,9 @@ exports[`openapi generators > handles non-default collection 1`] = `
             "ApiKey": [],
           },
         ],
-        "summary": "Update a Post",
+        "summary": "Update a specific Post",
         "tags": [
-          "Posts",
+          "Post",
         ],
       },
     },
@@ -14619,7 +15083,7 @@ exports[`openapi generators > handles non-default collection 1`] = `
         },
         "responses": {
           "201": {
-            "$ref": "#/components/responses/NewUsersResponse",
+            "$ref": "#/components/responses/UsersResponse",
           },
         },
         "security": [
@@ -14635,6 +15099,16 @@ exports[`openapi generators > handles non-default collection 1`] = `
     },
     "/api/users/{id}": {
       "delete": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/UsersResponse",
@@ -14648,12 +15122,43 @@ exports[`openapi generators > handles non-default collection 1`] = `
             "ApiKey": [],
           },
         ],
-        "summary": "Delete a users",
+        "summary": "Delete a specific users",
         "tags": [
           "users",
         ],
       },
       "get": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "in": "query",
+            "name": "depth",
+            "schema": {
+              "type": "number",
+            },
+          },
+          {
+            "in": "query",
+            "name": "locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "in": "query",
+            "name": "fallback-locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/UsersResponse",
@@ -14667,44 +15172,25 @@ exports[`openapi generators > handles non-default collection 1`] = `
             "ApiKey": [],
           },
         ],
-        "summary": "Find a users by ID",
+        "summary": "Retrieve a specific users",
         "tags": [
           "users",
         ],
       },
-      "parameters": [
-        {
-          "in": "query",
-          "name": "depth",
-          "schema": {
-            "type": "number",
-          },
-        },
-        {
-          "in": "query",
-          "name": "locale",
-          "schema": {
-            "type": "string",
-          },
-        },
-        {
-          "in": "query",
-          "name": "fallback-locale",
-          "schema": {
-            "type": "string",
-          },
-        },
-        {
-          "description": "ID of the users",
-          "in": "path",
-          "name": "id",
-          "required": true,
-          "schema": {
-            "type": "string",
-          },
-        },
-      ],
       "patch": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersRequestBody",
+        },
         "responses": {
           "200": {
             "$ref": "#/components/responses/UsersResponse",
@@ -14718,7 +15204,7 @@ exports[`openapi generators > handles non-default collection 1`] = `
             "ApiKey": [],
           },
         ],
-        "summary": "Update a users",
+        "summary": "Update a specific users",
         "tags": [
           "users",
         ],

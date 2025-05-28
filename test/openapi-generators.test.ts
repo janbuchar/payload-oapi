@@ -199,4 +199,83 @@ describe('openapi generators', () => {
 
     expect(spec).toMatchSnapshot()
   })
+
+  test('respects operation filtering configuration', async () => {
+    const Posts: CollectionConfig = {
+      slug: 'posts',
+      fields: [
+        {
+          name: 'title',
+          type: 'text',
+          required: true,
+        },
+      ],
+    }
+    const payload = await buildPayload({
+      collections: [Posts],
+    })
+
+    // Test excluding delete operations
+    const spec = await generateV30Spec(
+      { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
+      {
+        openapiVersion: '3.0',
+        metadata: { title: 'Test API', version: '1.0.0' },
+        authEndpoint: '/auth',
+        operations: {
+          excludeOperations: ['delete'],
+        },
+      },
+    )
+
+    // Check that collection-level operations exist
+    expect(spec.paths['/api/posts']).toBeDefined()
+    expect(spec.paths['/api/posts']?.get).toBeDefined()
+    expect(spec.paths['/api/posts']?.post).toBeDefined()
+
+    // Check that document-level operations exist except delete
+    expect(spec.paths['/api/posts/{id}']).toBeDefined()
+    expect(spec.paths['/api/posts/{id}']?.get).toBeDefined()
+    expect(spec.paths['/api/posts/{id}']?.patch).toBeDefined()
+    expect(spec.paths['/api/posts/{id}']?.delete).toBeUndefined()
+  })
+
+  test('respects includeOperations configuration', async () => {
+    const Posts: CollectionConfig = {
+      slug: 'posts',
+      fields: [
+        {
+          name: 'title',
+          type: 'text',
+          required: true,
+        },
+      ],
+    }
+    const payload = await buildPayload({
+      collections: [Posts],
+    })
+
+    // Test including only read operations
+    const spec = await generateV30Spec(
+      { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
+      {
+        openapiVersion: '3.0',
+        metadata: { title: 'Test API', version: '1.0.0' },
+        authEndpoint: '/auth',
+        operations: {
+          includeOperations: ['read', 'list'],
+        },
+      },
+    )
+
+    // Check that only read operations exist
+    expect(spec.paths['/api/posts']).toBeDefined()
+    expect(spec.paths['/api/posts']?.get).toBeDefined()
+    expect(spec.paths['/api/posts']?.post).toBeUndefined()
+
+    expect(spec.paths['/api/posts/{id}']).toBeDefined()
+    expect(spec.paths['/api/posts/{id}']?.get).toBeDefined()
+    expect(spec.paths['/api/posts/{id}']?.patch).toBeUndefined()
+    expect(spec.paths['/api/posts/{id}']?.delete).toBeUndefined()
+  })
 })

@@ -18,9 +18,10 @@ import type {
 import { entityToJSONSchema } from 'payload'
 import type { SanitizedPluginOptions } from '../types.js'
 import { mapValuesAsync, visitObjectNodes } from '../utils/objects.js'
-import { filterCollections, filterGlobals } from '../utils/filtering.js'
+import { filterCollections, filterGlobals, filterFields } from '../utils/filtering.js'
 import { type ComponentType, collectionName, componentName, globalName } from './naming.js'
 import { apiKeySecurity, generateSecuritySchemes } from './securitySchemes.js'
+import { shouldIncludeOperation } from '../utils/filtering.js'
 
 const baseQueryParams: Array<OpenAPIV3.ParameterObject & OpenAPIV3_1.ParameterObject> = [
   { in: 'query', name: 'depth', schema: { type: 'number' } },
@@ -83,10 +84,19 @@ const composeRef = (
   $ref: `#/components/${type}/${componentName(type, name, options)}`,
 })
 
-const generateSchemaObject = (config: SanitizedConfig, collection: Collection): JSONSchema4 => {
+const generateSchemaObject = (config: SanitizedConfig, collection: Collection, options: SanitizedPluginOptions): JSONSchema4 => {
+  // Filter fields before generating schema
+  const filteredFields = filterFields(collection.config.fields, collection, options)
+  
+  // Create a modified collection config with filtered fields
+  const modifiedCollectionConfig = {
+    ...collection.config,
+    fields: filteredFields
+  }
+  
   const schema = entityToJSONSchema(
     config,
-    removeInterfaceNames(collection.config), // the `interfaceName` option causes `entityToJSONSchema` to add a reference to a non-existing schema
+    removeInterfaceNames(modifiedCollectionConfig), // the `interfaceName` option causes `entityToJSONSchema` to add a reference to a non-existing schema
     new Map(),
     'text',
     undefined,
@@ -117,10 +127,20 @@ const requestBodySchema = (fields: Array<Field>, schema: JSONSchema4): JSONSchem
 const generateRequestBodySchema = (
   config: SanitizedConfig,
   collection: Collection,
+  options: SanitizedPluginOptions,
 ): OpenAPIV3_1.RequestBodyObject => {
+  // Filter fields before generating schema
+  const filteredFields = filterFields(collection.config.fields, collection, options)
+  
+  // Create a modified collection config with filtered fields
+  const modifiedCollectionConfig = {
+    ...collection.config,
+    fields: filteredFields
+  }
+  
   const schema = entityToJSONSchema(
     config,
-    removeInterfaceNames(collection.config), // the `interfaceName` option causes `entityToJSONSchema` to add a reference to a non-existing schema
+    removeInterfaceNames(modifiedCollectionConfig), // the `interfaceName` option causes `entityToJSONSchema` to add a reference to a non-existing schema
     new Map(),
     'text',
     undefined,
@@ -129,14 +149,17 @@ const generateRequestBodySchema = (
     description: collectionName(collection).singular,
     content: {
       'application/json': {
-        schema: requestBodySchema(collection.config.fields, schema) as OpenAPIV3_1.SchemaObject,
+        schema: requestBodySchema(filteredFields, schema) as OpenAPIV3_1.SchemaObject,
       },
     },
   }
 }
 
-const generateQueryOperationSchemas = (collection: Collection): Record<string, JSONSchema4> => {
+const generateQueryOperationSchemas = (collection: Collection, options: SanitizedPluginOptions): Record<string, JSONSchema4> => {
   const { singular } = collectionName(collection)
+  
+  // Filter fields before generating query operations
+  const filteredFields = filterFields(collection.config.fields, collection, options)
 
   return {
     [componentName('schemas', singular, { suffix: 'QueryOperations' })]: {
@@ -144,7 +167,7 @@ const generateQueryOperationSchemas = (collection: Collection): Record<string, J
       type: 'object',
       properties: Object.fromEntries(
         (
-          collection.config.fields.filter(({ type }) =>
+          filteredFields.filter(({ type }) =>
             ['number', 'text', 'email', 'date', 'radio', 'checkbox', 'select'].includes(type),
           ) as Array<
             FieldBase & {
@@ -356,109 +379,143 @@ const isOpenToPublic = async (checker: Access): Promise<boolean> => {
 
 const generateCollectionOperations = async (
   collection: Collection,
+  options: SanitizedPluginOptions,
 ): Promise<Record<string, OpenAPIV3.PathItemObject & OpenAPIV3_1.PathItemObject>> => {
-  const { slug } = collection.config
+  const slug = collection.config.slug
   const { singular, plural } = collectionName(collection)
-  const tags = [plural]
+  const tags = [singular]
+  
+  // Filter fields for sort parameter
+  const filteredFields = filterFields(collection.config.fields, collection, options)
+
+  const listResponses = {
+    200: composeRef('responses', singular, { suffix: 'List' }),
+  } satisfies OpenAPIV3_1.ResponsesObject & OpenAPIV3.ResponsesObject
 
   const singleObjectResponses = {
     200: composeRef('responses', singular),
     404: composeRef('responses', singular, { suffix: 'NotFound' }),
   } satisfies OpenAPIV3_1.ResponsesObject & OpenAPIV3.ResponsesObject
 
-  return {
-    [`/api/${slug}`]: {
-      get: {
-        summary: `Retrieve a list of ${plural}`,
-        tags,
-        parameters: [
-          { in: 'query', name: 'page', schema: { type: 'number' } },
-          { in: 'query', name: 'limit', schema: { type: 'number' } },
-          ...baseQueryParams,
-          {
-            in: 'query',
-            name: 'sort',
-            schema: {
-              type: 'string',
-              enum: collection.config.fields.flatMap(field => {
-                if (
-                  field.type === 'number' ||
-                  field.type === 'text' ||
-                  field.type === 'email' ||
-                  field.type === 'date'
-                ) {
-                  return [field.name, `-${field.name}`]
-                }
-                return []
-              }),
-            },
-          },
-          {
-            in: 'query',
-            name: 'where',
-            style: 'deepObject',
-            schema: {
-              allOf: [
-                { type: 'object' },
-                {
-                  anyOf: [
-                    composeRef('schemas', singular, { suffix: 'QueryOperations' }),
-                    composeRef('schemas', singular, { suffix: 'QueryOperationsAnd' }),
-                    composeRef('schemas', singular, { suffix: 'QueryOperationsOr' }),
-                  ],
-                },
-              ],
-            },
-          },
-        ],
-        responses: {
-          200: composeRef('responses', singular, { suffix: 'List' }),
-        },
-        security: (await isOpenToPublic(collection.config.access.read)) ? [] : [apiKeySecurity],
-      },
-      post: {
-        summary: `Create a new ${singular}`,
-        tags,
-        requestBody: composeRef('requestBodies', singular),
-        responses: {
-          201: composeRef('responses', singular, { prefix: 'New' }),
-        },
-        security: (await isOpenToPublic(collection.config.access.create)) ? [] : [apiKeySecurity],
-      },
-    },
-    [`/api/${slug}/{id}`]: {
+  const paths: Record<string, OpenAPIV3.PathItemObject & OpenAPIV3_1.PathItemObject> = {}
+
+  // Collection-level operations (/api/{slug})
+  const collectionPath: OpenAPIV3.PathItemObject & OpenAPIV3_1.PathItemObject = {}
+
+  // List operation (GET /api/{slug})
+  if (shouldIncludeOperation('list', collection, options)) {
+    collectionPath.get = {
+      summary: `Retrieve a list of ${plural}`,
+      tags,
       parameters: [
+        { in: 'query', name: 'page', schema: { type: 'number' } },
+        { in: 'query', name: 'limit', schema: { type: 'number' } },
         ...baseQueryParams,
         {
-          in: 'path',
-          name: 'id',
-          description: `ID of the ${singular}`,
-          required: true,
+          in: 'query',
+          name: 'sort',
           schema: {
             type: 'string',
+            enum: filteredFields.flatMap(field => {
+              if (
+                field.type === 'number' ||
+                field.type === 'text' ||
+                field.type === 'email' ||
+                field.type === 'date'
+              ) {
+                return [field.name, `-${field.name}`]
+              }
+              return []
+            }),
+          },
+        },
+        {
+          in: 'query',
+          name: 'where',
+          style: 'deepObject',
+          schema: {
+            allOf: [
+              { type: 'object' },
+              {
+                anyOf: [
+                  composeRef('schemas', singular, { suffix: 'QueryOperations' }),
+                  composeRef('schemas', singular, { suffix: 'QueryOperationsAnd' }),
+                  composeRef('schemas', singular, { suffix: 'QueryOperationsOr' }),
+                ],
+              },
+            ],
           },
         },
       ],
-      get: {
-        summary: `Find a ${singular} by ID`,
-        tags,
-        responses: singleObjectResponses,
-        security: (await isOpenToPublic(collection.config.access.read)) ? [] : [apiKeySecurity],
+      responses: {
+        200: composeRef('responses', singular, { suffix: 'List' }),
       },
-      patch: {
-        summary: `Update a ${singular}`,
-        tags,
-        responses: singleObjectResponses,
-        security: (await isOpenToPublic(collection.config.access.update)) ? [] : [apiKeySecurity],
-      },
-      delete: {
-        summary: `Delete a ${singular}`,
-        tags,
-        responses: singleObjectResponses,
-        security: (await isOpenToPublic(collection.config.access.delete)) ? [] : [apiKeySecurity],
-      },
-    },
+      security: (await isOpenToPublic(collection.config.access.read)) ? [] : [apiKeySecurity],
+    }
   }
+
+  // Create operation (POST /api/{slug})
+  if (shouldIncludeOperation('create', collection, options)) {
+    collectionPath.post = {
+      summary: `Create a new ${singular}`,
+      tags,
+      requestBody: composeRef('requestBodies', singular),
+      responses: {
+        201: composeRef('responses', singular),
+      },
+      security: (await isOpenToPublic(collection.config.access.create)) ? [] : [apiKeySecurity],
+    }
+  }
+
+  if (Object.keys(collectionPath).length > 0) {
+    paths[`/api/${slug}`] = collectionPath
+  }
+
+  // Document-level operations (/api/{slug}/{id})
+  const documentPath: OpenAPIV3.PathItemObject & OpenAPIV3_1.PathItemObject = {}
+
+  // Read operation (GET /api/{slug}/{id})
+  if (shouldIncludeOperation('read', collection, options)) {
+    documentPath.get = {
+      summary: `Retrieve a specific ${singular}`,
+      tags,
+      parameters: [
+        { in: 'path', name: 'id', required: true, schema: { type: 'string' } },
+        ...baseQueryParams,
+      ],
+      responses: singleObjectResponses,
+      security: (await isOpenToPublic(collection.config.access.read)) ? [] : [apiKeySecurity],
+    }
+  }
+
+  // Update operation (PATCH /api/{slug}/{id})
+  if (shouldIncludeOperation('update', collection, options)) {
+    documentPath.patch = {
+      summary: `Update a specific ${singular}`,
+      tags,
+      parameters: [{ in: 'path', name: 'id', required: true, schema: { type: 'string' } }],
+      requestBody: composeRef('requestBodies', singular),
+      responses: singleObjectResponses,
+      security: (await isOpenToPublic(collection.config.access.update)) ? [] : [apiKeySecurity],
+    }
+  }
+
+  // Delete operation (DELETE /api/{slug}/{id})
+  if (shouldIncludeOperation('delete', collection, options)) {
+    documentPath.delete = {
+      summary: `Delete a specific ${singular}`,
+      tags,
+      parameters: [{ in: 'path', name: 'id', required: true, schema: { type: 'string' } }],
+      responses: singleObjectResponses,
+      security: (await isOpenToPublic(collection.config.access.delete)) ? [] : [apiKeySecurity],
+    }
+  }
+
+  if (Object.keys(documentPath).length > 0) {
+    paths[`/api/${slug}/{id}`] = documentPath
+  }
+
+  return paths
 }
 
 const generateGlobalResponse = (
@@ -537,16 +594,17 @@ const generateGlobalOperations = async (
   }
 }
 
-const generateComponents = (
+const generateComponents = async (
   req: Pick<PayloadRequest, 'payload'>,
-  options: SanitizedPluginOptions
-) => {
-  const schemas: Record<string, JSONSchema4> = {
-    supportedTimezones: {
-      type: 'string',
-      example: 'Europe/Prague',
-    },
-  }
+  options: SanitizedPluginOptions,
+): Promise<{
+  schemas: Record<string, JSONSchema4>
+  requestBodies: Record<string, OpenAPIV3_1.RequestBodyObject>
+  responses: Record<string, OpenAPIV3_1.ResponseObject>
+  filteredCollections: Collection[]
+  filteredGlobals: SanitizedGlobalConfig[]
+}> => {
+  const schemas: Record<string, JSONSchema4> = {}
 
   // Filter collections and globals based on options
   const filteredCollections = filterCollections(req.payload.collections, options)
@@ -557,11 +615,12 @@ const generateComponents = (
     schemas[componentName('schemas', singular)] = generateSchemaObject(
       req.payload.config,
       collection,
+      options,
     )
   }
 
   for (const collection of filteredCollections) {
-    Object.assign(schemas, generateQueryOperationSchemas(collection))
+    Object.assign(schemas, generateQueryOperationSchemas(collection, options))
   }
 
   for (const global of filteredGlobals) {
@@ -575,6 +634,7 @@ const generateComponents = (
     requestBodies[componentName('requestBodies', singular)] = generateRequestBodySchema(
       req.payload.config,
       collection,
+      options,
     )
   }
 
@@ -598,7 +658,7 @@ export const generateV30Spec = async (
   req: Pick<PayloadRequest, 'payload' | 'protocol' | 'headers'>,
   options: SanitizedPluginOptions,
 ): Promise<OpenAPIV3.Document> => {
-  const { schemas, requestBodies, responses, filteredCollections, filteredGlobals } = generateComponents(req, options)
+  const { schemas, requestBodies, responses, filteredCollections, filteredGlobals } = await generateComponents(req, options)
 
   const spec = {
     openapi: '3.0.3',
@@ -607,7 +667,7 @@ export const generateV30Spec = async (
     paths: Object.assign(
       {},
       ...(await Promise.all(
-        filteredCollections.map(generateCollectionOperations),
+        filteredCollections.map(collection => generateCollectionOperations(collection, options)),
       )),
       ...(await Promise.all(filteredGlobals.map(generateGlobalOperations))),
     ),
@@ -658,7 +718,7 @@ export const generateV31Spec = async (
   req: Pick<PayloadRequest, 'payload' | 'protocol' | 'headers'>,
   options: SanitizedPluginOptions,
 ): Promise<OpenAPIV3_1.Document> => {
-  const { schemas, requestBodies, responses, filteredCollections, filteredGlobals } = generateComponents(req, options)
+  const { schemas, requestBodies, responses, filteredCollections, filteredGlobals } = await generateComponents(req, options)
 
   const spec = {
     openapi: '3.1.0',
@@ -666,8 +726,10 @@ export const generateV31Spec = async (
     servers: [{ url: `${req.protocol}//${req.headers.get('host')}` }],
     paths: Object.assign(
       {},
-      ...filteredCollections.map(generateCollectionOperations),
-      ...filteredGlobals.map(generateGlobalOperations),
+      ...(await Promise.all(
+        filteredCollections.map(collection => generateCollectionOperations(collection, options)),
+      )),
+      ...(await Promise.all(filteredGlobals.map(generateGlobalOperations))),
     ),
     components: {
       securitySchemes: generateSecuritySchemes(options.authEndpoint),
