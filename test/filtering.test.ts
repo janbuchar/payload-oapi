@@ -1,17 +1,17 @@
-import { describe, it, expect } from 'vitest'
 import type { Collection, SanitizedGlobalConfig } from 'payload'
+import { describe, expect, it } from 'vitest'
 import { filterCollections, filterGlobals } from '../src/utils/filtering.js'
 
 describe('Filtering utilities', () => {
   const mockCollections = {
     posts: {
-      config: { slug: 'posts', auth: false }
+      config: { slug: 'posts', auth: false },
     } as unknown as Collection,
     users: {
-      config: { slug: 'users', auth: true }
+      config: { slug: 'users', auth: true },
     } as unknown as Collection,
     media: {
-      config: { slug: 'media', auth: false }
+      config: { slug: 'media', auth: false },
     } as unknown as Collection,
   }
 
@@ -30,7 +30,7 @@ describe('Filtering utilities', () => {
 
     it('should include only specified collections when includeCollections is an array', () => {
       const result = filterCollections(mockCollections, {
-        includeCollections: ['posts', 'users']
+        includeCollections: ['posts', 'users'],
       })
       expect(result).toHaveLength(2)
       expect(result.map(c => c.config.slug)).toEqual(['posts', 'users'])
@@ -38,7 +38,7 @@ describe('Filtering utilities', () => {
 
     it('should exclude specified collections when excludeCollections is an array', () => {
       const result = filterCollections(mockCollections, {
-        excludeCollections: ['media']
+        excludeCollections: ['media'],
       })
       expect(result).toHaveLength(2)
       expect(result.map(c => c.config.slug)).toEqual(['posts', 'users'])
@@ -46,7 +46,7 @@ describe('Filtering utilities', () => {
 
     it('should work with custom filter functions', () => {
       const result = filterCollections(mockCollections, {
-        includeCollections: ({ config }) => config.auth === true
+        includeCollections: ({ config }) => config.auth === true,
       })
       expect(result).toHaveLength(1)
       expect(result[0].config.slug).toBe('users')
@@ -55,7 +55,7 @@ describe('Filtering utilities', () => {
     it('should apply both include and exclude filters', () => {
       const result = filterCollections(mockCollections, {
         includeCollections: ['posts', 'users', 'media'],
-        excludeCollections: ['media']
+        excludeCollections: ['media'],
       })
       expect(result).toHaveLength(2)
       expect(result.map(c => c.config.slug)).toEqual(['posts', 'users'])
@@ -71,7 +71,7 @@ describe('Filtering utilities', () => {
 
     it('should include only specified globals when includeGlobals is an array', () => {
       const result = filterGlobals(mockGlobals, {
-        includeGlobals: ['settings', 'public-info']
+        includeGlobals: ['settings', 'public-info'],
       })
       expect(result).toHaveLength(2)
       expect(result.map(g => g.slug)).toEqual(['settings', 'public-info'])
@@ -79,7 +79,7 @@ describe('Filtering utilities', () => {
 
     it('should exclude specified globals when excludeGlobals is an array', () => {
       const result = filterGlobals(mockGlobals, {
-        excludeGlobals: ['internal-config']
+        excludeGlobals: ['internal-config'],
       })
       expect(result).toHaveLength(2)
       expect(result.map(g => g.slug)).toEqual(['settings', 'public-info'])
@@ -87,7 +87,7 @@ describe('Filtering utilities', () => {
 
     it('should work with custom filter functions', () => {
       const result = filterGlobals(mockGlobals, {
-        excludeGlobals: ({ slug }) => slug.startsWith('internal-')
+        excludeGlobals: ({ slug }) => slug.startsWith('internal-'),
       })
       expect(result).toHaveLength(2)
       expect(result.map(g => g.slug)).toEqual(['settings', 'public-info'])
@@ -96,10 +96,10 @@ describe('Filtering utilities', () => {
     it('should apply both include and exclude filters', () => {
       const result = filterGlobals(mockGlobals, {
         includeGlobals: ['settings', 'internal-config'],
-        excludeGlobals: ['internal-config']
+        excludeGlobals: ['internal-config'],
       })
       expect(result).toHaveLength(1)
       expect(result[0].slug).toBe('settings')
     })
   })
-}) 
+})

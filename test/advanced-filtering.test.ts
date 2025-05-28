@@ -1,26 +1,26 @@
-import { describe, it, expect } from 'vitest'
-import type { Collection, SanitizedGlobalConfig, Field } from 'payload'
-import { 
-  filterCollections, 
-  filterGlobals, 
-  shouldIncludeOperation, 
-  filterFields
-} from '../src/utils/filtering.js'
+import type { Collection, Field, SanitizedGlobalConfig } from 'payload'
+import { describe, expect, it } from 'vitest'
 import type { CRUDOperation } from '../src/types.js'
+import {
+  filterCollections,
+  filterFields,
+  filterGlobals,
+  shouldIncludeOperation,
+} from '../src/utils/filtering.js'
 
 describe('Advanced Filtering utilities', () => {
   const mockCollections = {
     posts: {
-      config: { slug: 'posts', auth: false, access: { read: true } }
+      config: { slug: 'posts', auth: false, access: { read: true } },
     } as unknown as Collection,
     users: {
-      config: { slug: 'users', auth: true }
+      config: { slug: 'users', auth: true },
     } as unknown as Collection,
     'payload-preferences': {
-      config: { slug: 'payload-preferences', auth: false }
+      config: { slug: 'payload-preferences', auth: false },
     } as unknown as Collection,
     'internal-data': {
-      config: { slug: 'internal-data', auth: false, access: { read: false } }
+      config: { slug: 'internal-data', auth: false, access: { read: false } },
     } as unknown as Collection,
   }
 
@@ -35,7 +35,7 @@ describe('Advanced Filtering utilities', () => {
   describe('filterCollections with hideInternalCollections', () => {
     it('should hide payload-* collections when hideInternalCollections is true', () => {
       const result = filterCollections(mockCollections, {
-        hideInternalCollections: true
+        hideInternalCollections: true,
       })
       expect(result).toHaveLength(3)
       expect(result.map(c => c.config.slug)).not.toContain('payload-preferences')
@@ -43,7 +43,7 @@ describe('Advanced Filtering utilities', () => {
 
     it('should include payload-* collections when hideInternalCollections is false', () => {
       const result = filterCollections(mockCollections, {
-        hideInternalCollections: false
+        hideInternalCollections: false,
       })
       expect(result).toHaveLength(4)
       expect(result.map(c => c.config.slug)).toContain('payload-preferences')
@@ -52,7 +52,7 @@ describe('Advanced Filtering utilities', () => {
     it('should combine hideInternalCollections with other filters', () => {
       const result = filterCollections(mockCollections, {
         hideInternalCollections: true,
-        includeCollections: ['posts', 'users', 'payload-preferences']
+        includeCollections: ['posts', 'users', 'payload-preferences'],
       })
       expect(result).toHaveLength(2)
       expect(result.map(c => c.config.slug)).toEqual(['posts', 'users'])
@@ -64,18 +64,18 @@ describe('Advanced Filtering utilities', () => {
 
     it('should include all operations when no filter is provided', () => {
       const operations: CRUDOperation[] = ['create', 'read', 'update', 'delete', 'list']
-      operations.forEach(op => {
+      for (const op of operations) {
         expect(shouldIncludeOperation(op, mockCollection, {})).toBe(true)
-      })
+      }
     })
 
     it('should only include specified operations when includeOperations is set', () => {
       const options = {
         operations: {
-          includeOperations: ['read', 'list'] as CRUDOperation[]
-        }
+          includeOperations: ['read', 'list'] as CRUDOperation[],
+        },
       }
-      
+
       expect(shouldIncludeOperation('read', mockCollection, options)).toBe(true)
       expect(shouldIncludeOperation('list', mockCollection, options)).toBe(true)
       expect(shouldIncludeOperation('create', mockCollection, options)).toBe(false)
@@ -85,10 +85,10 @@ describe('Advanced Filtering utilities', () => {
     it('should exclude specified operations when excludeOperations is set', () => {
       const options = {
         operations: {
-          excludeOperations: ['delete', 'create'] as CRUDOperation[]
-        }
+          excludeOperations: ['delete', 'create'] as CRUDOperation[],
+        },
       }
-      
+
       expect(shouldIncludeOperation('read', mockCollection, options)).toBe(true)
       expect(shouldIncludeOperation('update', mockCollection, options)).toBe(true)
       expect(shouldIncludeOperation('delete', mockCollection, options)).toBe(false)
@@ -104,10 +104,10 @@ describe('Advanced Filtering utilities', () => {
               return operation === 'read'
             }
             return true
-          }
-        }
+          },
+        },
       }
-      
+
       expect(shouldIncludeOperation('read', mockCollection, options)).toBe(true)
       expect(shouldIncludeOperation('create', mockCollection, options)).toBe(false)
     })
@@ -123,7 +123,7 @@ describe('Advanced Filtering utilities', () => {
 
     it('should exclude specified fields when excludeFields is an array', () => {
       const result = filterFields(mockFields, mockCollection, {
-        excludeFields: ['password', 'secretKey']
+        excludeFields: ['password', 'secretKey'],
       })
       expect(result.map(f => (f as any).name)).not.toContain('password')
       expect(result.map(f => (f as any).name)).not.toContain('secretKey')
@@ -134,7 +134,7 @@ describe('Advanced Filtering utilities', () => {
       const result = filterFields(mockFields, mockCollection, {
         excludeFields: ({ name, type }) => {
           return type === 'password' || name.startsWith('_')
-        }
+        },
       })
       expect(result.map(f => (f as any).name)).not.toContain('password')
       expect(result.map(f => (f as any).name)).not.toContain('_internal')
@@ -152,7 +152,7 @@ describe('Advanced Filtering utilities', () => {
           }
           // For other collections, only exclude password
           return type === 'password'
-        }
+        },
       })
       expect(result.map(f => (f as any).name)).not.toContain('password')
       expect(result.map(f => (f as any).name)).not.toContain('_internal')
@@ -162,7 +162,7 @@ describe('Advanced Filtering utilities', () => {
 
     it('should filter differently for different collections', () => {
       const usersCollection = mockCollections.users
-      
+
       // For users collection, exclude different fields
       const result = filterFields(mockFields, usersCollection, {
         excludeFields: ({ name, collection }) => {
@@ -171,7 +171,7 @@ describe('Advanced Filtering utilities', () => {
             return name === 'secretKey'
           }
           return false
-        }
+        },
       })
       expect(result.map(f => (f as any).name)).toContain('password')
       expect(result.map(f => (f as any).name)).toContain('_internal')
@@ -183,14 +183,14 @@ describe('Advanced Filtering utilities', () => {
   describe('operation filtering integration', () => {
     it('should respect excludeOperations configuration', () => {
       const mockCollection = mockCollections.posts
-      
+
       // Test that delete operation is excluded
       const options = {
         operations: {
-          excludeOperations: ['delete'] as CRUDOperation[]
-        }
+          excludeOperations: ['delete'] as CRUDOperation[],
+        },
       }
-      
+
       expect(shouldIncludeOperation('create', mockCollection, options)).toBe(true)
       expect(shouldIncludeOperation('read', mockCollection, options)).toBe(true)
       expect(shouldIncludeOperation('update', mockCollection, options)).toBe(true)
@@ -200,14 +200,14 @@ describe('Advanced Filtering utilities', () => {
 
     it('should respect includeOperations configuration', () => {
       const mockCollection = mockCollections.posts
-      
+
       // Test that only read and list operations are included
       const options = {
         operations: {
-          includeOperations: ['read', 'list'] as CRUDOperation[]
-        }
+          includeOperations: ['read', 'list'] as CRUDOperation[],
+        },
       }
-      
+
       expect(shouldIncludeOperation('read', mockCollection, options)).toBe(true)
       expect(shouldIncludeOperation('list', mockCollection, options)).toBe(true)
       expect(shouldIncludeOperation('create', mockCollection, options)).toBe(false)
@@ -217,7 +217,7 @@ describe('Advanced Filtering utilities', () => {
 
     it('should respect custom operationFilter', () => {
       const mockCollection = mockCollections.posts
-      
+
       // Test custom operation filter
       const options = {
         operations: {
@@ -227,10 +227,10 @@ describe('Advanced Filtering utilities', () => {
               return operation === 'read' || operation === 'list'
             }
             return true
-          }
-        }
+          },
+        },
       }
-      
+
       expect(shouldIncludeOperation('read', mockCollection, options)).toBe(true)
       expect(shouldIncludeOperation('list', mockCollection, options)).toBe(true)
       expect(shouldIncludeOperation('create', mockCollection, options)).toBe(false)
@@ -238,4 +238,4 @@ describe('Advanced Filtering utilities', () => {
       expect(shouldIncludeOperation('delete', mockCollection, options)).toBe(false)
     })
   })
-}) 
+})

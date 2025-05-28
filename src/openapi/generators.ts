@@ -17,11 +17,11 @@ import type {
 } from 'payload'
 import { entityToJSONSchema } from 'payload'
 import type { SanitizedPluginOptions } from '../types.js'
+import { filterCollections, filterFields, filterGlobals } from '../utils/filtering.js'
+import { shouldIncludeOperation } from '../utils/filtering.js'
 import { mapValuesAsync, visitObjectNodes } from '../utils/objects.js'
-import { filterCollections, filterGlobals, filterFields } from '../utils/filtering.js'
 import { type ComponentType, collectionName, componentName, globalName } from './naming.js'
 import { apiKeySecurity, generateSecuritySchemes } from './securitySchemes.js'
-import { shouldIncludeOperation } from '../utils/filtering.js'
 
 const baseQueryParams: Array<OpenAPIV3.ParameterObject & OpenAPIV3_1.ParameterObject> = [
   { in: 'query', name: 'depth', schema: { type: 'number' } },
@@ -84,16 +84,20 @@ const composeRef = (
   $ref: `#/components/${type}/${componentName(type, name, options)}`,
 })
 
-const generateSchemaObject = (config: SanitizedConfig, collection: Collection, options: SanitizedPluginOptions): JSONSchema4 => {
+const generateSchemaObject = (
+  config: SanitizedConfig,
+  collection: Collection,
+  options: SanitizedPluginOptions,
+): JSONSchema4 => {
   // Filter fields before generating schema
   const filteredFields = filterFields(collection.config.fields, collection, options)
-  
+
   // Create a modified collection config with filtered fields
   const modifiedCollectionConfig = {
     ...collection.config,
-    fields: filteredFields
+    fields: filteredFields,
   }
-  
+
   const schema = entityToJSONSchema(
     config,
     removeInterfaceNames(modifiedCollectionConfig), // the `interfaceName` option causes `entityToJSONSchema` to add a reference to a non-existing schema
@@ -131,13 +135,13 @@ const generateRequestBodySchema = (
 ): OpenAPIV3_1.RequestBodyObject => {
   // Filter fields before generating schema
   const filteredFields = filterFields(collection.config.fields, collection, options)
-  
+
   // Create a modified collection config with filtered fields
   const modifiedCollectionConfig = {
     ...collection.config,
-    fields: filteredFields
+    fields: filteredFields,
   }
-  
+
   const schema = entityToJSONSchema(
     config,
     removeInterfaceNames(modifiedCollectionConfig), // the `interfaceName` option causes `entityToJSONSchema` to add a reference to a non-existing schema
@@ -155,9 +159,12 @@ const generateRequestBodySchema = (
   }
 }
 
-const generateQueryOperationSchemas = (collection: Collection, options: SanitizedPluginOptions): Record<string, JSONSchema4> => {
+const generateQueryOperationSchemas = (
+  collection: Collection,
+  options: SanitizedPluginOptions,
+): Record<string, JSONSchema4> => {
   const { singular } = collectionName(collection)
-  
+
   // Filter fields before generating query operations
   const filteredFields = filterFields(collection.config.fields, collection, options)
 
@@ -384,7 +391,7 @@ const generateCollectionOperations = async (
   const slug = collection.config.slug
   const { singular, plural } = collectionName(collection)
   const tags = [singular]
-  
+
   // Filter fields for sort parameter
   const filteredFields = filterFields(collection.config.fields, collection, options)
 
@@ -658,7 +665,8 @@ export const generateV30Spec = async (
   req: Pick<PayloadRequest, 'payload' | 'protocol' | 'headers'>,
   options: SanitizedPluginOptions,
 ): Promise<OpenAPIV3.Document> => {
-  const { schemas, requestBodies, responses, filteredCollections, filteredGlobals } = await generateComponents(req, options)
+  const { schemas, requestBodies, responses, filteredCollections, filteredGlobals } =
+    await generateComponents(req, options)
 
   const spec = {
     openapi: '3.0.3',
@@ -718,7 +726,8 @@ export const generateV31Spec = async (
   req: Pick<PayloadRequest, 'payload' | 'protocol' | 'headers'>,
   options: SanitizedPluginOptions,
 ): Promise<OpenAPIV3_1.Document> => {
-  const { schemas, requestBodies, responses, filteredCollections, filteredGlobals } = await generateComponents(req, options)
+  const { schemas, requestBodies, responses, filteredCollections, filteredGlobals } =
+    await generateComponents(req, options)
 
   const spec = {
     openapi: '3.1.0',

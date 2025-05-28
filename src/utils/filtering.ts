@@ -1,21 +1,24 @@
-import type { Collection, SanitizedGlobalConfig, Field } from 'payload'
-import type { FilterFunction, SanitizedPluginOptions, CRUDOperation } from '../types.js'
+import type { Collection, Field, SanitizedGlobalConfig } from 'payload'
+import type { CRUDOperation, FilterFunction, SanitizedPluginOptions } from '../types.js'
 
 /**
  * Filters collections based on include/exclude options
  */
 export function filterCollections(
   collections: Record<string, Collection>,
-  options: Pick<SanitizedPluginOptions, 'includeCollections' | 'excludeCollections' | 'hideInternalCollections'>
+  options: Pick<
+    SanitizedPluginOptions,
+    'includeCollections' | 'excludeCollections' | 'hideInternalCollections'
+  >,
 ): Collection[] {
   const allCollections = Object.values(collections)
-  
+
   let filteredCollections = allCollections
 
   // Hide internal Payload collections
   if (options.hideInternalCollections) {
-    filteredCollections = filteredCollections.filter(collection =>
-      !collection.config.slug.startsWith('payload-')
+    filteredCollections = filteredCollections.filter(
+      collection => !collection.config.slug.startsWith('payload-'),
     )
   }
 
@@ -23,14 +26,14 @@ export function filterCollections(
   if (options.includeCollections) {
     if (Array.isArray(options.includeCollections)) {
       filteredCollections = filteredCollections.filter(collection =>
-        (options.includeCollections as string[]).includes(collection.config.slug)
+        (options.includeCollections as string[]).includes(collection.config.slug),
       )
     } else {
       filteredCollections = filteredCollections.filter(collection =>
         (options.includeCollections as FilterFunction<{ slug: string; config: any }>)({
           slug: collection.config.slug,
-          config: collection.config
-        })
+          config: collection.config,
+        }),
       )
     }
   }
@@ -38,15 +41,16 @@ export function filterCollections(
   // Apply exclude filter
   if (options.excludeCollections) {
     if (Array.isArray(options.excludeCollections)) {
-      filteredCollections = filteredCollections.filter(collection =>
-        !(options.excludeCollections as string[]).includes(collection.config.slug)
+      filteredCollections = filteredCollections.filter(
+        collection => !(options.excludeCollections as string[]).includes(collection.config.slug),
       )
     } else {
-      filteredCollections = filteredCollections.filter(collection =>
-        !(options.excludeCollections as FilterFunction<{ slug: string; config: any }>)({
-          slug: collection.config.slug,
-          config: collection.config
-        })
+      filteredCollections = filteredCollections.filter(
+        collection =>
+          !(options.excludeCollections as FilterFunction<{ slug: string; config: any }>)({
+            slug: collection.config.slug,
+            config: collection.config,
+          }),
       )
     }
   }
@@ -59,7 +63,7 @@ export function filterCollections(
  */
 export function filterGlobals(
   globals: SanitizedGlobalConfig[],
-  options: Pick<SanitizedPluginOptions, 'includeGlobals' | 'excludeGlobals'>
+  options: Pick<SanitizedPluginOptions, 'includeGlobals' | 'excludeGlobals'>,
 ): SanitizedGlobalConfig[] {
   let filteredGlobals = globals
 
@@ -67,13 +71,13 @@ export function filterGlobals(
   if (options.includeGlobals) {
     if (Array.isArray(options.includeGlobals)) {
       filteredGlobals = filteredGlobals.filter(global =>
-        (options.includeGlobals as string[]).includes(global.slug)
+        (options.includeGlobals as string[]).includes(global.slug),
       )
     } else {
       filteredGlobals = filteredGlobals.filter(global =>
         (options.includeGlobals as FilterFunction<{ slug: string }>)({
-          slug: global.slug
-        })
+          slug: global.slug,
+        }),
       )
     }
   }
@@ -81,14 +85,15 @@ export function filterGlobals(
   // Apply exclude filter
   if (options.excludeGlobals) {
     if (Array.isArray(options.excludeGlobals)) {
-      filteredGlobals = filteredGlobals.filter(global =>
-        !(options.excludeGlobals as string[]).includes(global.slug)
+      filteredGlobals = filteredGlobals.filter(
+        global => !(options.excludeGlobals as string[]).includes(global.slug),
       )
     } else {
-      filteredGlobals = filteredGlobals.filter(global =>
-        !(options.excludeGlobals as FilterFunction<{ slug: string }>)({
-          slug: global.slug
-        })
+      filteredGlobals = filteredGlobals.filter(
+        global =>
+          !(options.excludeGlobals as FilterFunction<{ slug: string }>)({
+            slug: global.slug,
+          }),
       )
     }
   }
@@ -102,7 +107,7 @@ export function filterGlobals(
 export function shouldIncludeOperation(
   operation: CRUDOperation,
   collection: Collection,
-  options: Pick<SanitizedPluginOptions, 'operations'>
+  options: Pick<SanitizedPluginOptions, 'operations'>,
 ): boolean {
   if (!options.operations) return true
 
@@ -112,7 +117,7 @@ export function shouldIncludeOperation(
   if (operationFilter) {
     return operationFilter(operation, {
       slug: collection.config.slug,
-      config: collection.config
+      config: collection.config,
     })
   }
 
@@ -122,7 +127,7 @@ export function shouldIncludeOperation(
   }
 
   // Apply exclude filter
-  if (excludeOperations && excludeOperations.includes(operation)) {
+  if (excludeOperations?.includes(operation)) {
     return false
   }
 
@@ -135,7 +140,7 @@ export function shouldIncludeOperation(
 export function filterFields(
   fields: Field[],
   collection: Collection,
-  options: Pick<SanitizedPluginOptions, 'excludeFields'>
+  options: Pick<SanitizedPluginOptions, 'excludeFields'>,
 ): Field[] {
   let filteredFields = fields
 
@@ -151,18 +156,24 @@ export function filterFields(
         const fieldName = (field as any).name
         const fieldType = field.type
         if (!fieldName) return true
-        
-        return !(options.excludeFields as FilterFunction<{ name: string; type: string; collection: { slug: string; config: any } }>)({
+
+        return !(
+          options.excludeFields as FilterFunction<{
+            name: string
+            type: string
+            collection: { slug: string; config: any }
+          }>
+        )({
           name: fieldName,
           type: fieldType,
           collection: {
             slug: collection.config.slug,
-            config: collection.config
-          }
+            config: collection.config,
+          },
         })
       })
     }
   }
 
   return filteredFields
-} 
+}

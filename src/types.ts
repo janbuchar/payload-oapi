@@ -33,17 +33,34 @@ export interface PluginOptions {
   // Operation-level filtering
   operations?: OperationFilter
   // Field-level filtering
-  excludeFields?: string[] | FilterFunction<{ name: string; type: string; collection: { slug: string; config: any } }>
+  excludeFields?:
+    | string[]
+    | FilterFunction<{ name: string; type: string; collection: { slug: string; config: any } }>
   // Hide internal collections
   hideInternalCollections?: boolean // Hide payload-* collections
 }
 
-export type SanitizedPluginOptions = Required<Omit<PluginOptions, 'enabled' | 'specEndpoint' | 'includeCollections' | 'excludeCollections' | 'includeGlobals' | 'excludeGlobals' | 'operations' | 'excludeFields' | 'hideInternalCollections'>> & {
+export type SanitizedPluginOptions = Required<
+  Omit<
+    PluginOptions,
+    | 'enabled'
+    | 'specEndpoint'
+    | 'includeCollections'
+    | 'excludeCollections'
+    | 'includeGlobals'
+    | 'excludeGlobals'
+    | 'operations'
+    | 'excludeFields'
+    | 'hideInternalCollections'
+  >
+> & {
   includeCollections?: string[] | FilterFunction<{ slug: string; config: any }>
   excludeCollections?: string[] | FilterFunction<{ slug: string; config: any }>
   includeGlobals?: string[] | FilterFunction<{ slug: string }>
   excludeGlobals?: string[] | FilterFunction<{ slug: string }>
   operations?: OperationFilter
-  excludeFields?: string[] | FilterFunction<{ name: string; type: string; collection: { slug: string; config: any } }>
+  excludeFields?:
+    | string[]
+    | FilterFunction<{ name: string; type: string; collection: { slug: string; config: any } }>
   hideInternalCollections?: boolean
 }
