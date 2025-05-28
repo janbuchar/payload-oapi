@@ -10,6 +10,10 @@ const openapi =
     openapiVersion = '3.0',
     metadata,
     enabled = true,
+    includeCollections,
+    excludeCollections,
+    includeGlobals,
+    excludeGlobals,
   }: PluginOptions): Plugin =>
   ({ endpoints = [], ...config }) => {
     if (!enabled) {
@@ -27,6 +31,10 @@ const openapi =
             openapiVersion,
             metadata,
             authEndpoint,
+            includeCollections,
+            excludeCollections,
+            includeGlobals,
+            excludeGlobals,
           }),
         },
         {
