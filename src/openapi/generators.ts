@@ -658,8 +658,10 @@ export const generateV31Spec = async (
     servers: [{ url: `${req.protocol}//${req.headers.get('host')}` }],
     paths: Object.assign(
       {},
-      ...Object.values(req.payload.collections).map(generateCollectionOperations),
-      ...req.payload.globals.config.map(generateGlobalOperations),
+      ...(await Promise.all(
+        Object.values(req.payload.collections).map(generateCollectionOperations),
+      )),
+      ...(await Promise.all(req.payload.globals.config.map(generateGlobalOperations))),
     ),
     components: {
       securitySchemes: generateSecuritySchemes(options.authEndpoint),
