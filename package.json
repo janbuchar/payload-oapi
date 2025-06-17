@@ -1,7 +1,7 @@
 {
   "name": "payload-oapi",
   "description": "An OpenAPI plugin for Payload CMS",
-  "version": "0.2.3",
+  "version": "0.2.4-b.0",
   "homepage:": "https://github.com/janbuchar/payload-oapi",
   "repository:": "https://github.com/janbuchar/payload-oapi",
   "main": "dist/index.js",
