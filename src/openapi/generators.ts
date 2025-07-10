@@ -90,7 +90,7 @@ const generateSchemaObject = (config: SanitizedConfig, collection: Collection): 
     'text',
     undefined,
   )
-  console.log(schema)
+  //console.log(schema)
   return {
     ...schema,
     title: collectionName(collection).singular,
