@@ -11,6 +11,7 @@ const dirname = path.dirname(fileURLToPath(import.meta.url))
 const opts: NextServerOptions = {
   dev: true,
   dir: dirname,
+  port: 3005,
 }
 
 // @ts-expect-error next types do not import
@@ -19,11 +20,11 @@ const handle = app.getRequestHandler()
 
 await app.prepare()
 
-await open('http://localhost:3000/admin')
+await open('http://localhost:3005/admin')
 
 const server = createServer((req, res) => {
   const parsedUrl = parse(req.url!, true)
   void handle(req, res, parsedUrl)
 })
 
-server.listen(3000)
+server.listen(3005)

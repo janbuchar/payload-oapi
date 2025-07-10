@@ -10,6 +10,7 @@ import { testEmailAdapter } from './helpers/testEmailAdapter.js'
 import { seed } from './seed.js'
 
 import { Categories, Pets } from './collections/Pets.js'
+import { Posts } from './collections/Posts.js'
 import { Users } from './collections/Users.js'
 import { FeaturedPet } from './globals/FeaturedPet.js'
 
@@ -28,6 +29,7 @@ export default buildConfig({
     },
   },
   collections: [
+    Posts,
     Pets,
     Categories,
     Users,
