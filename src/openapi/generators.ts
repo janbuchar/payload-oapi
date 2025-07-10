@@ -65,7 +65,7 @@ const adjustRefTargets = (
   })
 }
 
-const removeInterfaceNames = (target: SanitizedCollectionConfig) =>
+const removeInterfaceNames = (target: SanitizedCollectionConfig | SanitizedGlobalConfig) =>
   create(target, draft =>
     visitObjectNodes(draft, (subject, key) => {
       if (key === 'interfaceName') {
@@ -90,6 +90,7 @@ const generateSchemaObject = (config: SanitizedConfig, collection: Collection): 
     'text',
     undefined,
   )
+  console.log(schema)
   return {
     ...schema,
     title: collectionName(collection).singular,
@@ -494,7 +495,7 @@ const generateGlobalSchemas = (
   config: SanitizedConfig,
   global: SanitizedGlobalConfig,
 ): Record<string, JSONSchema4> => {
-  const schema = entityToJSONSchema(config, global, new Map(), 'text', undefined)
+  const schema = entityToJSONSchema(config, removeInterfaceNames(global), new Map(), 'text', undefined)
 
   return {
     [componentName('schemas', globalName(global))]: { ...schema, title: globalName(global) },
@@ -591,7 +592,7 @@ export const generateV30Spec = async (
   options: SanitizedPluginOptions,
 ): Promise<OpenAPIV3.Document> => {
   const { schemas, requestBodies, responses } = generateComponents(req)
-
+  //console.log(schemas)
   const spec = {
     openapi: '3.0.3',
     info: options.metadata,

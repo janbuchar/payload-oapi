@@ -22,7 +22,7 @@
     "noEmit": true,
     "emitDeclarationOnly": false,
     "incremental": true,
-    "moduleResolution": "node",
+    "moduleResolution": "nodenext",
     "resolveJsonModule": true,
     "isolatedModules": true
   }
