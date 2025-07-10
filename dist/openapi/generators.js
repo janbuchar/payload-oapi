@@ -47,7 +47,7 @@ const composeRef = (type, name, options) => ({
 const generateSchemaObject = (config, collection) => {
     const schema = entityToJSONSchema(config, removeInterfaceNames(collection.config), // the `interfaceName` option causes `entityToJSONSchema` to add a reference to a non-existing schema
     new Map(), 'text', undefined);
-    console.log(schema);
+    //console.log(schema)
     return {
         ...schema,
         title: collectionName(collection).singular,
