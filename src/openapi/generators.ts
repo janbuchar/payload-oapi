@@ -27,6 +27,11 @@ const baseQueryParams: Array<OpenAPIV3.ParameterObject & OpenAPIV3_1.ParameterOb
   { in: 'query', name: 'fallback-locale', schema: { type: 'string' } },
 ]
 
+const createQueryParams: Array<OpenAPIV3.ParameterObject & OpenAPIV3_1.ParameterObject> = [
+  { in: 'query', name: 'depth', schema: { type: 'number' } },
+  { in: 'query', name: 'locale', schema: { type: 'string' } },
+]
+
 async function jsonSchemaToOpenapiSchema(schema: JSONSchema4): Promise<OpenAPIV3.Document> {
   return await (_jsonSchemaToOpenapiSchema as any)(schema)
 }
@@ -418,6 +423,7 @@ const generateCollectionOperations = async (
       post: {
         summary: `Create a new ${singular}`,
         tags,
+        parameters: createQueryParams,
         requestBody: composeRef('requestBodies', singular),
         responses: {
           201: composeRef('responses', singular, { prefix: 'New' }),
