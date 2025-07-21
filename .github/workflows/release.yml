@@ -64,7 +64,7 @@ jobs:
 
       - name: Update changelog
         if: ${{ github.event.inputs.stability == 'latest' }}
-        uses: orhun/git-cliff-action@v3
+        uses: orhun/git-cliff-action@v4
         with:
           config: cliff.toml
           args: --tag "release-${{ steps.bump_version.outputs.version }}"
@@ -94,7 +94,7 @@ jobs:
           fetch-depth: 0
 
       - name: Generate release notes
-        uses: orhun/git-cliff-action@v3
+        uses: orhun/git-cliff-action@v4
         with:
           config: cliff.toml
           args: --tag "release-${{ needs.prepare_metadata.outputs.version }}" --unreleased --strip all
