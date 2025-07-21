@@ -67,7 +67,7 @@ const adjustRefTargets = (
   })
 }
 
-const removeInterfaceNames = (target: SanitizedCollectionConfig) =>
+const removeInterfaceNames = (target: SanitizedCollectionConfig | SanitizedGlobalConfig) =>
   create(target, draft =>
     visitObjectNodes(draft, (subject, key) => {
       if (key === 'interfaceName') {
@@ -105,6 +105,7 @@ const generateSchemaObject = (
     'text',
     undefined,
   )
+
   return {
     ...schema,
     title: collectionName(collection).singular,
@@ -559,7 +560,13 @@ const generateGlobalSchemas = (
   config: SanitizedConfig,
   global: SanitizedGlobalConfig,
 ): Record<string, JSONSchema4> => {
-  const schema = entityToJSONSchema(config, global, new Map(), 'text', undefined)
+  const schema = entityToJSONSchema(
+    config,
+    removeInterfaceNames(global),
+    new Map(),
+    'text',
+    undefined,
+  )
 
   return {
     [componentName('schemas', globalName(global))]: { ...schema, title: globalName(global) },

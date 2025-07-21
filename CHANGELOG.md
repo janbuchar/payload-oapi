@@ -2,11 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.3] - 2025-05-31
+
+### 🐛 Bug Fixes
+
+- Add missing Scalar plugin import to index.ts (#39)
+
 ## [0.2.2] - 2025-05-27
 
 ### 🚀 Features
 
 - Add Scalar plugin (#37)
+
+### ⚙️ Miscellaneous Tasks
+
+- *(release)* 0.2.2 [skip ci]
 
 ## [0.2.1] - 2025-05-18
 

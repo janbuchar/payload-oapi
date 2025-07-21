@@ -1,3 +1,4 @@
+import { MediaBlock } from 'blocks/MediaBlock/config.js'
 import type { GlobalConfig } from 'payload'
 
 export const FeaturedPet: GlobalConfig = {
@@ -6,5 +7,11 @@ export const FeaturedPet: GlobalConfig = {
   fields: [
     { name: 'pet', type: 'relationship', relationTo: 'pets', required: true },
     { name: 'blurb', type: 'text' },
+
+    {
+      name: 'content',
+      type: 'blocks',
+      blocks: [MediaBlock],
+    },
   ],
 }
