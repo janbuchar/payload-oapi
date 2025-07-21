@@ -90,7 +90,7 @@ const generateSchemaObject = (config: SanitizedConfig, collection: Collection): 
     'text',
     undefined,
   )
-  //console.log(schema)
+
   return {
     ...schema,
     title: collectionName(collection).singular,
@@ -495,7 +495,13 @@ const generateGlobalSchemas = (
   config: SanitizedConfig,
   global: SanitizedGlobalConfig,
 ): Record<string, JSONSchema4> => {
-  const schema = entityToJSONSchema(config, removeInterfaceNames(global), new Map(), 'text', undefined)
+  const schema = entityToJSONSchema(
+    config,
+    removeInterfaceNames(global),
+    new Map(),
+    'text',
+    undefined,
+  )
 
   return {
     [componentName('schemas', globalName(global))]: { ...schema, title: globalName(global) },

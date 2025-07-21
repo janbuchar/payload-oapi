@@ -7,11 +7,11 @@ export const FeaturedPet: GlobalConfig = {
   fields: [
     { name: 'pet', type: 'relationship', relationTo: 'pets', required: true },
     { name: 'blurb', type: 'text' },
-    
+
     {
       name: 'content',
       type: 'blocks',
       blocks: [MediaBlock],
-    }
+    },
   ],
 }
