@@ -2,11 +2,31 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.4] - 2025-07-21
+
+### 🚀 Features
+
+- Add locale and depth parameters to POST endpoints (#48)
+
+### 🐛 Bug Fixes
+
+- Empty paths property in version 3.1 (#40)
+- Handle empty string in the upperFirst utility function (#42)
+- Add removeinterfacename for global as collection (#46)
+
+### ⚙️ Miscellaneous Tasks
+
+- Update git-cliff-action (#49)
+
 ## [0.2.3] - 2025-05-31
 
 ### 🐛 Bug Fixes
 
 - Add missing Scalar plugin import to index.ts (#39)
+
+### ⚙️ Miscellaneous Tasks
+
+- *(release)* 0.2.3 [skip ci]
 
 ## [0.2.2] - 2025-05-27
 
