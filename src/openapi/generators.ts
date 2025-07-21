@@ -598,7 +598,7 @@ export const generateV30Spec = async (
   options: SanitizedPluginOptions,
 ): Promise<OpenAPIV3.Document> => {
   const { schemas, requestBodies, responses } = generateComponents(req)
-  //console.log(schemas)
+
   const spec = {
     openapi: '3.0.3',
     info: options.metadata,
