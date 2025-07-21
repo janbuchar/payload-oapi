@@ -1801,6 +1801,22 @@ exports[`openapi generators > converts empty config correctly 1`] = `
         ],
       },
       "post": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "depth",
+            "schema": {
+              "type": "number",
+            },
+          },
+          {
+            "in": "query",
+            "name": "locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "requestBody": {
           "$ref": "#/components/requestBodies/PayloadLockedDocumentRequestBody",
         },
@@ -2008,6 +2024,22 @@ exports[`openapi generators > converts empty config correctly 1`] = `
         ],
       },
       "post": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "depth",
+            "schema": {
+              "type": "number",
+            },
+          },
+          {
+            "in": "query",
+            "name": "locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "requestBody": {
           "$ref": "#/components/requestBodies/PayloadMigrationRequestBody",
         },
@@ -2213,6 +2245,22 @@ exports[`openapi generators > converts empty config correctly 1`] = `
         ],
       },
       "post": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "depth",
+            "schema": {
+              "type": "number",
+            },
+          },
+          {
+            "in": "query",
+            "name": "locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "requestBody": {
           "$ref": "#/components/requestBodies/PayloadPreferenceRequestBody",
         },
@@ -2430,6 +2478,22 @@ exports[`openapi generators > converts empty config correctly 1`] = `
         ],
       },
       "post": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "depth",
+            "schema": {
+              "type": "number",
+            },
+          },
+          {
+            "in": "query",
+            "name": "locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "requestBody": {
           "$ref": "#/components/requestBodies/UsersRequestBody",
         },
@@ -4868,6 +4932,22 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         ],
       },
       "post": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "depth",
+            "schema": {
+              "type": "number",
+            },
+          },
+          {
+            "in": "query",
+            "name": "locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "requestBody": {
           "$ref": "#/components/requestBodies/PageRequestBody",
         },
@@ -5073,6 +5153,22 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         ],
       },
       "post": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "depth",
+            "schema": {
+              "type": "number",
+            },
+          },
+          {
+            "in": "query",
+            "name": "locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "requestBody": {
           "$ref": "#/components/requestBodies/PayloadLockedDocumentRequestBody",
         },
@@ -5280,6 +5376,22 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         ],
       },
       "post": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "depth",
+            "schema": {
+              "type": "number",
+            },
+          },
+          {
+            "in": "query",
+            "name": "locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "requestBody": {
           "$ref": "#/components/requestBodies/PayloadMigrationRequestBody",
         },
@@ -5485,6 +5597,22 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         ],
       },
       "post": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "depth",
+            "schema": {
+              "type": "number",
+            },
+          },
+          {
+            "in": "query",
+            "name": "locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "requestBody": {
           "$ref": "#/components/requestBodies/PayloadPreferenceRequestBody",
         },
@@ -5702,6 +5830,22 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         ],
       },
       "post": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "depth",
+            "schema": {
+              "type": "number",
+            },
+          },
+          {
+            "in": "query",
+            "name": "locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "requestBody": {
           "$ref": "#/components/requestBodies/UsersRequestBody",
         },
@@ -8096,6 +8240,22 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         ],
       },
       "post": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "depth",
+            "schema": {
+              "type": "number",
+            },
+          },
+          {
+            "in": "query",
+            "name": "locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "requestBody": {
           "$ref": "#/components/requestBodies/EventRequestBody",
         },
@@ -8301,6 +8461,22 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         ],
       },
       "post": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "depth",
+            "schema": {
+              "type": "number",
+            },
+          },
+          {
+            "in": "query",
+            "name": "locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "requestBody": {
           "$ref": "#/components/requestBodies/PayloadLockedDocumentRequestBody",
         },
@@ -8508,6 +8684,22 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         ],
       },
       "post": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "depth",
+            "schema": {
+              "type": "number",
+            },
+          },
+          {
+            "in": "query",
+            "name": "locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "requestBody": {
           "$ref": "#/components/requestBodies/PayloadMigrationRequestBody",
         },
@@ -8713,6 +8905,22 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         ],
       },
       "post": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "depth",
+            "schema": {
+              "type": "number",
+            },
+          },
+          {
+            "in": "query",
+            "name": "locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "requestBody": {
           "$ref": "#/components/requestBodies/PayloadPreferenceRequestBody",
         },
@@ -8930,6 +9138,22 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         ],
       },
       "post": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "depth",
+            "schema": {
+              "type": "number",
+            },
+          },
+          {
+            "in": "query",
+            "name": "locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "requestBody": {
           "$ref": "#/components/requestBodies/UsersRequestBody",
         },
@@ -10888,6 +11112,22 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
         ],
       },
       "post": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "depth",
+            "schema": {
+              "type": "number",
+            },
+          },
+          {
+            "in": "query",
+            "name": "locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "requestBody": {
           "$ref": "#/components/requestBodies/PayloadLockedDocumentRequestBody",
         },
@@ -11095,6 +11335,22 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
         ],
       },
       "post": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "depth",
+            "schema": {
+              "type": "number",
+            },
+          },
+          {
+            "in": "query",
+            "name": "locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "requestBody": {
           "$ref": "#/components/requestBodies/PayloadMigrationRequestBody",
         },
@@ -11300,6 +11556,22 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
         ],
       },
       "post": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "depth",
+            "schema": {
+              "type": "number",
+            },
+          },
+          {
+            "in": "query",
+            "name": "locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "requestBody": {
           "$ref": "#/components/requestBodies/PayloadPreferenceRequestBody",
         },
@@ -11517,6 +11789,22 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
         ],
       },
       "post": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "depth",
+            "schema": {
+              "type": "number",
+            },
+          },
+          {
+            "in": "query",
+            "name": "locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "requestBody": {
           "$ref": "#/components/requestBodies/UserRequestBody",
         },
@@ -13780,6 +14068,22 @@ exports[`openapi generators > handles non-default collection 1`] = `
         ],
       },
       "post": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "depth",
+            "schema": {
+              "type": "number",
+            },
+          },
+          {
+            "in": "query",
+            "name": "locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "requestBody": {
           "$ref": "#/components/requestBodies/PayloadLockedDocumentRequestBody",
         },
@@ -13987,6 +14291,22 @@ exports[`openapi generators > handles non-default collection 1`] = `
         ],
       },
       "post": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "depth",
+            "schema": {
+              "type": "number",
+            },
+          },
+          {
+            "in": "query",
+            "name": "locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "requestBody": {
           "$ref": "#/components/requestBodies/PayloadMigrationRequestBody",
         },
@@ -14192,6 +14512,22 @@ exports[`openapi generators > handles non-default collection 1`] = `
         ],
       },
       "post": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "depth",
+            "schema": {
+              "type": "number",
+            },
+          },
+          {
+            "in": "query",
+            "name": "locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "requestBody": {
           "$ref": "#/components/requestBodies/PayloadPreferenceRequestBody",
         },
@@ -14397,6 +14733,22 @@ exports[`openapi generators > handles non-default collection 1`] = `
         ],
       },
       "post": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "depth",
+            "schema": {
+              "type": "number",
+            },
+          },
+          {
+            "in": "query",
+            "name": "locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "requestBody": {
           "$ref": "#/components/requestBodies/PostRequestBody",
         },
@@ -14614,6 +14966,22 @@ exports[`openapi generators > handles non-default collection 1`] = `
         ],
       },
       "post": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "depth",
+            "schema": {
+              "type": "number",
+            },
+          },
+          {
+            "in": "query",
+            "name": "locale",
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
         "requestBody": {
           "$ref": "#/components/requestBodies/UsersRequestBody",
         },
