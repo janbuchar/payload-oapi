@@ -17,6 +17,7 @@ import type {
 } from 'payload'
 import { entityToJSONSchema } from 'payload'
 import type { SanitizedPluginOptions } from '../types.js'
+import { isHiddenField } from '../utils/fields.js'
 import { mapValuesAsync, visitObjectNodes } from '../utils/objects.js'
 import { type ComponentType, collectionName, componentName, globalName } from './naming.js'
 import { apiKeySecurity, generateSecuritySchemes } from './securitySchemes.js'
@@ -96,6 +97,14 @@ const generateSchemaObject = (config: SanitizedConfig, collection: Collection): 
     undefined,
   )
 
+  schema.properties = Object.fromEntries(
+    Object.entries(schema.properties ?? {}).filter(([property]) => {
+      const field = collection.config.fields.find(field => (field as FieldBase).name === property)
+
+      return !isHiddenField(field)
+    }),
+  )
+
   return {
     ...schema,
     title: collectionName(collection).singular,
@@ -133,9 +142,12 @@ const generateRequestBodySchema = (
   )
 
   schema.properties = Object.fromEntries(
-    Object.entries(schema.properties ?? {}).filter(
-      ([property]) => !['id', 'createdAt', 'updatedAt'].includes(property),
-    ),
+    Object.entries(schema.properties ?? {}).filter(([property]) => {
+      const field = collection.config.fields.find(field => (field as FieldBase).name === property)
+      const isRequestBodyProperty = !['id', 'createdAt', 'updatedAt'].includes(property)
+
+      return isRequestBodyProperty && !isHiddenField(field)
+    }),
   )
   schema.required = ((schema.required ?? []) as string[]).filter(
     property => schema.properties?.[property] !== undefined,
