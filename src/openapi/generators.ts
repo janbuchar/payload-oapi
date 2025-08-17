@@ -18,6 +18,20 @@ import type {
 import { entityToJSONSchema } from 'payload'
 import type { SanitizedPluginOptions } from '../types.js'
 import { mapValuesAsync, visitObjectNodes } from '../utils/objects.js'
+import {
+  forgotPasswordRequestBodySchema,
+  forgotPasswordResponseSchema,
+  loginRequestBodySchema,
+  loginResponseSchema,
+  logoutResponseSchema,
+  meResponseSchema,
+  refreshTokenResponseSchema,
+  resetPasswordRequestBodySchema,
+  resetPasswordResponseSchema,
+  unlockRequestBodySchema,
+  unlockResponseSchema,
+  verifyUserResponseSchema,
+} from './authSchemas.js'
 import { type ComponentType, collectionName, componentName, globalName } from './naming.js'
 import { apiKeySecurity, generateSecuritySchemes } from './securitySchemes.js'
 
@@ -102,6 +116,24 @@ const generateSchemaObject = (config: SanitizedConfig, collection: Collection): 
   }
 }
 
+const generateAuthSchemaObjects = (collectionName: string) => {
+  const schemas: Record<string, JSONSchema4> = {
+    [componentName('schemas', collectionName, { suffix: 'ForgotPassword' })]:
+      forgotPasswordResponseSchema,
+    [componentName('schemas', collectionName, { suffix: 'Login' })]: loginResponseSchema,
+    [componentName('schemas', collectionName, { suffix: 'Logout' })]: logoutResponseSchema,
+    [componentName('schemas', collectionName, { suffix: 'Me' })]: meResponseSchema,
+    [componentName('schemas', collectionName, { suffix: 'RefreshToken' })]:
+      refreshTokenResponseSchema,
+    [componentName('schemas', collectionName, { suffix: 'ResetPassword' })]:
+      resetPasswordResponseSchema,
+    [componentName('schemas', collectionName, { suffix: 'Unlock' })]: unlockResponseSchema,
+    [componentName('schemas', collectionName, { suffix: 'Verify' })]: verifyUserResponseSchema,
+  }
+
+  return schemas
+}
+
 type RequestBodyType = 'post' | 'patch'
 
 const requestBodySchema = (fields: Array<Field>, schema: JSONSchema4): JSONSchema4 => ({
@@ -153,6 +185,49 @@ const generateRequestBodySchema = (
       },
     },
   }
+}
+
+const getRequestBodySchema = (
+  description: string,
+  schema: OpenAPIV3_1.SchemaObject,
+): OpenAPIV3_1.RequestBodyObject => {
+  return {
+    description,
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          additionalProperties: false,
+          ...schema,
+        },
+      },
+    },
+  }
+}
+
+const generateRequestBodyAuthSchemas = (collectionName: string) => {
+  const requestBodies: Record<string, OpenAPIV3_1.RequestBodyObject> = {
+    [componentName('requestBodies', collectionName, { suffix: 'ForgotPassword' })]:
+      getRequestBodySchema(
+        `Forgot password request for ${collectionName}`,
+        forgotPasswordRequestBodySchema,
+      ),
+    [componentName('requestBodies', collectionName, { suffix: 'Login' })]: getRequestBodySchema(
+      `Login request for ${collectionName}`,
+      loginRequestBodySchema,
+    ),
+    [componentName('requestBodies', collectionName, { suffix: 'ResetPassword' })]:
+      getRequestBodySchema(
+        `Reset password request for ${collectionName}`,
+        resetPasswordRequestBodySchema,
+      ),
+    [componentName('requestBodies', collectionName, { suffix: 'Unlock' })]: getRequestBodySchema(
+      `Unlock request for ${collectionName}`,
+      unlockRequestBodySchema,
+    ),
+  }
+
+  return requestBodies
 }
 
 const generateQueryOperationSchemas = (collection: Collection): Record<string, JSONSchema4> => {
@@ -353,6 +428,84 @@ const generateCollectionResponses = (
         },
       },
     },
+    ...generateCollectionAuthResponses(collection),
+  }
+}
+
+const generateCollectionAuthResponses = (
+  collection: Collection,
+): Record<string, OpenAPIV3_1.ResponseObject & OpenAPIV3.ResponseObject> => {
+  if (!collection.config.auth) {
+    return {}
+  }
+
+  const { singular } = collectionName(collection)
+
+  return {
+    [componentName('responses', singular, { suffix: 'ForgotPassword' })]: {
+      description: `${singular} forgot password object`,
+      content: {
+        'application/json': {
+          schema: composeRef('schemas', singular, { suffix: 'ForgotPassword' }),
+        },
+      },
+    },
+    [componentName('responses', singular, { suffix: 'Login' })]: {
+      description: `${singular} auth object`,
+      content: {
+        'application/json': {
+          schema: composeRef('schemas', singular, { suffix: 'Login' }),
+        },
+      },
+    },
+    [componentName('responses', singular, { suffix: 'Logout' })]: {
+      description: `${singular} logout response`,
+      content: {
+        'application/json': {
+          schema: composeRef('schemas', singular, { suffix: 'Logout' }),
+        },
+      },
+    },
+    [componentName('responses', singular, { suffix: 'Me' })]: {
+      description: `${singular} me response`,
+      content: {
+        'application/json': {
+          schema: composeRef('schemas', singular, { suffix: 'Me' }),
+        },
+      },
+    },
+    [componentName('responses', singular, { suffix: 'RefreshToken' })]: {
+      description: `${singular} refresh token response`,
+      content: {
+        'application/json': {
+          schema: composeRef('schemas', singular, { suffix: 'RefreshToken' }),
+        },
+      },
+    },
+    [componentName('responses', singular, { suffix: 'ResetPassword' })]: {
+      description: `${singular} reset password response`,
+      content: {
+        'application/json': {
+          schema: composeRef('schemas', singular, { suffix: 'ResetPassword' }),
+        },
+      },
+    },
+    [componentName('responses', singular, { suffix: 'Unlock' })]: {
+      description: `${singular} unlock response`,
+      content: {
+        'application/json': {
+          schema: composeRef('schemas', singular, { suffix: 'Unlock' }),
+        },
+      },
+    },
+    [componentName('responses', singular, { suffix: 'Verify' })]: {
+      description: `${singular} verify response`,
+      content: {
+        'application/json': {
+          schema: composeRef('schemas', singular, { suffix: 'Verify' }),
+        },
+      },
+    },
   }
 }
 
@@ -488,6 +641,109 @@ const generateCollectionOperations = async (
         security: (await isOpenToPublic(collection.config.access.delete)) ? [] : [apiKeySecurity],
       },
     },
+    ...(await generateCollectionAuthOperations(collection)),
+  }
+}
+
+const generateCollectionAuthOperations = async (
+  collection: Collection,
+): Promise<Record<string, OpenAPIV3.PathItemObject & OpenAPIV3_1.PathItemObject>> => {
+  if (!collection.config.auth) {
+    return {}
+  }
+
+  const { slug } = collection.config
+  const { singular, plural } = collectionName(collection)
+  const tags = [plural]
+
+  return {
+    [`/api/${slug}/forgot-password`]: {
+      post: {
+        summary: `Forgot password for ${singular}`,
+        tags,
+        requestBody: composeRef('requestBodies', singular, { suffix: 'ForgotPassword' }),
+        responses: {
+          200: composeRef('responses', singular, { suffix: 'ForgotPassword' }),
+        },
+      },
+    },
+    [`/api/${slug}/login`]: {
+      post: {
+        summary: `Log in to ${singular}`,
+        tags,
+        requestBody: composeRef('requestBodies', singular, { suffix: 'Login' }),
+        responses: {
+          200: composeRef('responses', singular, { suffix: 'Login' }),
+        },
+      },
+    },
+    [`/api/${slug}/logout`]: {
+      post: {
+        summary: `Log out of ${singular}`,
+        tags,
+        responses: {
+          200: composeRef('responses', singular, { suffix: 'Logout' }),
+        },
+      },
+    },
+    [`/api/${slug}/me`]: {
+      post: {
+        summary: `Get current ${singular}`,
+        tags,
+        responses: {
+          200: composeRef('responses', singular, { suffix: 'Me' }),
+        },
+      },
+    },
+    [`/api/${slug}/refresh-token`]: {
+      post: {
+        summary: `Refresh token for ${singular}`,
+        tags,
+        responses: {
+          200: composeRef('responses', singular, { suffix: 'RefreshToken' }),
+        },
+      },
+    },
+    [`/api/${slug}/reset-password`]: {
+      post: {
+        summary: `Reset password for ${singular}`,
+        tags,
+        requestBody: composeRef('requestBodies', singular, { suffix: 'ResetPassword' }),
+        responses: {
+          200: composeRef('responses', singular, { suffix: 'ResetPassword' }),
+        },
+      },
+    },
+    [`/api/${slug}/unlock`]: {
+      post: {
+        summary: `Unlock ${singular}`,
+        tags,
+        requestBody: composeRef('requestBodies', singular, { suffix: 'Unlock' }),
+        responses: {
+          200: composeRef('responses', singular, { suffix: 'Unlock' }),
+        },
+      },
+    },
+    [`/api/${slug}/verify/{token}`]: {
+      parameters: [
+        {
+          in: 'path',
+          name: 'token',
+          description: `Verification token for ${singular}`,
+          required: true,
+          schema: {
+            type: 'string',
+          },
+        },
+      ],
+      post: {
+        summary: `Verify ${singular}`,
+        tags,
+        responses: {
+          200: composeRef('responses', singular, { suffix: 'Verify' }),
+        },
+      },
+    },
   }
 }
 
@@ -587,6 +843,10 @@ const generateComponents = (req: Pick<PayloadRequest, 'payload'>) => {
       req.payload.config,
       collection,
     )
+
+    if (collection.config.auth) {
+      Object.assign(schemas, generateAuthSchemaObjects(singular))
+    }
   }
 
   for (const collection of Object.values(req.payload.collections)) {
@@ -608,6 +868,10 @@ const generateComponents = (req: Pick<PayloadRequest, 'payload'>) => {
     )
     requestBodies[componentName('requestBodies', singular, { suffix: 'Patch' })] =
       generateRequestBodySchema(req.payload.config, collection, 'patch')
+
+    if (collection.config.auth) {
+      Object.assign(requestBodies, generateRequestBodyAuthSchemas(singular))
+    }
   }
 
   for (const global of req.payload.globals.config) {
