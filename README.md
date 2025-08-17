@@ -13,7 +13,7 @@ Autogenerate an OpenAPI specification from your Payload CMS instance and use it 
 - [x] Preferences endpoints
 - [x] Support Payload CMS 3.x
 - [x] Support generating both OpenAPI 3.0 and 3.1
-- [ ] Custom endpoints
+- [x] Custom endpoints
 
 # Installation
 
@@ -38,6 +38,52 @@ buildConfig({
   ],
   // ...
 })
+```
+
+To include custom endpoints you need to provide a documentation under the custom openapi property of the endpoint.
+
+```typescript
+import type { CustomEndpointDocumentation } from 'payload-oapi'
+import type { CollectionConfig } from 'payload'
+
+export const Pets: CollectionConfig = {
+  slug: 'pets',
+  // ...
+  endpoints: [
+    {
+      // ...
+      custom: {
+        openapi: {
+          summary: 'Delete pets by status',
+          description: 'Delete pets by status',
+          parameters: [
+            {
+              name: 'status',
+              in: 'path',
+              required: true,
+              schema: {
+                type: 'string',
+                enum: ['available', 'pending', 'sold'],
+              },
+            },
+          ],
+          responses: {
+            200: {
+              type: 'object',
+              properties: {
+                message: {
+                  type: 'string',
+                  description: 'A message indicating the result of the operation',
+                },
+              },
+            },
+          },
+        } as CustomEndpointDocumentation<'3.1'>,
+      }
+    }
+  ]
+
+}
 ```
 
 ## 2. Add a documentation UI plugin (optional)
