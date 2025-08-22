@@ -205,31 +205,7 @@ exports[`openapi generators > converts empty config correctly 1`] = `
                 "email": {
                   "type": "string",
                 },
-                "hash": {
-                  "nullable": true,
-                  "type": "string",
-                },
-                "lockUntil": {
-                  "nullable": true,
-                  "type": "string",
-                },
-                "loginAttempts": {
-                  "nullable": true,
-                  "type": "number",
-                },
                 "password": {
-                  "nullable": true,
-                  "type": "string",
-                },
-                "resetPasswordExpiration": {
-                  "nullable": true,
-                  "type": "string",
-                },
-                "resetPasswordToken": {
-                  "nullable": true,
-                  "type": "string",
-                },
-                "salt": {
                   "nullable": true,
                   "type": "string",
                 },
@@ -275,31 +251,7 @@ exports[`openapi generators > converts empty config correctly 1`] = `
                 "email": {
                   "type": "string",
                 },
-                "hash": {
-                  "nullable": true,
-                  "type": "string",
-                },
-                "lockUntil": {
-                  "nullable": true,
-                  "type": "string",
-                },
-                "loginAttempts": {
-                  "nullable": true,
-                  "type": "number",
-                },
                 "password": {
-                  "nullable": true,
-                  "type": "string",
-                },
-                "resetPasswordExpiration": {
-                  "nullable": true,
-                  "type": "string",
-                },
-                "resetPasswordToken": {
-                  "nullable": true,
-                  "type": "string",
-                },
-                "salt": {
                   "nullable": true,
                   "type": "string",
                 },
@@ -1497,34 +1449,10 @@ exports[`openapi generators > converts empty config correctly 1`] = `
           "email": {
             "type": "string",
           },
-          "hash": {
-            "nullable": true,
-            "type": "string",
-          },
           "id": {
             "type": "string",
           },
-          "lockUntil": {
-            "nullable": true,
-            "type": "string",
-          },
-          "loginAttempts": {
-            "nullable": true,
-            "type": "number",
-          },
           "password": {
-            "nullable": true,
-            "type": "string",
-          },
-          "resetPasswordExpiration": {
-            "nullable": true,
-            "type": "string",
-          },
-          "resetPasswordToken": {
-            "nullable": true,
-            "type": "string",
-          },
-          "salt": {
             "nullable": true,
             "type": "string",
           },
@@ -3287,31 +3215,7 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
                 "email": {
                   "type": "string",
                 },
-                "hash": {
-                  "nullable": true,
-                  "type": "string",
-                },
-                "lockUntil": {
-                  "nullable": true,
-                  "type": "string",
-                },
-                "loginAttempts": {
-                  "nullable": true,
-                  "type": "number",
-                },
                 "password": {
-                  "nullable": true,
-                  "type": "string",
-                },
-                "resetPasswordExpiration": {
-                  "nullable": true,
-                  "type": "string",
-                },
-                "resetPasswordToken": {
-                  "nullable": true,
-                  "type": "string",
-                },
-                "salt": {
                   "nullable": true,
                   "type": "string",
                 },
@@ -3357,31 +3261,7 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
                 "email": {
                   "type": "string",
                 },
-                "hash": {
-                  "nullable": true,
-                  "type": "string",
-                },
-                "lockUntil": {
-                  "nullable": true,
-                  "type": "string",
-                },
-                "loginAttempts": {
-                  "nullable": true,
-                  "type": "number",
-                },
                 "password": {
-                  "nullable": true,
-                  "type": "string",
-                },
-                "resetPasswordExpiration": {
-                  "nullable": true,
-                  "type": "string",
-                },
-                "resetPasswordToken": {
-                  "nullable": true,
-                  "type": "string",
-                },
-                "salt": {
                   "nullable": true,
                   "type": "string",
                 },
@@ -4976,34 +4856,10 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
           "email": {
             "type": "string",
           },
-          "hash": {
-            "nullable": true,
-            "type": "string",
-          },
           "id": {
             "type": "string",
           },
-          "lockUntil": {
-            "nullable": true,
-            "type": "string",
-          },
-          "loginAttempts": {
-            "nullable": true,
-            "type": "number",
-          },
           "password": {
-            "nullable": true,
-            "type": "string",
-          },
-          "resetPasswordExpiration": {
-            "nullable": true,
-            "type": "string",
-          },
-          "resetPasswordToken": {
-            "nullable": true,
-            "type": "string",
-          },
-          "salt": {
             "nullable": true,
             "type": "string",
           },
@@ -6799,31 +6655,7 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
                 "email": {
                   "type": "string",
                 },
-                "hash": {
-                  "nullable": true,
-                  "type": "string",
-                },
-                "lockUntil": {
-                  "nullable": true,
-                  "type": "string",
-                },
-                "loginAttempts": {
-                  "nullable": true,
-                  "type": "number",
-                },
                 "password": {
-                  "nullable": true,
-                  "type": "string",
-                },
-                "resetPasswordExpiration": {
-                  "nullable": true,
-                  "type": "string",
-                },
-                "resetPasswordToken": {
-                  "nullable": true,
-                  "type": "string",
-                },
-                "salt": {
                   "nullable": true,
                   "type": "string",
                 },
@@ -6869,31 +6701,7 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
                 "email": {
                   "type": "string",
                 },
-                "hash": {
-                  "nullable": true,
-                  "type": "string",
-                },
-                "lockUntil": {
-                  "nullable": true,
-                  "type": "string",
-                },
-                "loginAttempts": {
-                  "nullable": true,
-                  "type": "number",
-                },
                 "password": {
-                  "nullable": true,
-                  "type": "string",
-                },
-                "resetPasswordExpiration": {
-                  "nullable": true,
-                  "type": "string",
-                },
-                "resetPasswordToken": {
-                  "nullable": true,
-                  "type": "string",
-                },
-                "salt": {
                   "nullable": true,
                   "type": "string",
                 },
@@ -8541,34 +8349,10 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
           "email": {
             "type": "string",
           },
-          "hash": {
-            "nullable": true,
-            "type": "string",
-          },
           "id": {
             "type": "string",
           },
-          "lockUntil": {
-            "nullable": true,
-            "type": "string",
-          },
-          "loginAttempts": {
-            "nullable": true,
-            "type": "number",
-          },
           "password": {
-            "nullable": true,
-            "type": "string",
-          },
-          "resetPasswordExpiration": {
-            "nullable": true,
-            "type": "string",
-          },
-          "resetPasswordToken": {
-            "nullable": true,
-            "type": "string",
-          },
-          "salt": {
             "nullable": true,
             "type": "string",
           },
@@ -10322,27 +10106,7 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
                 "email": {
                   "type": "string",
                 },
-                "hash": {
-                  "nullable": true,
-                  "type": "string",
-                },
-                "lockUntil": {
-                  "nullable": true,
-                  "type": "string",
-                },
-                "loginAttempts": {
-                  "nullable": true,
-                  "type": "number",
-                },
                 "password": {
-                  "nullable": true,
-                  "type": "string",
-                },
-                "resetPasswordExpiration": {
-                  "nullable": true,
-                  "type": "string",
-                },
-                "resetPasswordToken": {
                   "nullable": true,
                   "type": "string",
                 },
@@ -10364,10 +10128,6 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
                   },
                   "nullable": true,
                   "type": "array",
-                },
-                "salt": {
-                  "nullable": true,
-                  "type": "string",
                 },
                 "sessions": {
                   "items": {
@@ -10411,27 +10171,7 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
                 "email": {
                   "type": "string",
                 },
-                "hash": {
-                  "nullable": true,
-                  "type": "string",
-                },
-                "lockUntil": {
-                  "nullable": true,
-                  "type": "string",
-                },
-                "loginAttempts": {
-                  "nullable": true,
-                  "type": "number",
-                },
                 "password": {
-                  "nullable": true,
-                  "type": "string",
-                },
-                "resetPasswordExpiration": {
-                  "nullable": true,
-                  "type": "string",
-                },
-                "resetPasswordToken": {
                   "nullable": true,
                   "type": "string",
                 },
@@ -10453,10 +10193,6 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
                   },
                   "nullable": true,
                   "type": "array",
-                },
-                "salt": {
-                  "nullable": true,
-                  "type": "string",
                 },
                 "sessions": {
                   "items": {
@@ -11652,30 +11388,10 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
           "email": {
             "type": "string",
           },
-          "hash": {
-            "nullable": true,
-            "type": "string",
-          },
           "id": {
             "type": "string",
           },
-          "lockUntil": {
-            "nullable": true,
-            "type": "string",
-          },
-          "loginAttempts": {
-            "nullable": true,
-            "type": "number",
-          },
           "password": {
-            "nullable": true,
-            "type": "string",
-          },
-          "resetPasswordExpiration": {
-            "nullable": true,
-            "type": "string",
-          },
-          "resetPasswordToken": {
             "nullable": true,
             "type": "string",
           },
@@ -11697,10 +11413,6 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
             },
             "nullable": true,
             "type": "array",
-          },
-          "salt": {
-            "nullable": true,
-            "type": "string",
           },
           "sessions": {
             "items": {
@@ -13261,31 +12973,7 @@ exports[`openapi generators > handles non-default collection 1`] = `
                 "email": {
                   "type": "string",
                 },
-                "hash": {
-                  "nullable": true,
-                  "type": "string",
-                },
-                "lockUntil": {
-                  "nullable": true,
-                  "type": "string",
-                },
-                "loginAttempts": {
-                  "nullable": true,
-                  "type": "number",
-                },
                 "password": {
-                  "nullable": true,
-                  "type": "string",
-                },
-                "resetPasswordExpiration": {
-                  "nullable": true,
-                  "type": "string",
-                },
-                "resetPasswordToken": {
-                  "nullable": true,
-                  "type": "string",
-                },
-                "salt": {
                   "nullable": true,
                   "type": "string",
                 },
@@ -13331,31 +13019,7 @@ exports[`openapi generators > handles non-default collection 1`] = `
                 "email": {
                   "type": "string",
                 },
-                "hash": {
-                  "nullable": true,
-                  "type": "string",
-                },
-                "lockUntil": {
-                  "nullable": true,
-                  "type": "string",
-                },
-                "loginAttempts": {
-                  "nullable": true,
-                  "type": "number",
-                },
                 "password": {
-                  "nullable": true,
-                  "type": "string",
-                },
-                "resetPasswordExpiration": {
-                  "nullable": true,
-                  "type": "string",
-                },
-                "resetPasswordToken": {
-                  "nullable": true,
-                  "type": "string",
-                },
-                "salt": {
                   "nullable": true,
                   "type": "string",
                 },
@@ -14873,34 +14537,10 @@ exports[`openapi generators > handles non-default collection 1`] = `
           "email": {
             "type": "string",
           },
-          "hash": {
-            "nullable": true,
-            "type": "string",
-          },
           "id": {
             "type": "string",
           },
-          "lockUntil": {
-            "nullable": true,
-            "type": "string",
-          },
-          "loginAttempts": {
-            "nullable": true,
-            "type": "number",
-          },
           "password": {
-            "nullable": true,
-            "type": "string",
-          },
-          "resetPasswordExpiration": {
-            "nullable": true,
-            "type": "string",
-          },
-          "resetPasswordToken": {
-            "nullable": true,
-            "type": "string",
-          },
-          "salt": {
             "nullable": true,
             "type": "string",
           },
