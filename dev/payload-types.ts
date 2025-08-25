@@ -54,18 +54,32 @@ export type SupportedTimezones =
   | 'Asia/Singapore'
   | 'Asia/Tokyo'
   | 'Asia/Seoul'
+  | 'Australia/Brisbane'
   | 'Australia/Sydney'
   | 'Pacific/Guam'
   | 'Pacific/Noumea'
   | 'Pacific/Auckland'
   | 'Pacific/Fiji'
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "roles".
+ */
+export type Roles =
+  | {
+      name?: string | null
+      id?: string | null
+    }[]
+  | null
 
 export interface Config {
   auth: {
     users: UserAuthOperations
   }
-  blocks: {}
+  blocks: {
+    ReferenceBlock: ReferenceBlock
+  }
   collections: {
+    posts: Post
     pets: Pet
     petCategories: PetCategory
     users: User
@@ -76,6 +90,7 @@ export interface Config {
   }
   collectionsJoins: {}
   collectionsSelect: {
+    posts: PostsSelect<false> | PostsSelect<true>
     pets: PetsSelect<false> | PetsSelect<true>
     petCategories: PetCategoriesSelect<false> | PetCategoriesSelect<true>
     users: UsersSelect<false> | UsersSelect<true>
@@ -124,44 +139,35 @@ export interface UserAuthOperations {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "pets".
+ * via the `definition` "ReferenceBlock".
  */
-export interface Pet {
+export interface ReferenceBlock {
+  title: string
+  id?: string | null
+  blockName?: string | null
+  blockType: 'ReferenceBlock'
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "posts".
+ */
+export interface Post {
   id: string
-  name: string
-  category?: (string | null) | PetCategory
-  status: 'available' | 'pending' | 'sold'
+  title: string
+  content?: MediaBlock[] | null
+  contentRef?: ReferenceBlock[] | null
   updatedAt: string
   createdAt: string
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "petCategories".
+ * via the `definition` "MediaBlock".
  */
-export interface PetCategory {
-  id: string
-  name?: string | null
-  updatedAt: string
-  createdAt: string
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users".
- */
-export interface User {
-  id: string
-  firstName?: string | null
-  lastName?: string | null
-  updatedAt: string
-  createdAt: string
-  email: string
-  resetPasswordToken?: string | null
-  resetPasswordExpiration?: string | null
-  salt?: string | null
-  hash?: string | null
-  loginAttempts?: number | null
-  lockUntil?: string | null
-  password?: string | null
+export interface MediaBlock {
+  media: string | Media
+  id?: string | null
+  blockName?: string | null
+  blockType: 'mediaBlock'
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -183,11 +189,66 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pets".
+ */
+export interface Pet {
+  id: string
+  name: string
+  category?: (string | null) | PetCategory
+  status: 'available' | 'pending' | 'sold'
+  lastUpdateAt?: string | null
+  lastUpdateAt_tz?: SupportedTimezones
+  updatedAt: string
+  createdAt: string
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "petCategories".
+ */
+export interface PetCategory {
+  id: string
+  name?: string | null
+  updatedAt: string
+  createdAt: string
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "users".
+ */
+export interface User {
+  id: string
+  firstName?: string | null
+  lastName?: string | null
+  roles?: Roles
+  updatedAt: string
+  createdAt: string
+  email: string
+  resetPasswordToken?: string | null
+  resetPasswordExpiration?: string | null
+  salt?: string | null
+  hash?: string | null
+  loginAttempts?: number | null
+  lockUntil?: string | null
+  sessions?:
+    | {
+        id: string
+        createdAt?: string | null
+        expiresAt: string
+      }[]
+    | null
+  password?: string | null
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
   id: string
   document?:
+    | ({
+        relationTo: 'posts'
+        value: string | Post
+      } | null)
     | ({
         relationTo: 'pets'
         value: string | Pet
@@ -248,12 +309,38 @@ export interface PayloadMigration {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "posts_select".
+ */
+export interface PostsSelect<T extends boolean = true> {
+  title?: T
+  content?:
+    | T
+    | {
+        mediaBlock?: T | MediaBlockSelect<T>
+      }
+  contentRef?: T | {}
+  updatedAt?: T
+  createdAt?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MediaBlock_select".
+ */
+export interface MediaBlockSelect<T extends boolean = true> {
+  media?: T
+  id?: T
+  blockName?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "pets_select".
  */
 export interface PetsSelect<T extends boolean = true> {
   name?: T
   category?: T
   status?: T
+  lastUpdateAt?: T
+  lastUpdateAt_tz?: T
   updatedAt?: T
   createdAt?: T
 }
@@ -273,6 +360,7 @@ export interface PetCategoriesSelect<T extends boolean = true> {
 export interface UsersSelect<T extends boolean = true> {
   firstName?: T
   lastName?: T
+  roles?: T | RolesSelect<T>
   updatedAt?: T
   createdAt?: T
   email?: T
@@ -282,6 +370,21 @@ export interface UsersSelect<T extends boolean = true> {
   hash?: T
   loginAttempts?: T
   lockUntil?: T
+  sessions?:
+    | T
+    | {
+        id?: T
+        createdAt?: T
+        expiresAt?: T
+      }
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "roles_select".
+ */
+export interface RolesSelect<T extends boolean = true> {
+  name?: T
+  id?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -340,6 +443,7 @@ export interface FeaturedPet {
   id: string
   pet: string | Pet
   blurb?: string | null
+  content?: MediaBlock[] | null
   updatedAt?: string | null
   createdAt?: string | null
 }
@@ -350,6 +454,11 @@ export interface FeaturedPet {
 export interface FeaturedPetSelect<T extends boolean = true> {
   pet?: T
   blurb?: T
+  content?:
+    | T
+    | {
+        mediaBlock?: T | MediaBlockSelect<T>
+      }
   updatedAt?: T
   createdAt?: T
   globalType?: T

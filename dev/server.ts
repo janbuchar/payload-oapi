@@ -1,9 +1,8 @@
-import type { NextServerOptions } from 'next/dist/server/next.js'
-
 import { createServer } from 'node:http'
 import path from 'node:path'
 import { fileURLToPath, parse } from 'node:url'
 import next from 'next'
+import type { NextServerOptions } from 'next/dist/server/next.js'
 import open from 'open'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))

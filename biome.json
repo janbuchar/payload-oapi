@@ -1,9 +1,9 @@
 {
   "files": {
-    "ignore": ["dev/.next", "importMap.js", "dist"]
+    "includes": ["**", "!**/dev/.next", "!**/importMap.js", "!**/dist"]
   },
   "linter": {
-    "ignore": ["dev/payload-types.ts"],
+    "includes": ["**", "!**/dev/payload-types.ts"],
     "rules": {
       "complexity": {
         "useLiteralKeys": "off"

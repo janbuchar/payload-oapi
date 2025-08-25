@@ -1,18 +1,17 @@
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { openapi, rapidoc, redoc, swaggerUI } from '@payload-oapi'
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { buildConfig } from 'payload'
 import sharp from 'sharp'
-
-import { testEmailAdapter } from './helpers/testEmailAdapter.js'
-import { seed } from './seed.js'
-
+import { openapi, rapidoc, redoc, scalar, swaggerUI } from '../src/index.js'
+import { ReferenceBlock } from './blocks/ReferenceBlock/config.js'
 import { Categories, Pets } from './collections/Pets.js'
 import { Posts } from './collections/Posts.js'
 import { Users } from './collections/Users.js'
 import { FeaturedPet } from './globals/FeaturedPet.js'
+import { testEmailAdapter } from './helpers/testEmailAdapter.js'
+import { seed } from './seed.js'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -28,6 +27,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
+  blocks: [ReferenceBlock],
   collections: [
     Posts,
     Pets,
@@ -51,10 +51,14 @@ export default buildConfig({
     await seed(payload)
   },
   plugins: [
-    openapi({ openapiVersion: '3.0', metadata: { title: 'Dev API', version: '0.0.1' } }),
+    openapi({
+      openapiVersion: '3.0',
+      metadata: { title: 'Dev API', version: '0.0.1' },
+    }),
     swaggerUI({ docsUrl: '/swagger-ui' }),
     redoc({ docsUrl: '/redoc' }),
     rapidoc({ docsUrl: '/rapidoc' }),
+    scalar({ docsUrl: '/scalar' }),
   ],
   secret: process.env.PAYLOAD_SECRET || 'test-secret_key',
   sharp,

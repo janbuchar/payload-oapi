@@ -2,7 +2,7 @@ import { mongooseAdapter } from '@payloadcms/db-mongodb'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { MongoMemoryServer } from 'mongodb-memory-server'
 import mongoose from 'mongoose'
-import { BasePayload, type CollectionConfig, type Config, type Payload, buildConfig } from 'payload'
+import { BasePayload, buildConfig, type CollectionConfig, type Config, type Payload } from 'payload'
 import { afterEach, beforeAll, beforeEach, describe, expect, test } from 'vitest'
 import { generateV30Spec } from '../src/openapi/generators'
 
@@ -50,7 +50,11 @@ describe('openapi generators', () => {
     const payload = await buildPayload({})
 
     const spec = await generateV30Spec(
-      { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
+      {
+        protocol: 'https',
+        headers: new Headers({ host: 'localhost' }),
+        payload,
+      },
       {
         openapiVersion: '3.0',
         authEndpoint: '/api/auth',
@@ -80,7 +84,11 @@ describe('openapi generators', () => {
     })
 
     const spec = await generateV30Spec(
-      { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
+      {
+        protocol: 'https',
+        headers: new Headers({ host: 'localhost' }),
+        payload,
+      },
       {
         openapiVersion: '3.0',
         authEndpoint: '/api/auth',
@@ -129,7 +137,11 @@ describe('openapi generators', () => {
     })
 
     const spec = await generateV30Spec(
-      { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
+      {
+        protocol: 'https',
+        headers: new Headers({ host: 'localhost' }),
+        payload,
+      },
       {
         openapiVersion: '3.0',
         authEndpoint: '/api/auth',
@@ -162,7 +174,11 @@ describe('openapi generators', () => {
     })
 
     const spec = await generateV30Spec(
-      { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
+      {
+        protocol: 'https',
+        headers: new Headers({ host: 'localhost' }),
+        payload,
+      },
       {
         openapiVersion: '3.0',
         authEndpoint: '/api/auth',
@@ -189,7 +205,11 @@ describe('openapi generators', () => {
     })
 
     const spec = await generateV30Spec(
-      { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
+      {
+        protocol: 'https',
+        headers: new Headers({ host: 'localhost' }),
+        payload,
+      },
       {
         openapiVersion: '3.0',
         authEndpoint: '/api/auth',

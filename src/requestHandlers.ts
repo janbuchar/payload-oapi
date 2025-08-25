@@ -1,7 +1,6 @@
 import type { PayloadRequest } from 'payload'
-import type { SanitizedPluginOptions } from './types.js'
-
 import { generateV30Spec, generateV31Spec } from './openapi/generators.js'
+import type { SanitizedPluginOptions } from './types.js'
 
 export const createOpenAPIRequestHandler =
   (options: SanitizedPluginOptions) =>
@@ -43,8 +42,6 @@ export const createOAuthPasswordFlowHandler =
       access_token: response.token,
       token_type: 'JWT',
       expires_in:
-        response.exp !== undefined
-          ? response.exp - Math.floor(new Date().valueOf() / 1000)
-          : undefined,
+        response.exp !== undefined ? response.exp - Math.floor(Date.now() / 1000) : undefined,
     })
   }
