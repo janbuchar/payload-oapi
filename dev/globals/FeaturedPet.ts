@@ -1,5 +1,5 @@
-import { MediaBlock } from 'blocks/MediaBlock/config.js'
 import type { GlobalConfig } from 'payload'
+import { MediaBlock } from '../blocks/MediaBlock/config.js'
 
 export const FeaturedPet: GlobalConfig = {
   slug: 'featuredPet',
