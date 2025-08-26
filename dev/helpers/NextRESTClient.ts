@@ -1,6 +1,3 @@
-import type { JoinQuery, PopulateType, SanitizedConfig, SelectType, Where } from 'payload'
-import type { ParsedQs } from 'qs-esm'
-
 import {
   REST_DELETE as createDELETE,
   REST_GET as createGET,
@@ -9,6 +6,8 @@ import {
   REST_POST as createPOST,
   REST_PUT as createPUT,
 } from '@payloadcms/next/routes'
+import type { JoinQuery, PopulateType, SanitizedConfig, SelectType, Where } from 'payload'
+import type { ParsedQs } from 'qs-esm'
 import * as qs from 'qs-esm'
 
 import { devUser } from './credentials.js'

@@ -1,7 +1,6 @@
 import type { Plugin } from 'payload'
-import type { PluginOptions } from './types.js'
-
 import { createOAuthPasswordFlowHandler, createOpenAPIRequestHandler } from './requestHandlers.js'
+import type { PluginOptions } from './types.js'
 
 const openapi =
   ({
