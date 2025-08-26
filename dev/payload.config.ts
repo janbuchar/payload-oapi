@@ -9,6 +9,7 @@ import sharp from 'sharp'
 import { testEmailAdapter } from './helpers/testEmailAdapter.js'
 import { seed } from './seed.js'
 
+import { ReferenceBlock } from './blocks/ReferenceBlock/config.js'
 import { Categories, Pets } from './collections/Pets.js'
 import { Posts } from './collections/Posts.js'
 import { Users } from './collections/Users.js'
@@ -28,6 +29,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
+  blocks: [ReferenceBlock],
   collections: [
     Posts,
     Pets,
