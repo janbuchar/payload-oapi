@@ -618,11 +618,11 @@ const generateComponents = (req: Pick<PayloadRequest, 'payload'>) => {
     Object.assign(schemas, generateGlobalSchemas(req.payload.config, global))
   }
 
- if (req.payload.blocks) {
-   for (const block of Object.values(req.payload.blocks)) {
-     Object.assign(schemas, generateBlockSchemas(req.payload.config, block))
-   }
- }
+  if (req.payload.blocks) {
+    for (const block of Object.values(req.payload.blocks)) {
+      Object.assign(schemas, generateBlockSchemas(req.payload.config, block))
+    }
+  }
 
   const requestBodies: Record<string, OpenAPIV3_1.RequestBodyObject> = {}
 
