@@ -43,7 +43,7 @@ const redoc =
                   </style>
                 </head>
                 <body>
-                  <redoc spec-url="${req.protocol}//${req.headers.get('host')}/api${specEndpoint}"></redoc>
+                  <redoc spec-url="${req.protocol}//${req.headers.get('host')}${specEndpoint}"></redoc>
                   <script src="https://cdn.jsdelivr.net/npm/redoc@2.4.0/bundles/redoc.standalone.js"></script>
                 </body>
               </html>`,

@@ -42,7 +42,7 @@ const swaggerUI =
               <script>
                 window.onload = () => {
                   window.ui = SwaggerUIBundle({
-                    url: '${req.protocol}//${req.headers.get('host')}/api${specEndpoint}',
+                    url: '${req.protocol}//${req.headers.get('host')}${specEndpoint}',
                     dom_id: '#swagger-ui',
                   });
                 };
