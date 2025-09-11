@@ -79,6 +79,9 @@ jobs:
         id: commit
         uses: EndBug/add-and-commit@v9
         with:
+          add:
+            - package.json
+            - CHANGELOG.md
           author_name: Jan Buchar
           author_email: ci@bucharjan.cz
           message: "chore(release): ${{ steps.bump_version.outputs.version }} [skip ci]"
