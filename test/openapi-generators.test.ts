@@ -2,7 +2,7 @@ import { mongooseAdapter } from '@payloadcms/db-mongodb'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { MongoMemoryServer } from 'mongodb-memory-server'
 import mongoose from 'mongoose'
-import { BasePayload, type CollectionConfig, type Config, type Payload, buildConfig } from 'payload'
+import { BasePayload, buildConfig, type CollectionConfig, type Config, type Payload } from 'payload'
 import { afterEach, beforeAll, beforeEach, describe, expect, test } from 'vitest'
 import { generateV30Spec } from '../src/openapi/generators'
 
