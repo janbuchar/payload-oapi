@@ -4,6 +4,33 @@ exports[`openapi generators > converts empty config correctly 1`] = `
 {
   "components": {
     "requestBodies": {
+      "PayloadLockedDocumentPatchRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "document": {
+                  "description": "ID of the users",
+                  "type": "string",
+                },
+                "globalSlug": {
+                  "nullable": true,
+                  "type": "string",
+                },
+                "user": {
+                  "description": "ID of the users",
+                  "type": "string",
+                },
+              },
+              "required": [],
+              "title": "PayloadLockedDocument",
+              "type": "object",
+            },
+          },
+        },
+        "description": "Payload Locked Document",
+      },
       "PayloadLockedDocumentRequestBody": {
         "content": {
           "application/json": {
@@ -24,10 +51,7 @@ exports[`openapi generators > converts empty config correctly 1`] = `
                 },
               },
               "required": [
-                "id",
                 "user",
-                "updatedAt",
-                "createdAt",
               ],
               "title": "PayloadLockedDocument",
               "type": "object",
@@ -35,6 +59,29 @@ exports[`openapi generators > converts empty config correctly 1`] = `
           },
         },
         "description": "Payload Locked Document",
+      },
+      "PayloadMigrationPatchRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "batch": {
+                  "nullable": true,
+                  "type": "number",
+                },
+                "name": {
+                  "nullable": true,
+                  "type": "string",
+                },
+              },
+              "required": [],
+              "title": "PayloadMigration",
+              "type": "object",
+            },
+          },
+        },
+        "description": "Payload Migration",
       },
       "PayloadMigrationRequestBody": {
         "content": {
@@ -51,17 +98,57 @@ exports[`openapi generators > converts empty config correctly 1`] = `
                   "type": "string",
                 },
               },
-              "required": [
-                "id",
-                "updatedAt",
-                "createdAt",
-              ],
+              "required": [],
               "title": "PayloadMigration",
               "type": "object",
             },
           },
         },
         "description": "Payload Migration",
+      },
+      "PayloadPreferencePatchRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "key": {
+                  "nullable": true,
+                  "type": "string",
+                },
+                "user": {
+                  "description": "ID of the users",
+                  "type": "string",
+                },
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                    },
+                    {
+                      "items": {},
+                      "type": "array",
+                    },
+                    {
+                      "type": "string",
+                    },
+                    {
+                      "type": "number",
+                    },
+                    {
+                      "type": "boolean",
+                    },
+                  ],
+                  "nullable": true,
+                },
+              },
+              "required": [],
+              "title": "PayloadPreference",
+              "type": "object",
+            },
+          },
+        },
+        "description": "Payload Preference",
       },
       "PayloadPreferenceRequestBody": {
         "content": {
@@ -100,10 +187,7 @@ exports[`openapi generators > converts empty config correctly 1`] = `
                 },
               },
               "required": [
-                "id",
                 "user",
-                "updatedAt",
-                "createdAt",
               ],
               "title": "PayloadPreference",
               "type": "object",
@@ -111,6 +195,52 @@ exports[`openapi generators > converts empty config correctly 1`] = `
           },
         },
         "description": "Payload Preference",
+      },
+      "UsersPatchRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "email": {
+                  "type": "string",
+                },
+                "hash": {
+                  "nullable": true,
+                  "type": "string",
+                },
+                "lockUntil": {
+                  "nullable": true,
+                  "type": "string",
+                },
+                "loginAttempts": {
+                  "nullable": true,
+                  "type": "number",
+                },
+                "password": {
+                  "nullable": true,
+                  "type": "string",
+                },
+                "resetPasswordExpiration": {
+                  "nullable": true,
+                  "type": "string",
+                },
+                "resetPasswordToken": {
+                  "nullable": true,
+                  "type": "string",
+                },
+                "salt": {
+                  "nullable": true,
+                  "type": "string",
+                },
+              },
+              "required": [],
+              "title": "User",
+              "type": "object",
+            },
+          },
+        },
+        "description": "users",
       },
       "UsersRequestBody": {
         "content": {
@@ -151,9 +281,6 @@ exports[`openapi generators > converts empty config correctly 1`] = `
                 },
               },
               "required": [
-                "id",
-                "updatedAt",
-                "createdAt",
                 "email",
               ],
               "title": "User",
@@ -1708,6 +1835,7 @@ exports[`openapi generators > converts empty config correctly 1`] = `
   "paths": {
     "/api/payload-locked-documents": {
       "get": {
+        "operationId": "listPayloadLockedDocuments",
         "parameters": [
           {
             "in": "query",
@@ -1801,6 +1929,7 @@ exports[`openapi generators > converts empty config correctly 1`] = `
         ],
       },
       "post": {
+        "operationId": "createPayloadLockedDocument",
         "parameters": [
           {
             "in": "query",
@@ -1838,6 +1967,7 @@ exports[`openapi generators > converts empty config correctly 1`] = `
     },
     "/api/payload-locked-documents/{id}": {
       "delete": {
+        "operationId": "deletePayloadLockedDocument",
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadLockedDocumentResponse",
@@ -1857,6 +1987,7 @@ exports[`openapi generators > converts empty config correctly 1`] = `
         ],
       },
       "get": {
+        "operationId": "findPayloadLockedDocumentById",
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadLockedDocumentResponse",
@@ -1908,6 +2039,10 @@ exports[`openapi generators > converts empty config correctly 1`] = `
         },
       ],
       "patch": {
+        "operationId": "updatePayloadLockedDocument",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/PayloadLockedDocumentPatchRequestBody",
+        },
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadLockedDocumentResponse",
@@ -1929,6 +2064,7 @@ exports[`openapi generators > converts empty config correctly 1`] = `
     },
     "/api/payload-migrations": {
       "get": {
+        "operationId": "listPayloadMigrations",
         "parameters": [
           {
             "in": "query",
@@ -2024,6 +2160,7 @@ exports[`openapi generators > converts empty config correctly 1`] = `
         ],
       },
       "post": {
+        "operationId": "createPayloadMigration",
         "parameters": [
           {
             "in": "query",
@@ -2061,6 +2198,7 @@ exports[`openapi generators > converts empty config correctly 1`] = `
     },
     "/api/payload-migrations/{id}": {
       "delete": {
+        "operationId": "deletePayloadMigration",
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadMigrationResponse",
@@ -2080,6 +2218,7 @@ exports[`openapi generators > converts empty config correctly 1`] = `
         ],
       },
       "get": {
+        "operationId": "findPayloadMigrationById",
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadMigrationResponse",
@@ -2131,6 +2270,10 @@ exports[`openapi generators > converts empty config correctly 1`] = `
         },
       ],
       "patch": {
+        "operationId": "updatePayloadMigration",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/PayloadMigrationPatchRequestBody",
+        },
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadMigrationResponse",
@@ -2152,6 +2295,7 @@ exports[`openapi generators > converts empty config correctly 1`] = `
     },
     "/api/payload-preferences": {
       "get": {
+        "operationId": "listPayloadPreferences",
         "parameters": [
           {
             "in": "query",
@@ -2245,6 +2389,7 @@ exports[`openapi generators > converts empty config correctly 1`] = `
         ],
       },
       "post": {
+        "operationId": "createPayloadPreference",
         "parameters": [
           {
             "in": "query",
@@ -2282,6 +2427,7 @@ exports[`openapi generators > converts empty config correctly 1`] = `
     },
     "/api/payload-preferences/{id}": {
       "delete": {
+        "operationId": "deletePayloadPreference",
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadPreferenceResponse",
@@ -2301,6 +2447,7 @@ exports[`openapi generators > converts empty config correctly 1`] = `
         ],
       },
       "get": {
+        "operationId": "findPayloadPreferenceById",
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadPreferenceResponse",
@@ -2352,6 +2499,10 @@ exports[`openapi generators > converts empty config correctly 1`] = `
         },
       ],
       "patch": {
+        "operationId": "updatePayloadPreference",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/PayloadPreferencePatchRequestBody",
+        },
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadPreferenceResponse",
@@ -2373,6 +2524,7 @@ exports[`openapi generators > converts empty config correctly 1`] = `
     },
     "/api/users": {
       "get": {
+        "operationId": "listUsers",
         "parameters": [
           {
             "in": "query",
@@ -2478,6 +2630,7 @@ exports[`openapi generators > converts empty config correctly 1`] = `
         ],
       },
       "post": {
+        "operationId": "createUsers",
         "parameters": [
           {
             "in": "query",
@@ -2515,6 +2668,7 @@ exports[`openapi generators > converts empty config correctly 1`] = `
     },
     "/api/users/{id}": {
       "delete": {
+        "operationId": "deleteUsers",
         "responses": {
           "200": {
             "$ref": "#/components/responses/UsersResponse",
@@ -2534,6 +2688,7 @@ exports[`openapi generators > converts empty config correctly 1`] = `
         ],
       },
       "get": {
+        "operationId": "findUsersById",
         "responses": {
           "200": {
             "$ref": "#/components/responses/UsersResponse",
@@ -2585,6 +2740,10 @@ exports[`openapi generators > converts empty config correctly 1`] = `
         },
       ],
       "patch": {
+        "operationId": "updateUsers",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersPatchRequestBody",
+        },
         "responses": {
           "200": {
             "$ref": "#/components/responses/UsersResponse",
@@ -2617,6 +2776,125 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
 {
   "components": {
     "requestBodies": {
+      "PagePatchRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "content": {
+                  "items": {
+                    "oneOf": [
+                      {
+                        "additionalProperties": false,
+                        "properties": {
+                          "blockName": {
+                            "nullable": true,
+                            "type": "string",
+                          },
+                          "blockType": {
+                            "enum": [
+                              "pageContent",
+                            ],
+                          },
+                          "id": {
+                            "nullable": true,
+                            "type": "string",
+                          },
+                          "richText": {
+                            "nullable": true,
+                            "properties": {
+                              "root": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "children": {
+                                    "items": {
+                                      "additionalProperties": true,
+                                      "properties": {
+                                        "type": {
+                                          "type": "string",
+                                        },
+                                        "version": {
+                                          "type": "integer",
+                                        },
+                                      },
+                                      "required": [
+                                        "type",
+                                        "version",
+                                      ],
+                                      "type": "object",
+                                    },
+                                    "type": "array",
+                                  },
+                                  "direction": {
+                                    "oneOf": [
+                                      {
+                                        "enum": [
+                                          "ltr",
+                                          "rtl",
+                                        ],
+                                        "nullable": true,
+                                      },
+                                    ],
+                                  },
+                                  "format": {
+                                    "enum": [
+                                      "left",
+                                      "start",
+                                      "center",
+                                      "right",
+                                      "end",
+                                      "justify",
+                                      "",
+                                    ],
+                                    "type": "string",
+                                  },
+                                  "indent": {
+                                    "type": "integer",
+                                  },
+                                  "type": {
+                                    "type": "string",
+                                  },
+                                  "version": {
+                                    "type": "integer",
+                                  },
+                                },
+                                "required": [
+                                  "children",
+                                  "direction",
+                                  "format",
+                                  "indent",
+                                  "type",
+                                  "version",
+                                ],
+                                "type": "object",
+                              },
+                            },
+                            "required": [
+                              "root",
+                            ],
+                            "type": "object",
+                          },
+                        },
+                        "required": [
+                          "blockType",
+                        ],
+                        "type": "object",
+                      },
+                    ],
+                  },
+                  "nullable": true,
+                  "type": "array",
+                },
+              },
+              "required": [],
+              "title": "Page",
+              "type": "object",
+            },
+          },
+        },
+        "description": "Page",
+      },
       "PageRequestBody": {
         "content": {
           "application/json": {
@@ -2728,17 +3006,40 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
                   "type": "array",
                 },
               },
-              "required": [
-                "id",
-                "updatedAt",
-                "createdAt",
-              ],
+              "required": [],
               "title": "Page",
               "type": "object",
             },
           },
         },
         "description": "Page",
+      },
+      "PayloadLockedDocumentPatchRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "document": {
+                  "description": "ID of the pages/users",
+                  "type": "string",
+                },
+                "globalSlug": {
+                  "nullable": true,
+                  "type": "string",
+                },
+                "user": {
+                  "description": "ID of the users",
+                  "type": "string",
+                },
+              },
+              "required": [],
+              "title": "PayloadLockedDocument",
+              "type": "object",
+            },
+          },
+        },
+        "description": "Payload Locked Document",
       },
       "PayloadLockedDocumentRequestBody": {
         "content": {
@@ -2760,10 +3061,7 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
                 },
               },
               "required": [
-                "id",
                 "user",
-                "updatedAt",
-                "createdAt",
               ],
               "title": "PayloadLockedDocument",
               "type": "object",
@@ -2771,6 +3069,29 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
           },
         },
         "description": "Payload Locked Document",
+      },
+      "PayloadMigrationPatchRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "batch": {
+                  "nullable": true,
+                  "type": "number",
+                },
+                "name": {
+                  "nullable": true,
+                  "type": "string",
+                },
+              },
+              "required": [],
+              "title": "PayloadMigration",
+              "type": "object",
+            },
+          },
+        },
+        "description": "Payload Migration",
       },
       "PayloadMigrationRequestBody": {
         "content": {
@@ -2787,17 +3108,57 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
                   "type": "string",
                 },
               },
-              "required": [
-                "id",
-                "updatedAt",
-                "createdAt",
-              ],
+              "required": [],
               "title": "PayloadMigration",
               "type": "object",
             },
           },
         },
         "description": "Payload Migration",
+      },
+      "PayloadPreferencePatchRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "key": {
+                  "nullable": true,
+                  "type": "string",
+                },
+                "user": {
+                  "description": "ID of the users",
+                  "type": "string",
+                },
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                    },
+                    {
+                      "items": {},
+                      "type": "array",
+                    },
+                    {
+                      "type": "string",
+                    },
+                    {
+                      "type": "number",
+                    },
+                    {
+                      "type": "boolean",
+                    },
+                  ],
+                  "nullable": true,
+                },
+              },
+              "required": [],
+              "title": "PayloadPreference",
+              "type": "object",
+            },
+          },
+        },
+        "description": "Payload Preference",
       },
       "PayloadPreferenceRequestBody": {
         "content": {
@@ -2836,10 +3197,7 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
                 },
               },
               "required": [
-                "id",
                 "user",
-                "updatedAt",
-                "createdAt",
               ],
               "title": "PayloadPreference",
               "type": "object",
@@ -2847,6 +3205,52 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
           },
         },
         "description": "Payload Preference",
+      },
+      "UsersPatchRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "email": {
+                  "type": "string",
+                },
+                "hash": {
+                  "nullable": true,
+                  "type": "string",
+                },
+                "lockUntil": {
+                  "nullable": true,
+                  "type": "string",
+                },
+                "loginAttempts": {
+                  "nullable": true,
+                  "type": "number",
+                },
+                "password": {
+                  "nullable": true,
+                  "type": "string",
+                },
+                "resetPasswordExpiration": {
+                  "nullable": true,
+                  "type": "string",
+                },
+                "resetPasswordToken": {
+                  "nullable": true,
+                  "type": "string",
+                },
+                "salt": {
+                  "nullable": true,
+                  "type": "string",
+                },
+              },
+              "required": [],
+              "title": "User",
+              "type": "object",
+            },
+          },
+        },
+        "description": "users",
       },
       "UsersRequestBody": {
         "content": {
@@ -2887,9 +3291,6 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
                 },
               },
               "required": [
-                "id",
-                "updatedAt",
-                "createdAt",
                 "email",
               ],
               "title": "User",
@@ -4841,6 +5242,7 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
   "paths": {
     "/api/pages": {
       "get": {
+        "operationId": "listPages",
         "parameters": [
           {
             "in": "query",
@@ -4932,6 +5334,7 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         ],
       },
       "post": {
+        "operationId": "createPage",
         "parameters": [
           {
             "in": "query",
@@ -4969,6 +5372,7 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
     },
     "/api/pages/{id}": {
       "delete": {
+        "operationId": "deletePage",
         "responses": {
           "200": {
             "$ref": "#/components/responses/PageResponse",
@@ -4988,6 +5392,7 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         ],
       },
       "get": {
+        "operationId": "findPageById",
         "responses": {
           "200": {
             "$ref": "#/components/responses/PageResponse",
@@ -5039,6 +5444,10 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         },
       ],
       "patch": {
+        "operationId": "updatePage",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/PagePatchRequestBody",
+        },
         "responses": {
           "200": {
             "$ref": "#/components/responses/PageResponse",
@@ -5060,6 +5469,7 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
     },
     "/api/payload-locked-documents": {
       "get": {
+        "operationId": "listPayloadLockedDocuments",
         "parameters": [
           {
             "in": "query",
@@ -5153,6 +5563,7 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         ],
       },
       "post": {
+        "operationId": "createPayloadLockedDocument",
         "parameters": [
           {
             "in": "query",
@@ -5190,6 +5601,7 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
     },
     "/api/payload-locked-documents/{id}": {
       "delete": {
+        "operationId": "deletePayloadLockedDocument",
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadLockedDocumentResponse",
@@ -5209,6 +5621,7 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         ],
       },
       "get": {
+        "operationId": "findPayloadLockedDocumentById",
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadLockedDocumentResponse",
@@ -5260,6 +5673,10 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         },
       ],
       "patch": {
+        "operationId": "updatePayloadLockedDocument",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/PayloadLockedDocumentPatchRequestBody",
+        },
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadLockedDocumentResponse",
@@ -5281,6 +5698,7 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
     },
     "/api/payload-migrations": {
       "get": {
+        "operationId": "listPayloadMigrations",
         "parameters": [
           {
             "in": "query",
@@ -5376,6 +5794,7 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         ],
       },
       "post": {
+        "operationId": "createPayloadMigration",
         "parameters": [
           {
             "in": "query",
@@ -5413,6 +5832,7 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
     },
     "/api/payload-migrations/{id}": {
       "delete": {
+        "operationId": "deletePayloadMigration",
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadMigrationResponse",
@@ -5432,6 +5852,7 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         ],
       },
       "get": {
+        "operationId": "findPayloadMigrationById",
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadMigrationResponse",
@@ -5483,6 +5904,10 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         },
       ],
       "patch": {
+        "operationId": "updatePayloadMigration",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/PayloadMigrationPatchRequestBody",
+        },
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadMigrationResponse",
@@ -5504,6 +5929,7 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
     },
     "/api/payload-preferences": {
       "get": {
+        "operationId": "listPayloadPreferences",
         "parameters": [
           {
             "in": "query",
@@ -5597,6 +6023,7 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         ],
       },
       "post": {
+        "operationId": "createPayloadPreference",
         "parameters": [
           {
             "in": "query",
@@ -5634,6 +6061,7 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
     },
     "/api/payload-preferences/{id}": {
       "delete": {
+        "operationId": "deletePayloadPreference",
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadPreferenceResponse",
@@ -5653,6 +6081,7 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         ],
       },
       "get": {
+        "operationId": "findPayloadPreferenceById",
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadPreferenceResponse",
@@ -5704,6 +6133,10 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         },
       ],
       "patch": {
+        "operationId": "updatePayloadPreference",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/PayloadPreferencePatchRequestBody",
+        },
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadPreferenceResponse",
@@ -5725,6 +6158,7 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
     },
     "/api/users": {
       "get": {
+        "operationId": "listUsers",
         "parameters": [
           {
             "in": "query",
@@ -5830,6 +6264,7 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         ],
       },
       "post": {
+        "operationId": "createUsers",
         "parameters": [
           {
             "in": "query",
@@ -5867,6 +6302,7 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
     },
     "/api/users/{id}": {
       "delete": {
+        "operationId": "deleteUsers",
         "responses": {
           "200": {
             "$ref": "#/components/responses/UsersResponse",
@@ -5886,6 +6322,7 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         ],
       },
       "get": {
+        "operationId": "findUsersById",
         "responses": {
           "200": {
             "$ref": "#/components/responses/UsersResponse",
@@ -5937,6 +6374,10 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         },
       ],
       "patch": {
+        "operationId": "updateUsers",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersPatchRequestBody",
+        },
         "responses": {
           "200": {
             "$ref": "#/components/responses/UsersResponse",
@@ -5969,6 +6410,28 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
 {
   "components": {
     "requestBodies": {
+      "EventPatchRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "startsAt": {
+                  "nullable": true,
+                  "type": "string",
+                },
+                "startsAt_tz": {
+                  "$ref": "#/components/schemas/supportedTimezones",
+                },
+              },
+              "required": [],
+              "title": "Event",
+              "type": "object",
+            },
+          },
+        },
+        "description": "Event",
+      },
       "EventRequestBody": {
         "content": {
           "application/json": {
@@ -5983,17 +6446,40 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
                   "$ref": "#/components/schemas/supportedTimezones",
                 },
               },
-              "required": [
-                "id",
-                "updatedAt",
-                "createdAt",
-              ],
+              "required": [],
               "title": "Event",
               "type": "object",
             },
           },
         },
         "description": "Event",
+      },
+      "PayloadLockedDocumentPatchRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "document": {
+                  "description": "ID of the events/users",
+                  "type": "string",
+                },
+                "globalSlug": {
+                  "nullable": true,
+                  "type": "string",
+                },
+                "user": {
+                  "description": "ID of the users",
+                  "type": "string",
+                },
+              },
+              "required": [],
+              "title": "PayloadLockedDocument",
+              "type": "object",
+            },
+          },
+        },
+        "description": "Payload Locked Document",
       },
       "PayloadLockedDocumentRequestBody": {
         "content": {
@@ -6015,10 +6501,7 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
                 },
               },
               "required": [
-                "id",
                 "user",
-                "updatedAt",
-                "createdAt",
               ],
               "title": "PayloadLockedDocument",
               "type": "object",
@@ -6026,6 +6509,29 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
           },
         },
         "description": "Payload Locked Document",
+      },
+      "PayloadMigrationPatchRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "batch": {
+                  "nullable": true,
+                  "type": "number",
+                },
+                "name": {
+                  "nullable": true,
+                  "type": "string",
+                },
+              },
+              "required": [],
+              "title": "PayloadMigration",
+              "type": "object",
+            },
+          },
+        },
+        "description": "Payload Migration",
       },
       "PayloadMigrationRequestBody": {
         "content": {
@@ -6042,17 +6548,57 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
                   "type": "string",
                 },
               },
-              "required": [
-                "id",
-                "updatedAt",
-                "createdAt",
-              ],
+              "required": [],
               "title": "PayloadMigration",
               "type": "object",
             },
           },
         },
         "description": "Payload Migration",
+      },
+      "PayloadPreferencePatchRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "key": {
+                  "nullable": true,
+                  "type": "string",
+                },
+                "user": {
+                  "description": "ID of the users",
+                  "type": "string",
+                },
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                    },
+                    {
+                      "items": {},
+                      "type": "array",
+                    },
+                    {
+                      "type": "string",
+                    },
+                    {
+                      "type": "number",
+                    },
+                    {
+                      "type": "boolean",
+                    },
+                  ],
+                  "nullable": true,
+                },
+              },
+              "required": [],
+              "title": "PayloadPreference",
+              "type": "object",
+            },
+          },
+        },
+        "description": "Payload Preference",
       },
       "PayloadPreferenceRequestBody": {
         "content": {
@@ -6091,10 +6637,7 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
                 },
               },
               "required": [
-                "id",
                 "user",
-                "updatedAt",
-                "createdAt",
               ],
               "title": "PayloadPreference",
               "type": "object",
@@ -6102,6 +6645,52 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
           },
         },
         "description": "Payload Preference",
+      },
+      "UsersPatchRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "email": {
+                  "type": "string",
+                },
+                "hash": {
+                  "nullable": true,
+                  "type": "string",
+                },
+                "lockUntil": {
+                  "nullable": true,
+                  "type": "string",
+                },
+                "loginAttempts": {
+                  "nullable": true,
+                  "type": "number",
+                },
+                "password": {
+                  "nullable": true,
+                  "type": "string",
+                },
+                "resetPasswordExpiration": {
+                  "nullable": true,
+                  "type": "string",
+                },
+                "resetPasswordToken": {
+                  "nullable": true,
+                  "type": "string",
+                },
+                "salt": {
+                  "nullable": true,
+                  "type": "string",
+                },
+              },
+              "required": [],
+              "title": "User",
+              "type": "object",
+            },
+          },
+        },
+        "description": "users",
       },
       "UsersRequestBody": {
         "content": {
@@ -6142,9 +6731,6 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
                 },
               },
               "required": [
-                "id",
-                "updatedAt",
-                "createdAt",
                 "email",
               ],
               "title": "User",
@@ -8147,6 +8733,7 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
   "paths": {
     "/api/events": {
       "get": {
+        "operationId": "listEvents",
         "parameters": [
           {
             "in": "query",
@@ -8240,6 +8827,7 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         ],
       },
       "post": {
+        "operationId": "createEvent",
         "parameters": [
           {
             "in": "query",
@@ -8277,6 +8865,7 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
     },
     "/api/events/{id}": {
       "delete": {
+        "operationId": "deleteEvent",
         "responses": {
           "200": {
             "$ref": "#/components/responses/EventResponse",
@@ -8296,6 +8885,7 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         ],
       },
       "get": {
+        "operationId": "findEventById",
         "responses": {
           "200": {
             "$ref": "#/components/responses/EventResponse",
@@ -8347,6 +8937,10 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         },
       ],
       "patch": {
+        "operationId": "updateEvent",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/EventPatchRequestBody",
+        },
         "responses": {
           "200": {
             "$ref": "#/components/responses/EventResponse",
@@ -8368,6 +8962,7 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
     },
     "/api/payload-locked-documents": {
       "get": {
+        "operationId": "listPayloadLockedDocuments",
         "parameters": [
           {
             "in": "query",
@@ -8461,6 +9056,7 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         ],
       },
       "post": {
+        "operationId": "createPayloadLockedDocument",
         "parameters": [
           {
             "in": "query",
@@ -8498,6 +9094,7 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
     },
     "/api/payload-locked-documents/{id}": {
       "delete": {
+        "operationId": "deletePayloadLockedDocument",
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadLockedDocumentResponse",
@@ -8517,6 +9114,7 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         ],
       },
       "get": {
+        "operationId": "findPayloadLockedDocumentById",
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadLockedDocumentResponse",
@@ -8568,6 +9166,10 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         },
       ],
       "patch": {
+        "operationId": "updatePayloadLockedDocument",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/PayloadLockedDocumentPatchRequestBody",
+        },
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadLockedDocumentResponse",
@@ -8589,6 +9191,7 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
     },
     "/api/payload-migrations": {
       "get": {
+        "operationId": "listPayloadMigrations",
         "parameters": [
           {
             "in": "query",
@@ -8684,6 +9287,7 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         ],
       },
       "post": {
+        "operationId": "createPayloadMigration",
         "parameters": [
           {
             "in": "query",
@@ -8721,6 +9325,7 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
     },
     "/api/payload-migrations/{id}": {
       "delete": {
+        "operationId": "deletePayloadMigration",
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadMigrationResponse",
@@ -8740,6 +9345,7 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         ],
       },
       "get": {
+        "operationId": "findPayloadMigrationById",
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadMigrationResponse",
@@ -8791,6 +9397,10 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         },
       ],
       "patch": {
+        "operationId": "updatePayloadMigration",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/PayloadMigrationPatchRequestBody",
+        },
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadMigrationResponse",
@@ -8812,6 +9422,7 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
     },
     "/api/payload-preferences": {
       "get": {
+        "operationId": "listPayloadPreferences",
         "parameters": [
           {
             "in": "query",
@@ -8905,6 +9516,7 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         ],
       },
       "post": {
+        "operationId": "createPayloadPreference",
         "parameters": [
           {
             "in": "query",
@@ -8942,6 +9554,7 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
     },
     "/api/payload-preferences/{id}": {
       "delete": {
+        "operationId": "deletePayloadPreference",
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadPreferenceResponse",
@@ -8961,6 +9574,7 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         ],
       },
       "get": {
+        "operationId": "findPayloadPreferenceById",
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadPreferenceResponse",
@@ -9012,6 +9626,10 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         },
       ],
       "patch": {
+        "operationId": "updatePayloadPreference",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/PayloadPreferencePatchRequestBody",
+        },
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadPreferenceResponse",
@@ -9033,6 +9651,7 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
     },
     "/api/users": {
       "get": {
+        "operationId": "listUsers",
         "parameters": [
           {
             "in": "query",
@@ -9138,6 +9757,7 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         ],
       },
       "post": {
+        "operationId": "createUsers",
         "parameters": [
           {
             "in": "query",
@@ -9175,6 +9795,7 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
     },
     "/api/users/{id}": {
       "delete": {
+        "operationId": "deleteUsers",
         "responses": {
           "200": {
             "$ref": "#/components/responses/UsersResponse",
@@ -9194,6 +9815,7 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         ],
       },
       "get": {
+        "operationId": "findUsersById",
         "responses": {
           "200": {
             "$ref": "#/components/responses/UsersResponse",
@@ -9245,6 +9867,10 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         },
       ],
       "patch": {
+        "operationId": "updateUsers",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersPatchRequestBody",
+        },
         "responses": {
           "200": {
             "$ref": "#/components/responses/UsersResponse",
@@ -9277,6 +9903,33 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
 {
   "components": {
     "requestBodies": {
+      "PayloadLockedDocumentPatchRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "document": {
+                  "description": "ID of the users",
+                  "type": "string",
+                },
+                "globalSlug": {
+                  "nullable": true,
+                  "type": "string",
+                },
+                "user": {
+                  "description": "ID of the users",
+                  "type": "string",
+                },
+              },
+              "required": [],
+              "title": "PayloadLockedDocument",
+              "type": "object",
+            },
+          },
+        },
+        "description": "Payload Locked Document",
+      },
       "PayloadLockedDocumentRequestBody": {
         "content": {
           "application/json": {
@@ -9297,10 +9950,7 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
                 },
               },
               "required": [
-                "id",
                 "user",
-                "updatedAt",
-                "createdAt",
               ],
               "title": "PayloadLockedDocument",
               "type": "object",
@@ -9308,6 +9958,29 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
           },
         },
         "description": "Payload Locked Document",
+      },
+      "PayloadMigrationPatchRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "batch": {
+                  "nullable": true,
+                  "type": "number",
+                },
+                "name": {
+                  "nullable": true,
+                  "type": "string",
+                },
+              },
+              "required": [],
+              "title": "PayloadMigration",
+              "type": "object",
+            },
+          },
+        },
+        "description": "Payload Migration",
       },
       "PayloadMigrationRequestBody": {
         "content": {
@@ -9324,17 +9997,57 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
                   "type": "string",
                 },
               },
-              "required": [
-                "id",
-                "updatedAt",
-                "createdAt",
-              ],
+              "required": [],
               "title": "PayloadMigration",
               "type": "object",
             },
           },
         },
         "description": "Payload Migration",
+      },
+      "PayloadPreferencePatchRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "key": {
+                  "nullable": true,
+                  "type": "string",
+                },
+                "user": {
+                  "description": "ID of the users",
+                  "type": "string",
+                },
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                    },
+                    {
+                      "items": {},
+                      "type": "array",
+                    },
+                    {
+                      "type": "string",
+                    },
+                    {
+                      "type": "number",
+                    },
+                    {
+                      "type": "boolean",
+                    },
+                  ],
+                  "nullable": true,
+                },
+              },
+              "required": [],
+              "title": "PayloadPreference",
+              "type": "object",
+            },
+          },
+        },
+        "description": "Payload Preference",
       },
       "PayloadPreferenceRequestBody": {
         "content": {
@@ -9373,10 +10086,7 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
                 },
               },
               "required": [
-                "id",
                 "user",
-                "updatedAt",
-                "createdAt",
               ],
               "title": "PayloadPreference",
               "type": "object",
@@ -9384,6 +10094,71 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
           },
         },
         "description": "Payload Preference",
+      },
+      "UserPatchRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "email": {
+                  "type": "string",
+                },
+                "hash": {
+                  "nullable": true,
+                  "type": "string",
+                },
+                "lockUntil": {
+                  "nullable": true,
+                  "type": "string",
+                },
+                "loginAttempts": {
+                  "nullable": true,
+                  "type": "number",
+                },
+                "password": {
+                  "nullable": true,
+                  "type": "string",
+                },
+                "resetPasswordExpiration": {
+                  "nullable": true,
+                  "type": "string",
+                },
+                "resetPasswordToken": {
+                  "nullable": true,
+                  "type": "string",
+                },
+                "roles": {
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "nullable": true,
+                        "type": "string",
+                      },
+                      "name": {
+                        "nullable": true,
+                        "type": "string",
+                      },
+                    },
+                    "required": [],
+                    "type": "object",
+                  },
+                  "nullable": true,
+                  "type": "array",
+                },
+                "salt": {
+                  "nullable": true,
+                  "type": "string",
+                },
+              },
+              "required": [],
+              "title": "User",
+              "type": "object",
+            },
+          },
+        },
+        "description": "User",
       },
       "UserRequestBody": {
         "content": {
@@ -9443,9 +10218,6 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
                 },
               },
               "required": [
-                "id",
-                "updatedAt",
-                "createdAt",
                 "email",
               ],
               "title": "User",
@@ -11019,6 +11791,7 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
   "paths": {
     "/api/payload-locked-documents": {
       "get": {
+        "operationId": "listPayloadLockedDocuments",
         "parameters": [
           {
             "in": "query",
@@ -11112,6 +11885,7 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
         ],
       },
       "post": {
+        "operationId": "createPayloadLockedDocument",
         "parameters": [
           {
             "in": "query",
@@ -11149,6 +11923,7 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
     },
     "/api/payload-locked-documents/{id}": {
       "delete": {
+        "operationId": "deletePayloadLockedDocument",
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadLockedDocumentResponse",
@@ -11168,6 +11943,7 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
         ],
       },
       "get": {
+        "operationId": "findPayloadLockedDocumentById",
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadLockedDocumentResponse",
@@ -11219,6 +11995,10 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
         },
       ],
       "patch": {
+        "operationId": "updatePayloadLockedDocument",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/PayloadLockedDocumentPatchRequestBody",
+        },
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadLockedDocumentResponse",
@@ -11240,6 +12020,7 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
     },
     "/api/payload-migrations": {
       "get": {
+        "operationId": "listPayloadMigrations",
         "parameters": [
           {
             "in": "query",
@@ -11335,6 +12116,7 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
         ],
       },
       "post": {
+        "operationId": "createPayloadMigration",
         "parameters": [
           {
             "in": "query",
@@ -11372,6 +12154,7 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
     },
     "/api/payload-migrations/{id}": {
       "delete": {
+        "operationId": "deletePayloadMigration",
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadMigrationResponse",
@@ -11391,6 +12174,7 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
         ],
       },
       "get": {
+        "operationId": "findPayloadMigrationById",
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadMigrationResponse",
@@ -11442,6 +12226,10 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
         },
       ],
       "patch": {
+        "operationId": "updatePayloadMigration",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/PayloadMigrationPatchRequestBody",
+        },
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadMigrationResponse",
@@ -11463,6 +12251,7 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
     },
     "/api/payload-preferences": {
       "get": {
+        "operationId": "listPayloadPreferences",
         "parameters": [
           {
             "in": "query",
@@ -11556,6 +12345,7 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
         ],
       },
       "post": {
+        "operationId": "createPayloadPreference",
         "parameters": [
           {
             "in": "query",
@@ -11593,6 +12383,7 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
     },
     "/api/payload-preferences/{id}": {
       "delete": {
+        "operationId": "deletePayloadPreference",
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadPreferenceResponse",
@@ -11612,6 +12403,7 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
         ],
       },
       "get": {
+        "operationId": "findPayloadPreferenceById",
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadPreferenceResponse",
@@ -11663,6 +12455,10 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
         },
       ],
       "patch": {
+        "operationId": "updatePayloadPreference",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/PayloadPreferencePatchRequestBody",
+        },
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadPreferenceResponse",
@@ -11684,6 +12480,7 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
     },
     "/api/users": {
       "get": {
+        "operationId": "listUsers",
         "parameters": [
           {
             "in": "query",
@@ -11789,6 +12586,7 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
         ],
       },
       "post": {
+        "operationId": "createUser",
         "parameters": [
           {
             "in": "query",
@@ -11826,6 +12624,7 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
     },
     "/api/users/{id}": {
       "delete": {
+        "operationId": "deleteUser",
         "responses": {
           "200": {
             "$ref": "#/components/responses/UserResponse",
@@ -11845,6 +12644,7 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
         ],
       },
       "get": {
+        "operationId": "findUserById",
         "responses": {
           "200": {
             "$ref": "#/components/responses/UserResponse",
@@ -11896,6 +12696,10 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
         },
       ],
       "patch": {
+        "operationId": "updateUser",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UserPatchRequestBody",
+        },
         "responses": {
           "200": {
             "$ref": "#/components/responses/UserResponse",
@@ -11928,6 +12732,33 @@ exports[`openapi generators > handles non-default collection 1`] = `
 {
   "components": {
     "requestBodies": {
+      "PayloadLockedDocumentPatchRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "document": {
+                  "description": "ID of the posts/users",
+                  "type": "string",
+                },
+                "globalSlug": {
+                  "nullable": true,
+                  "type": "string",
+                },
+                "user": {
+                  "description": "ID of the users",
+                  "type": "string",
+                },
+              },
+              "required": [],
+              "title": "PayloadLockedDocument",
+              "type": "object",
+            },
+          },
+        },
+        "description": "Payload Locked Document",
+      },
       "PayloadLockedDocumentRequestBody": {
         "content": {
           "application/json": {
@@ -11948,10 +12779,7 @@ exports[`openapi generators > handles non-default collection 1`] = `
                 },
               },
               "required": [
-                "id",
                 "user",
-                "updatedAt",
-                "createdAt",
               ],
               "title": "PayloadLockedDocument",
               "type": "object",
@@ -11959,6 +12787,29 @@ exports[`openapi generators > handles non-default collection 1`] = `
           },
         },
         "description": "Payload Locked Document",
+      },
+      "PayloadMigrationPatchRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "batch": {
+                  "nullable": true,
+                  "type": "number",
+                },
+                "name": {
+                  "nullable": true,
+                  "type": "string",
+                },
+              },
+              "required": [],
+              "title": "PayloadMigration",
+              "type": "object",
+            },
+          },
+        },
+        "description": "Payload Migration",
       },
       "PayloadMigrationRequestBody": {
         "content": {
@@ -11975,17 +12826,57 @@ exports[`openapi generators > handles non-default collection 1`] = `
                   "type": "string",
                 },
               },
-              "required": [
-                "id",
-                "updatedAt",
-                "createdAt",
-              ],
+              "required": [],
               "title": "PayloadMigration",
               "type": "object",
             },
           },
         },
         "description": "Payload Migration",
+      },
+      "PayloadPreferencePatchRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "key": {
+                  "nullable": true,
+                  "type": "string",
+                },
+                "user": {
+                  "description": "ID of the users",
+                  "type": "string",
+                },
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                    },
+                    {
+                      "items": {},
+                      "type": "array",
+                    },
+                    {
+                      "type": "string",
+                    },
+                    {
+                      "type": "number",
+                    },
+                    {
+                      "type": "boolean",
+                    },
+                  ],
+                  "nullable": true,
+                },
+              },
+              "required": [],
+              "title": "PayloadPreference",
+              "type": "object",
+            },
+          },
+        },
+        "description": "Payload Preference",
       },
       "PayloadPreferenceRequestBody": {
         "content": {
@@ -12024,10 +12915,7 @@ exports[`openapi generators > handles non-default collection 1`] = `
                 },
               },
               "required": [
-                "id",
                 "user",
-                "updatedAt",
-                "createdAt",
               ],
               "title": "PayloadPreference",
               "type": "object",
@@ -12035,6 +12923,25 @@ exports[`openapi generators > handles non-default collection 1`] = `
           },
         },
         "description": "Payload Preference",
+      },
+      "PostPatchRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "title": {
+                  "nullable": true,
+                  "type": "string",
+                },
+              },
+              "required": [],
+              "title": "Post",
+              "type": "object",
+            },
+          },
+        },
+        "description": "Post",
       },
       "PostRequestBody": {
         "content": {
@@ -12047,17 +12954,59 @@ exports[`openapi generators > handles non-default collection 1`] = `
                   "type": "string",
                 },
               },
-              "required": [
-                "id",
-                "updatedAt",
-                "createdAt",
-              ],
+              "required": [],
               "title": "Post",
               "type": "object",
             },
           },
         },
         "description": "Post",
+      },
+      "UsersPatchRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "email": {
+                  "type": "string",
+                },
+                "hash": {
+                  "nullable": true,
+                  "type": "string",
+                },
+                "lockUntil": {
+                  "nullable": true,
+                  "type": "string",
+                },
+                "loginAttempts": {
+                  "nullable": true,
+                  "type": "number",
+                },
+                "password": {
+                  "nullable": true,
+                  "type": "string",
+                },
+                "resetPasswordExpiration": {
+                  "nullable": true,
+                  "type": "string",
+                },
+                "resetPasswordToken": {
+                  "nullable": true,
+                  "type": "string",
+                },
+                "salt": {
+                  "nullable": true,
+                  "type": "string",
+                },
+              },
+              "required": [],
+              "title": "User",
+              "type": "object",
+            },
+          },
+        },
+        "description": "users",
       },
       "UsersRequestBody": {
         "content": {
@@ -12098,9 +13047,6 @@ exports[`openapi generators > handles non-default collection 1`] = `
                 },
               },
               "required": [
-                "id",
-                "updatedAt",
-                "createdAt",
                 "email",
               ],
               "title": "User",
@@ -13975,6 +14921,7 @@ exports[`openapi generators > handles non-default collection 1`] = `
   "paths": {
     "/api/payload-locked-documents": {
       "get": {
+        "operationId": "listPayloadLockedDocuments",
         "parameters": [
           {
             "in": "query",
@@ -14068,6 +15015,7 @@ exports[`openapi generators > handles non-default collection 1`] = `
         ],
       },
       "post": {
+        "operationId": "createPayloadLockedDocument",
         "parameters": [
           {
             "in": "query",
@@ -14105,6 +15053,7 @@ exports[`openapi generators > handles non-default collection 1`] = `
     },
     "/api/payload-locked-documents/{id}": {
       "delete": {
+        "operationId": "deletePayloadLockedDocument",
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadLockedDocumentResponse",
@@ -14124,6 +15073,7 @@ exports[`openapi generators > handles non-default collection 1`] = `
         ],
       },
       "get": {
+        "operationId": "findPayloadLockedDocumentById",
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadLockedDocumentResponse",
@@ -14175,6 +15125,10 @@ exports[`openapi generators > handles non-default collection 1`] = `
         },
       ],
       "patch": {
+        "operationId": "updatePayloadLockedDocument",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/PayloadLockedDocumentPatchRequestBody",
+        },
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadLockedDocumentResponse",
@@ -14196,6 +15150,7 @@ exports[`openapi generators > handles non-default collection 1`] = `
     },
     "/api/payload-migrations": {
       "get": {
+        "operationId": "listPayloadMigrations",
         "parameters": [
           {
             "in": "query",
@@ -14291,6 +15246,7 @@ exports[`openapi generators > handles non-default collection 1`] = `
         ],
       },
       "post": {
+        "operationId": "createPayloadMigration",
         "parameters": [
           {
             "in": "query",
@@ -14328,6 +15284,7 @@ exports[`openapi generators > handles non-default collection 1`] = `
     },
     "/api/payload-migrations/{id}": {
       "delete": {
+        "operationId": "deletePayloadMigration",
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadMigrationResponse",
@@ -14347,6 +15304,7 @@ exports[`openapi generators > handles non-default collection 1`] = `
         ],
       },
       "get": {
+        "operationId": "findPayloadMigrationById",
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadMigrationResponse",
@@ -14398,6 +15356,10 @@ exports[`openapi generators > handles non-default collection 1`] = `
         },
       ],
       "patch": {
+        "operationId": "updatePayloadMigration",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/PayloadMigrationPatchRequestBody",
+        },
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadMigrationResponse",
@@ -14419,6 +15381,7 @@ exports[`openapi generators > handles non-default collection 1`] = `
     },
     "/api/payload-preferences": {
       "get": {
+        "operationId": "listPayloadPreferences",
         "parameters": [
           {
             "in": "query",
@@ -14512,6 +15475,7 @@ exports[`openapi generators > handles non-default collection 1`] = `
         ],
       },
       "post": {
+        "operationId": "createPayloadPreference",
         "parameters": [
           {
             "in": "query",
@@ -14549,6 +15513,7 @@ exports[`openapi generators > handles non-default collection 1`] = `
     },
     "/api/payload-preferences/{id}": {
       "delete": {
+        "operationId": "deletePayloadPreference",
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadPreferenceResponse",
@@ -14568,6 +15533,7 @@ exports[`openapi generators > handles non-default collection 1`] = `
         ],
       },
       "get": {
+        "operationId": "findPayloadPreferenceById",
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadPreferenceResponse",
@@ -14619,6 +15585,10 @@ exports[`openapi generators > handles non-default collection 1`] = `
         },
       ],
       "patch": {
+        "operationId": "updatePayloadPreference",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/PayloadPreferencePatchRequestBody",
+        },
         "responses": {
           "200": {
             "$ref": "#/components/responses/PayloadPreferenceResponse",
@@ -14640,6 +15610,7 @@ exports[`openapi generators > handles non-default collection 1`] = `
     },
     "/api/posts": {
       "get": {
+        "operationId": "listPosts",
         "parameters": [
           {
             "in": "query",
@@ -14733,6 +15704,7 @@ exports[`openapi generators > handles non-default collection 1`] = `
         ],
       },
       "post": {
+        "operationId": "createPost",
         "parameters": [
           {
             "in": "query",
@@ -14770,6 +15742,7 @@ exports[`openapi generators > handles non-default collection 1`] = `
     },
     "/api/posts/{id}": {
       "delete": {
+        "operationId": "deletePost",
         "responses": {
           "200": {
             "$ref": "#/components/responses/PostResponse",
@@ -14789,6 +15762,7 @@ exports[`openapi generators > handles non-default collection 1`] = `
         ],
       },
       "get": {
+        "operationId": "findPostById",
         "responses": {
           "200": {
             "$ref": "#/components/responses/PostResponse",
@@ -14840,6 +15814,10 @@ exports[`openapi generators > handles non-default collection 1`] = `
         },
       ],
       "patch": {
+        "operationId": "updatePost",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/PostPatchRequestBody",
+        },
         "responses": {
           "200": {
             "$ref": "#/components/responses/PostResponse",
@@ -14861,6 +15839,7 @@ exports[`openapi generators > handles non-default collection 1`] = `
     },
     "/api/users": {
       "get": {
+        "operationId": "listUsers",
         "parameters": [
           {
             "in": "query",
@@ -14966,6 +15945,7 @@ exports[`openapi generators > handles non-default collection 1`] = `
         ],
       },
       "post": {
+        "operationId": "createUsers",
         "parameters": [
           {
             "in": "query",
@@ -15003,6 +15983,7 @@ exports[`openapi generators > handles non-default collection 1`] = `
     },
     "/api/users/{id}": {
       "delete": {
+        "operationId": "deleteUsers",
         "responses": {
           "200": {
             "$ref": "#/components/responses/UsersResponse",
@@ -15022,6 +16003,7 @@ exports[`openapi generators > handles non-default collection 1`] = `
         ],
       },
       "get": {
+        "operationId": "findUsersById",
         "responses": {
           "200": {
             "$ref": "#/components/responses/UsersResponse",
@@ -15073,6 +16055,10 @@ exports[`openapi generators > handles non-default collection 1`] = `
         },
       ],
       "patch": {
+        "operationId": "updateUsers",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersPatchRequestBody",
+        },
         "responses": {
           "200": {
             "$ref": "#/components/responses/UsersResponse",
