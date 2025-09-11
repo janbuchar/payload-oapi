@@ -233,6 +233,30 @@ exports[`openapi generators > converts empty config correctly 1`] = `
                   "nullable": true,
                   "type": "string",
                 },
+                "sessions": {
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "createdAt": {
+                        "nullable": true,
+                        "type": "string",
+                      },
+                      "expiresAt": {
+                        "type": "string",
+                      },
+                      "id": {
+                        "type": "string",
+                      },
+                    },
+                    "required": [
+                      "id",
+                      "expiresAt",
+                    ],
+                    "type": "object",
+                  },
+                  "nullable": true,
+                  "type": "array",
+                },
               },
               "required": [],
               "title": "User",
@@ -278,6 +302,30 @@ exports[`openapi generators > converts empty config correctly 1`] = `
                 "salt": {
                   "nullable": true,
                   "type": "string",
+                },
+                "sessions": {
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "createdAt": {
+                        "nullable": true,
+                        "type": "string",
+                      },
+                      "expiresAt": {
+                        "type": "string",
+                      },
+                      "id": {
+                        "type": "string",
+                      },
+                    },
+                    "required": [
+                      "id",
+                      "expiresAt",
+                    ],
+                    "type": "object",
+                  },
+                  "nullable": true,
+                  "type": "array",
                 },
               },
               "required": [
@@ -1479,6 +1527,30 @@ exports[`openapi generators > converts empty config correctly 1`] = `
           "salt": {
             "nullable": true,
             "type": "string",
+          },
+          "sessions": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "createdAt": {
+                  "nullable": true,
+                  "type": "string",
+                },
+                "expiresAt": {
+                  "type": "string",
+                },
+                "id": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "id",
+                "expiresAt",
+              ],
+              "type": "object",
+            },
+            "nullable": true,
+            "type": "array",
           },
           "updatedAt": {
             "type": "string",
@@ -3243,6 +3315,30 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
                   "nullable": true,
                   "type": "string",
                 },
+                "sessions": {
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "createdAt": {
+                        "nullable": true,
+                        "type": "string",
+                      },
+                      "expiresAt": {
+                        "type": "string",
+                      },
+                      "id": {
+                        "type": "string",
+                      },
+                    },
+                    "required": [
+                      "id",
+                      "expiresAt",
+                    ],
+                    "type": "object",
+                  },
+                  "nullable": true,
+                  "type": "array",
+                },
               },
               "required": [],
               "title": "User",
@@ -3288,6 +3384,30 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
                 "salt": {
                   "nullable": true,
                   "type": "string",
+                },
+                "sessions": {
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "createdAt": {
+                        "nullable": true,
+                        "type": "string",
+                      },
+                      "expiresAt": {
+                        "type": "string",
+                      },
+                      "id": {
+                        "type": "string",
+                      },
+                    },
+                    "required": [
+                      "id",
+                      "expiresAt",
+                    ],
+                    "type": "object",
+                  },
+                  "nullable": true,
+                  "type": "array",
                 },
               },
               "required": [
@@ -4886,6 +5006,30 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
           "salt": {
             "nullable": true,
             "type": "string",
+          },
+          "sessions": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "createdAt": {
+                  "nullable": true,
+                  "type": "string",
+                },
+                "expiresAt": {
+                  "type": "string",
+                },
+                "id": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "id",
+                "expiresAt",
+              ],
+              "type": "object",
+            },
+            "nullable": true,
+            "type": "array",
           },
           "updatedAt": {
             "type": "string",
@@ -6683,6 +6827,30 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
                   "nullable": true,
                   "type": "string",
                 },
+                "sessions": {
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "createdAt": {
+                        "nullable": true,
+                        "type": "string",
+                      },
+                      "expiresAt": {
+                        "type": "string",
+                      },
+                      "id": {
+                        "type": "string",
+                      },
+                    },
+                    "required": [
+                      "id",
+                      "expiresAt",
+                    ],
+                    "type": "object",
+                  },
+                  "nullable": true,
+                  "type": "array",
+                },
               },
               "required": [],
               "title": "User",
@@ -6728,6 +6896,30 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
                 "salt": {
                   "nullable": true,
                   "type": "string",
+                },
+                "sessions": {
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "createdAt": {
+                        "nullable": true,
+                        "type": "string",
+                      },
+                      "expiresAt": {
+                        "type": "string",
+                      },
+                      "id": {
+                        "type": "string",
+                      },
+                    },
+                    "required": [
+                      "id",
+                      "expiresAt",
+                    ],
+                    "type": "object",
+                  },
+                  "nullable": true,
+                  "type": "array",
                 },
               },
               "required": [
@@ -7489,6 +7681,7 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
                   "Asia/Singapore",
                   "Asia/Tokyo",
                   "Asia/Seoul",
+                  "Australia/Brisbane",
                   "Australia/Sydney",
                   "Pacific/Guam",
                   "Pacific/Noumea",
@@ -7543,6 +7736,7 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
                   "Asia/Singapore",
                   "Asia/Tokyo",
                   "Asia/Seoul",
+                  "Australia/Brisbane",
                   "Australia/Sydney",
                   "Pacific/Guam",
                   "Pacific/Noumea",
@@ -8377,6 +8571,30 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
           "salt": {
             "nullable": true,
             "type": "string",
+          },
+          "sessions": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "createdAt": {
+                  "nullable": true,
+                  "type": "string",
+                },
+                "expiresAt": {
+                  "type": "string",
+                },
+                "id": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "id",
+                "expiresAt",
+              ],
+              "type": "object",
+            },
+            "nullable": true,
+            "type": "array",
           },
           "updatedAt": {
             "type": "string",
@@ -10151,6 +10369,30 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
                   "nullable": true,
                   "type": "string",
                 },
+                "sessions": {
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "createdAt": {
+                        "nullable": true,
+                        "type": "string",
+                      },
+                      "expiresAt": {
+                        "type": "string",
+                      },
+                      "id": {
+                        "type": "string",
+                      },
+                    },
+                    "required": [
+                      "id",
+                      "expiresAt",
+                    ],
+                    "type": "object",
+                  },
+                  "nullable": true,
+                  "type": "array",
+                },
               },
               "required": [],
               "title": "User",
@@ -10215,6 +10457,30 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
                 "salt": {
                   "nullable": true,
                   "type": "string",
+                },
+                "sessions": {
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "createdAt": {
+                        "nullable": true,
+                        "type": "string",
+                      },
+                      "expiresAt": {
+                        "type": "string",
+                      },
+                      "id": {
+                        "type": "string",
+                      },
+                    },
+                    "required": [
+                      "id",
+                      "expiresAt",
+                    ],
+                    "type": "object",
+                  },
+                  "nullable": true,
+                  "type": "array",
                 },
               },
               "required": [
@@ -11435,6 +11701,30 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
           "salt": {
             "nullable": true,
             "type": "string",
+          },
+          "sessions": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "createdAt": {
+                  "nullable": true,
+                  "type": "string",
+                },
+                "expiresAt": {
+                  "type": "string",
+                },
+                "id": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "id",
+                "expiresAt",
+              ],
+              "type": "object",
+            },
+            "nullable": true,
+            "type": "array",
           },
           "updatedAt": {
             "type": "string",
@@ -12999,6 +13289,30 @@ exports[`openapi generators > handles non-default collection 1`] = `
                   "nullable": true,
                   "type": "string",
                 },
+                "sessions": {
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "createdAt": {
+                        "nullable": true,
+                        "type": "string",
+                      },
+                      "expiresAt": {
+                        "type": "string",
+                      },
+                      "id": {
+                        "type": "string",
+                      },
+                    },
+                    "required": [
+                      "id",
+                      "expiresAt",
+                    ],
+                    "type": "object",
+                  },
+                  "nullable": true,
+                  "type": "array",
+                },
               },
               "required": [],
               "title": "User",
@@ -13044,6 +13358,30 @@ exports[`openapi generators > handles non-default collection 1`] = `
                 "salt": {
                   "nullable": true,
                   "type": "string",
+                },
+                "sessions": {
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "createdAt": {
+                        "nullable": true,
+                        "type": "string",
+                      },
+                      "expiresAt": {
+                        "type": "string",
+                      },
+                      "id": {
+                        "type": "string",
+                      },
+                    },
+                    "required": [
+                      "id",
+                      "expiresAt",
+                    ],
+                    "type": "object",
+                  },
+                  "nullable": true,
+                  "type": "array",
                 },
               },
               "required": [
@@ -14565,6 +14903,30 @@ exports[`openapi generators > handles non-default collection 1`] = `
           "salt": {
             "nullable": true,
             "type": "string",
+          },
+          "sessions": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "createdAt": {
+                  "nullable": true,
+                  "type": "string",
+                },
+                "expiresAt": {
+                  "type": "string",
+                },
+                "id": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "id",
+                "expiresAt",
+              ],
+              "type": "object",
+            },
+            "nullable": true,
+            "type": "array",
           },
           "updatedAt": {
             "type": "string",
