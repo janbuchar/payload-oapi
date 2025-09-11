@@ -2,7 +2,7 @@ import type { Plugin } from 'payload'
 
 const redoc =
   ({
-    specEndpoint = '/openapi.json',
+    specEndpoint = '/api/openapi.json',
     docsUrl = '/docs',
     enabled = true,
   }: {

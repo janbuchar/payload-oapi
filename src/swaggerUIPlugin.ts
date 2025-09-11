@@ -2,7 +2,7 @@ import type { Config, Plugin } from 'payload'
 
 const swaggerUI =
   ({
-    specEndpoint = '/openapi.json',
+    specEndpoint = '/api/openapi.json',
     docsUrl = '/docs',
     enabled = true,
   }: {
