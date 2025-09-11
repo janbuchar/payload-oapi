@@ -102,26 +102,27 @@ const generateSchemaObject = (config: SanitizedConfig, collection: Collection): 
   }
 }
 
+type RequestBodyType = 'post' | 'patch'
+
 const requestBodySchema = (fields: Array<Field>, schema: JSONSchema4): JSONSchema4 => ({
   ...schema,
   properties: Object.fromEntries(
-    Object.entries(schema.properties ?? {})
-      .filter(([slug]) => !['id', 'createdAt', 'updatedAt'].includes(slug))
-      .map(([fieldName, schema]) => {
-        const field = fields.find(field => (field as FieldBase).name === fieldName)
-        if (field?.type === 'relationship') {
-          const target = Array.isArray(field.relationTo) ? field.relationTo : [field.relationTo]
-          return [fieldName, { type: 'string', description: `ID of the ${target.join('/')}` }]
-        }
+    Object.entries(schema.properties ?? {}).map(([fieldName, schema]) => {
+      const field = fields.find(field => (field as FieldBase).name === fieldName)
+      if (field?.type === 'relationship') {
+        const target = Array.isArray(field.relationTo) ? field.relationTo : [field.relationTo]
+        return [fieldName, { type: 'string', description: `ID of the ${target.join('/')}` }]
+      }
 
-        return [fieldName, schema]
-      }),
+      return [fieldName, schema]
+    }),
   ),
 })
 
 const generateRequestBodySchema = (
   config: SanitizedConfig,
   collection: Collection,
+  type: RequestBodyType,
 ): OpenAPIV3_1.RequestBodyObject => {
   const schema = entityToJSONSchema(
     config,
@@ -130,6 +131,20 @@ const generateRequestBodySchema = (
     'text',
     undefined,
   )
+
+  schema.properties = Object.fromEntries(
+    Object.entries(schema.properties ?? {}).filter(
+      ([property]) => !['id', 'createdAt', 'updatedAt'].includes(property),
+    ),
+  )
+  schema.required = ((schema.required ?? []) as string[]).filter(
+    property => schema.properties?.[property] !== undefined,
+  )
+
+  if (type === 'patch') {
+    schema.required = []
+  }
+
   return {
     description: collectionName(collection).singular,
     content: {
@@ -374,6 +389,7 @@ const generateCollectionOperations = async (
   return {
     [`/api/${slug}`]: {
       get: {
+        operationId: componentName('schemas', plural, { prefix: 'list' }),
         summary: `Retrieve a list of ${plural}`,
         tags,
         parameters: [
@@ -422,6 +438,7 @@ const generateCollectionOperations = async (
         security: (await isOpenToPublic(collection.config.access.read)) ? [] : [apiKeySecurity],
       },
       post: {
+        operationId: componentName('schemas', singular, { prefix: 'create' }),
         summary: `Create a new ${singular}`,
         tags,
         parameters: createQueryParams,
@@ -446,18 +463,25 @@ const generateCollectionOperations = async (
         },
       ],
       get: {
+        operationId: componentName('schemas', singular, {
+          prefix: 'find',
+          suffix: 'ById',
+        }),
         summary: `Find a ${singular} by ID`,
         tags,
         responses: singleObjectResponses,
         security: (await isOpenToPublic(collection.config.access.read)) ? [] : [apiKeySecurity],
       },
       patch: {
+        operationId: componentName('schemas', singular, { prefix: 'update' }),
         summary: `Update a ${singular}`,
         tags,
+        requestBody: composeRef('requestBodies', singular, { suffix: 'Patch' }),
         responses: singleObjectResponses,
         security: (await isOpenToPublic(collection.config.access.update)) ? [] : [apiKeySecurity],
       },
       delete: {
+        operationId: componentName('schemas', singular, { prefix: 'delete' }),
         summary: `Delete a ${singular}`,
         tags,
         responses: singleObjectResponses,
@@ -580,7 +604,10 @@ const generateComponents = (req: Pick<PayloadRequest, 'payload'>) => {
     requestBodies[componentName('requestBodies', singular)] = generateRequestBodySchema(
       req.payload.config,
       collection,
+      'post',
     )
+    requestBodies[componentName('requestBodies', singular, { suffix: 'Patch' })] =
+      generateRequestBodySchema(req.payload.config, collection, 'patch')
   }
 
   for (const global of req.payload.globals.config) {
