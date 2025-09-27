@@ -1,3 +1,4 @@
+import type { CustomEndpointDocumentation } from '@payload-oapi'
 import type { CollectionConfig } from 'payload'
 
 export const Categories: CollectionConfig = {
@@ -31,5 +32,87 @@ export const Pets: CollectionConfig = {
       ],
     },
     { name: 'lastUpdateAt', type: 'date', timezone: true },
+  ],
+  endpoints: [
+    {
+      handler: async () => {
+        return Response.json({ message: 'Pet deleted successfully' })
+      },
+      method: 'delete',
+      path: '/status/:status',
+      custom: {
+        openapi: {
+          summary: 'Delete pets by status',
+          description: 'Delete pets by status',
+          parameters: [
+            {
+              name: 'status',
+              in: 'path',
+              required: true,
+              schema: {
+                type: 'string',
+                enum: ['available', 'pending', 'sold'],
+              },
+            },
+          ],
+          responses: {
+            200: {
+              type: 'object',
+              properties: {
+                message: {
+                  type: 'string',
+                  description: 'A message indicating the result of the operation',
+                },
+              },
+            },
+          },
+        } as CustomEndpointDocumentation<'3.1'>,
+      },
+    },
+    {
+      handler: async () => {
+        return Response.json({ message: 'Pet added successfully' })
+      },
+      method: 'post',
+      path: '/status/:status',
+      custom: {
+        openapi: {
+          summary: 'Add a new pet by status',
+          description: 'Add a new pet by status',
+          parameters: [
+            {
+              name: 'status',
+              in: 'path',
+              required: true,
+              schema: {
+                type: 'string',
+                enum: ['available', 'pending', 'sold'],
+              },
+            },
+          ],
+          requestBody: {
+            type: 'object',
+            properties: {
+              name: {
+                type: 'string',
+                description: 'Name of the pet',
+              },
+            },
+            required: ['name'],
+          },
+          responses: {
+            200: {
+              type: 'object',
+              properties: {
+                message: {
+                  type: 'string',
+                  description: 'A message indicating the result of the operation',
+                },
+              },
+            },
+          },
+        } as CustomEndpointDocumentation<'3.1'>,
+      },
+    },
   ],
 }
