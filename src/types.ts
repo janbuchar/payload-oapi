@@ -19,15 +19,15 @@ export interface PluginOptions {
 
 export type SanitizedPluginOptions = Required<Omit<PluginOptions, 'enabled' | 'specEndpoint'>>
 
-type ParameterObject<TVersion extends OpenAPIVersion = '3.1'> = TVersion extends '3.1'
+type ParameterObject<TVersion extends OpenAPIVersion = '3.0'> = TVersion extends '3.1'
   ? OpenAPIV3_1.ParameterObject
   : OpenAPIV3.ParameterObject
 
-type SchemaObject<TVersion extends OpenAPIVersion = '3.1'> = TVersion extends '3.1'
+type SchemaObject<TVersion extends OpenAPIVersion = '3.0'> = TVersion extends '3.1'
   ? OpenAPIV3_1.SchemaObject
   : OpenAPIV3.SchemaObject
 
-export interface CustomEndpointDocumentation<TVersion extends OpenAPIVersion = '3.1'> {
+export interface CustomEndpointDocumentation<TVersion extends OpenAPIVersion = '3.0'> {
   description: string
   parameters?: ParameterObject<TVersion>[]
   queryParameters?: Record<
