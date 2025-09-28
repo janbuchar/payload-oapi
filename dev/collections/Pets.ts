@@ -1,4 +1,4 @@
-import type { CustomEndpointDocumentation } from '@payload-oapi'
+import { createCustomEndpointDocumentation } from '@payload-oapi'
 import type { CollectionConfig } from 'payload'
 
 export const Categories: CollectionConfig = {
@@ -41,7 +41,7 @@ export const Pets: CollectionConfig = {
       method: 'delete',
       path: '/status/:status',
       custom: {
-        openapi: {
+        openapi: createCustomEndpointDocumentation({
           summary: 'Delete pets by status',
           description: 'Delete pets by status',
           parameters: [
@@ -66,7 +66,7 @@ export const Pets: CollectionConfig = {
               },
             },
           },
-        } as CustomEndpointDocumentation<'3.1'>,
+        }),
       },
     },
     {
@@ -76,7 +76,7 @@ export const Pets: CollectionConfig = {
       method: 'post',
       path: '/status/:status',
       custom: {
-        openapi: {
+        openapi: createCustomEndpointDocumentation({
           summary: 'Add a new pet by status',
           description: 'Add a new pet by status',
           parameters: [
@@ -111,7 +111,7 @@ export const Pets: CollectionConfig = {
               },
             },
           },
-        } as CustomEndpointDocumentation<'3.1'>,
+        }),
       },
     },
   ],
