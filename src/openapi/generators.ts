@@ -5,6 +5,7 @@ import type { OpenAPIV3, OpenAPIV3_1 } from 'openapi-types'
 import type {
   Access,
   AccessArgs,
+  Block,
   Collection,
   Field,
   FieldBase,
@@ -64,6 +65,11 @@ const adjustRefTargets = (
       const global = payload.globals.config.find(({ slug }) => slug === name)
       if (global !== undefined) {
         return `#/components/schemas/${componentName('schemas', globalName(global))}`
+      }
+
+      const blockName = payload.blocks?.[name]?.slug
+      if (blockName !== undefined) {
+        return `#/components/schemas/${componentName('schemas', blockName)}`
       }
 
       throw new Error(`Unknown reference: ${name}`)
@@ -585,6 +591,45 @@ const generateGlobalOperations = async (
   }
 }
 
+const generateBlockSchemas = (
+  config: SanitizedConfig,
+  block: Block,
+): Record<string, JSONSchema4> => {
+  const schema = entityToJSONSchema(
+    config,
+    removeInterfaceNames(block as any), // TODO fix types in removeInterfaceNames
+    new Map(),
+    'text',
+    undefined,
+  )
+
+  const blockName = block.slug
+
+  // This is copy-paste from fieldsToJSONSchema
+  // I have no idea why there is no correct generation of the scheme,
+  // I hope that someone can understand this.
+  // This code is needed in order to add a compulsory blockType field to the block
+  const blockSchema = {
+    type: 'object',
+    additionalProperties: false,
+    properties: {
+      ...schema.properties,
+      blockType: {
+        const: blockName,
+      },
+    },
+    required: ['blockType', ...(schema.required as string[])],
+  }
+
+  return {
+    [componentName('schemas', blockName)]: { ...blockSchema, title: blockName },
+    [componentName('schemas', blockName, { suffix: 'Write' })]: {
+      ...requestBodySchema(block.fields, schema),
+      title: `${blockName} (writable fields)`,
+    },
+  } as JSONSchema4
+}
+
 const generateComponents = (req: Pick<PayloadRequest, 'payload'>) => {
   const schemas: Record<string, JSONSchema4> = {
     supportedTimezones: {
@@ -607,6 +652,12 @@ const generateComponents = (req: Pick<PayloadRequest, 'payload'>) => {
 
   for (const global of req.payload.globals.config) {
     Object.assign(schemas, generateGlobalSchemas(req.payload.config, global))
+  }
+
+  if (req.payload.blocks) {
+    for (const block of Object.values(req.payload.blocks)) {
+      Object.assign(schemas, generateBlockSchemas(req.payload.config, block))
+    }
   }
 
   const requestBodies: Record<string, OpenAPIV3_1.RequestBodyObject> = {}

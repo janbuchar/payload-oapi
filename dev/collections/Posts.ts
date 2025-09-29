@@ -19,5 +19,16 @@ export const Posts: CollectionConfig = {
       type: 'blocks',
       blocks: [MediaBlock],
     },
+    {
+      name: 'contentRef',
+      type: 'blocks',
+      /**
+       * Required to be empty, for compatibility reasons.
+       * @see https://payloadcms.com/docs/fields/blocks#block-references blockReferences docs
+       * @see https://github.com/janbuchar/payload-oapi/issues/59 blockReferences issue
+       */
+      blocks: [],
+      blockReferences: ['ReferenceBlock'],
+    },
   ],
 }
