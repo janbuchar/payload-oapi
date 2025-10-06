@@ -93,7 +93,7 @@ const generateSchemaObject = (config: SanitizedConfig, collection: Collection): 
     config,
     removeInterfaceNames(collection.config), // the `interfaceName` option causes `entityToJSONSchema` to add a reference to a non-existing schema
     new Map(),
-    'text',
+    config.db.defaultIDType,
     undefined,
   )
 
@@ -137,7 +137,7 @@ const generateRequestBodySchema = (
     config,
     removeInterfaceNames(collection.config), // the `interfaceName` option causes `entityToJSONSchema` to add a reference to a non-existing schema
     new Map(),
-    'text',
+    config.db.defaultIDType,
     undefined,
   )
 
@@ -541,7 +541,7 @@ const generateGlobalSchemas = (
     config,
     removeInterfaceNames(global),
     new Map(),
-    'text',
+    config.db.defaultIDType,
     undefined,
   )
 
