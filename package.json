@@ -45,6 +45,7 @@
   "devDependencies": {
     "@biomejs/biome": "^2.2.2",
     "@payloadcms/db-mongodb": "^3.53.0",
+    "@payloadcms/db-sqlite": "^3.58.0",
     "@payloadcms/next": "^3.53.0",
     "@payloadcms/richtext-lexical": "^3.53.0",
     "@types/react": "19.1.11",

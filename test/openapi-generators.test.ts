@@ -1,4 +1,5 @@
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
+import { sqliteAdapter } from '@payloadcms/db-sqlite'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { MongoMemoryServer } from 'mongodb-memory-server'
 import mongoose from 'mongoose'
@@ -23,10 +24,9 @@ describe('openapi generators', () => {
   })
 
   const buildPayload = async (
-    inputConfig: Omit<Config, 'db' | 'secret' | 'typescript'>,
+    inputConfig: Omit<Config, 'db' | 'secret' | 'typescript'> & Partial<Config>,
   ): Promise<Payload> => {
     const config = await buildConfig({
-      ...inputConfig,
       db: mongooseAdapter({
         url: mongo.getUri(),
       }),
@@ -34,6 +34,7 @@ describe('openapi generators', () => {
       typescript: {
         autoGenerate: false,
       },
+      ...inputConfig,
     })
 
     return await new BasePayload().init({ config })
@@ -199,4 +200,27 @@ describe('openapi generators', () => {
 
     expect(spec).toMatchSnapshot()
   })
+
+  test('respects default ID type from db adapter', async () => {
+    const payload = await buildPayload({
+      // SQLite uses numbers for IDs
+      db: sqliteAdapter({
+        client: { url: ':memory:', },
+      }),
+      collections: [Posts]
+    })
+
+    const spec = await generateV30Spec(
+      { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
+      {
+        openapiVersion: '3.0',
+        authEndpoint: '/api/auth',
+        metadata: { title: 'Test API', version: '1.0' },
+      },
+    )
+
+    expect(spec).toMatchSnapshot()
+    expect((spec as any).components?.schemas?.Post?.properties?.id?.type).toBe('number')
+  })
+
 })
