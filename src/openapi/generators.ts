@@ -37,6 +37,51 @@ async function jsonSchemaToOpenapiSchema(schema: JSONSchema4): Promise<OpenAPIV3
   return await (_jsonSchemaToOpenapiSchema as any)(schema)
 }
 
+// Helper function to check if PhoneNumber reference exists in generated schemas
+// This is more reliable than checking field types since phoneNumberField from plugin
+// may not expose its type directly
+const hasPhoneNumberReference = (payload: PayloadRequest['payload']): boolean => {
+  // Check all collections by generating schema and looking for PhoneNumber reference
+  for (const collection of Object.values(payload.collections)) {
+    try {
+      const schema = entityToJSONSchema(
+        payload.config,
+        removeInterfaceNames(collection.config),
+        new Map(),
+        'text',
+        undefined,
+      )
+      // Check if schema contains PhoneNumber reference
+      const schemaStr = JSON.stringify(schema)
+      if (schemaStr.includes('"#/definitions/PhoneNumber"') || schemaStr.includes('PhoneNumber')) {
+        return true
+      }
+    } catch (e) {
+      // If schema generation fails, continue checking other collections
+      continue
+    }
+  }
+  // Check all globals
+  for (const global of payload.globals.config) {
+    try {
+      const schema = entityToJSONSchema(
+        payload.config,
+        removeInterfaceNames(global),
+        new Map(),
+        'text',
+        undefined,
+      )
+      const schemaStr = JSON.stringify(schema)
+      if (schemaStr.includes('"#/definitions/PhoneNumber"') || schemaStr.includes('PhoneNumber')) {
+        return true
+      }
+    } catch (e) {
+      continue
+    }
+  }
+  return false
+}
+
 const adjustRefTargets = (
   payload: PayloadRequest['payload'],
   spec: Record<string, unknown>,
@@ -53,6 +98,11 @@ const adjustRefTargets = (
     subject[key] = value.replace(search, (_match, name: string) => {
       if (name === 'supportedTimezones') {
         return '#/components/schemas/supportedTimezones'
+      }
+
+      // Handle PhoneNumber custom field type from payload-phone-number-plugin
+      if (name === 'PhoneNumber') {
+        return '#/components/schemas/PhoneNumber'
       }
 
       const collection = payload.collections[name]
@@ -591,6 +641,16 @@ const generateComponents = (req: Pick<PayloadRequest, 'payload'>) => {
       type: 'string',
       example: 'Europe/Prague',
     },
+  }
+
+  // Only add PhoneNumber schema if it's actually used (has PhoneNumber reference in any schema)
+  if (hasPhoneNumberReference(req.payload)) {
+    schemas.PhoneNumber = {
+      type: 'string',
+      format: 'tel',
+      description: 'Phone number in E.164 format (e.g., +84901230000)',
+      example: '+84901230000',
+    }
   }
 
   for (const collection of Object.values(req.payload.collections)) {
