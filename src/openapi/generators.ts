@@ -18,10 +18,7 @@ import type {
 import { entityToJSONSchema } from 'payload'
 import type { PluginOptions } from '../types.js'
 import { isHiddenField } from '../utils/fields.js'
-import {
-  shouldIncludeCollection,
-  shouldIncludeGlobal,
-} from '../utils/filters.js'
+import { shouldIncludeCollection, shouldIncludeGlobal } from '../utils/filters.js'
 import { mapValuesAsync, visitObjectNodes } from '../utils/objects.js'
 import { type ComponentType, collectionName, componentName, globalName } from './naming.js'
 import { apiKeySecurity, generateSecuritySchemes } from './securitySchemes.js'
@@ -589,10 +586,7 @@ const generateGlobalOperations = async (
   }
 }
 
-const generateComponents = (
-  req: Pick<PayloadRequest, 'payload'>,
-  options: PluginOptions,
-) => {
+const generateComponents = (req: Pick<PayloadRequest, 'payload'>, options: PluginOptions) => {
   const schemas: Record<string, JSONSchema4> = {
     supportedTimezones: {
       type: 'string',
@@ -604,9 +598,7 @@ const generateComponents = (
     shouldIncludeCollection(collection, options),
   )
 
-  const globals = req.payload.globals.config.filter(global =>
-    shouldIncludeGlobal(global, options),
-  )
+  const globals = req.payload.globals.config.filter(global => shouldIncludeGlobal(global, options))
 
   for (const collection of collections) {
     const { singular } = collectionName(collection)
@@ -662,9 +654,7 @@ export const generateV30Spec = async (
   const collections = Object.values(req.payload.collections).filter(collection =>
     shouldIncludeCollection(collection, options),
   )
-  const globals = req.payload.globals.config.filter(global =>
-    shouldIncludeGlobal(global, options),
-  )
+  const globals = req.payload.globals.config.filter(global => shouldIncludeGlobal(global, options))
 
   const spec = {
     openapi: '3.0.3',
@@ -727,9 +717,7 @@ export const generateV31Spec = async (
   const collections = Object.values(req.payload.collections).filter(collection =>
     shouldIncludeCollection(collection, options),
   )
-  const globals = req.payload.globals.config.filter(global =>
-    shouldIncludeGlobal(global, options),
-  )
+  const globals = req.payload.globals.config.filter(global => shouldIncludeGlobal(global, options))
 
   const spec = {
     openapi: '3.1.0',

@@ -228,9 +228,7 @@ describe('openapi generators', () => {
         },
       )
 
-      expect(new Set(Object.keys(spec.paths))).toEqual(
-        new Set(['/api/posts', '/api/posts/{id}']),
-      )
+      expect(new Set(Object.keys(spec.paths))).toEqual(new Set(['/api/posts', '/api/posts/{id}']))
       expect(spec.paths['/api/categories']).toBeUndefined()
     })
 
