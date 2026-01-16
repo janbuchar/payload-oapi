@@ -12,6 +12,9 @@ export interface PluginOptions {
   specEndpoint?: string
   authEndpoint?: string
   metadata: OpenAPIMetadata
+  includeCollections?: string[]
+  excludeCollections?: string[]
+  hideInternalCollections?: boolean
+  includeGlobals?: string[]
+  excludeGlobals?: string[]
 }
-
-export type SanitizedPluginOptions = Required<Omit<PluginOptions, 'enabled' | 'specEndpoint'>>

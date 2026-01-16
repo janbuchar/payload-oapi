@@ -1,9 +1,9 @@
 import type { PayloadRequest } from 'payload'
 import { generateV30Spec, generateV31Spec } from './openapi/generators.js'
-import type { SanitizedPluginOptions } from './types.js'
+import type { PluginOptions } from './types.js'
 
 export const createOpenAPIRequestHandler =
-  (options: SanitizedPluginOptions) =>
+  (options: PluginOptions) =>
   async (req: PayloadRequest): Promise<Response> => {
     switch (options.openapiVersion) {
       case '3.0':

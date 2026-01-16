@@ -2,8 +2,16 @@ import { mongooseAdapter } from '@payloadcms/db-mongodb'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { MongoMemoryServer } from 'mongodb-memory-server'
 import mongoose from 'mongoose'
-import { BasePayload, buildConfig, type CollectionConfig, type Config, type Payload } from 'payload'
+import {
+  BasePayload,
+  buildConfig,
+  type CollectionConfig,
+  type Config,
+  type GlobalConfig,
+  type Payload,
+} from 'payload'
 import { afterEach, beforeAll, beforeEach, describe, expect, test } from 'vitest'
+
 import { generateV30Spec } from '../src/openapi/generators'
 
 const Posts: CollectionConfig = {
@@ -198,5 +206,146 @@ describe('openapi generators', () => {
     )
 
     expect(spec).toMatchSnapshot()
+  })
+
+  describe('collection filtering', () => {
+    test('includeCollections filters to specified collections only', async () => {
+      const Categories: CollectionConfig = {
+        slug: 'categories',
+        fields: [{ type: 'text', name: 'name' }],
+      }
+      const payload = await buildPayload({
+        collections: [Posts, Categories],
+      })
+
+      const spec = await generateV30Spec(
+        { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
+        {
+          openapiVersion: '3.0',
+          authEndpoint: '/api/auth',
+          metadata: { title: 'Test API', version: '1.0' },
+          includeCollections: ['posts'],
+        },
+      )
+
+      expect(new Set(Object.keys(spec.paths))).toEqual(
+        new Set(['/api/posts', '/api/posts/{id}']),
+      )
+      expect(spec.paths['/api/categories']).toBeUndefined()
+    })
+
+    test('excludeCollections excludes specified collections', async () => {
+      const payload = await buildPayload({
+        collections: [Posts],
+      })
+
+      const spec = await generateV30Spec(
+        { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
+        {
+          openapiVersion: '3.0',
+          authEndpoint: '/api/auth',
+          metadata: { title: 'Test API', version: '1.0' },
+          excludeCollections: ['users'],
+        },
+      )
+
+      expect(spec.paths['/api/posts']).toBeDefined()
+      expect(spec.paths['/api/users']).toBeUndefined()
+    })
+
+    test('hideInternalCollections removes payload-* collections from spec', async () => {
+      const payload = await buildPayload({
+        collections: [Posts],
+      })
+
+      const spec = await generateV30Spec(
+        { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
+        {
+          openapiVersion: '3.0',
+          authEndpoint: '/api/auth',
+          metadata: { title: 'Test API', version: '1.0' },
+          hideInternalCollections: true,
+        },
+      )
+
+      expect(spec.paths['/api/posts']).toBeDefined()
+      expect(spec.paths['/api/payload-preferences']).toBeUndefined()
+      expect(spec.paths['/api/payload-migrations']).toBeUndefined()
+      expect(spec.paths['/api/payload-locked-documents']).toBeUndefined()
+    })
+
+    test('empty includeCollections array results in no collections', async () => {
+      const payload = await buildPayload({
+        collections: [Posts],
+      })
+
+      const spec = await generateV30Spec(
+        { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
+        {
+          openapiVersion: '3.0',
+          authEndpoint: '/api/auth',
+          metadata: { title: 'Test API', version: '1.0' },
+          includeCollections: [],
+        },
+      )
+
+      expect(Object.keys(spec.paths).filter(path => path.startsWith('/api/'))).toEqual([])
+    })
+  })
+
+  describe('global filtering', () => {
+    test('includeGlobals filters to specified globals only', async () => {
+      const Settings: GlobalConfig = {
+        slug: 'settings',
+        fields: [{ type: 'text', name: 'siteName' }],
+      }
+      const Footer: GlobalConfig = {
+        slug: 'footer',
+        fields: [{ type: 'text', name: 'copyright' }],
+      }
+      const payload = await buildPayload({
+        globals: [Settings, Footer],
+      })
+
+      const spec = await generateV30Spec(
+        { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
+        {
+          openapiVersion: '3.0',
+          authEndpoint: '/api/auth',
+          metadata: { title: 'Test API', version: '1.0' },
+          includeGlobals: ['settings'],
+        },
+      )
+
+      expect(spec.paths['/api/globals/settings']).toBeDefined()
+      expect(spec.paths['/api/globals/footer']).toBeUndefined()
+    })
+
+    test('excludeGlobals excludes specified globals', async () => {
+      const Settings: GlobalConfig = {
+        slug: 'settings',
+        fields: [{ type: 'text', name: 'siteName' }],
+      }
+      const Footer: GlobalConfig = {
+        slug: 'footer',
+        fields: [{ type: 'text', name: 'copyright' }],
+      }
+      const payload = await buildPayload({
+        globals: [Settings, Footer],
+      })
+
+      const spec = await generateV30Spec(
+        { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
+        {
+          openapiVersion: '3.0',
+          authEndpoint: '/api/auth',
+          metadata: { title: 'Test API', version: '1.0' },
+          excludeGlobals: ['footer'],
+        },
+      )
+
+      expect(spec.paths['/api/globals/settings']).toBeDefined()
+      expect(spec.paths['/api/globals/footer']).toBeUndefined()
+    })
   })
 })
