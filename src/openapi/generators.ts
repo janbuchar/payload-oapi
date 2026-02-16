@@ -16,7 +16,7 @@ import type {
   SelectField,
 } from 'payload'
 import { entityToJSONSchema } from 'payload'
-import type { PluginOptions } from '../types.js'
+import type { SanitizedPluginOptions } from '../types.js'
 import { isHiddenField } from '../utils/fields.js'
 import { shouldIncludeCollection, shouldIncludeGlobal } from '../utils/filters.js'
 import { mapValuesAsync, visitObjectNodes } from '../utils/objects.js'
@@ -586,7 +586,10 @@ const generateGlobalOperations = async (
   }
 }
 
-const generateComponents = (req: Pick<PayloadRequest, 'payload'>, options: PluginOptions) => {
+const generateComponents = (
+  req: Pick<PayloadRequest, 'payload'>,
+  options: SanitizedPluginOptions,
+) => {
   const schemas: Record<string, JSONSchema4> = {
     supportedTimezones: {
       type: 'string',
@@ -647,7 +650,7 @@ const generateComponents = (req: Pick<PayloadRequest, 'payload'>, options: Plugi
 
 export const generateV30Spec = async (
   req: Pick<PayloadRequest, 'payload' | 'protocol' | 'headers'>,
-  options: PluginOptions,
+  options: SanitizedPluginOptions,
 ): Promise<OpenAPIV3.Document> => {
   const { schemas, requestBodies, responses } = generateComponents(req, options)
 
@@ -710,7 +713,7 @@ export const generateV30Spec = async (
 
 export const generateV31Spec = async (
   req: Pick<PayloadRequest, 'payload' | 'protocol' | 'headers'>,
-  options: PluginOptions,
+  options: SanitizedPluginOptions,
 ): Promise<OpenAPIV3_1.Document> => {
   const { schemas, requestBodies, responses } = generateComponents(req, options)
 

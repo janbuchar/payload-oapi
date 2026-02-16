@@ -18,3 +18,5 @@ export interface PluginOptions {
   includeGlobals?: string[]
   excludeGlobals?: string[]
 }
+
+export type SanitizedPluginOptions = Required<Omit<PluginOptions, 'enabled' | 'specEndpoint'>>
