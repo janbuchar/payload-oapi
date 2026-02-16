@@ -1990,7 +1990,10 @@ exports[`openapi generators > converts empty config correctly 1`] = `
         "operationId": "findPayloadLockedDocumentById",
         "responses": {
           "200": {
-            "$ref": "#/components/responses/MutatePayloadLockedDocumentResponse",
+            "$ref": "#/components/responses/PayloadLockedDocumentResponse",
+          },
+          "404": {
+            "$ref": "#/components/responses/PayloadLockedDocumentNotFoundResponse",
           },
         },
         "security": [
@@ -2042,10 +2045,7 @@ exports[`openapi generators > converts empty config correctly 1`] = `
         },
         "responses": {
           "200": {
-            "$ref": "#/components/responses/PayloadLockedDocumentResponse",
-          },
-          "404": {
-            "$ref": "#/components/responses/PayloadLockedDocumentNotFoundResponse",
+            "$ref": "#/components/responses/MutatePayloadLockedDocumentResponse",
           },
         },
         "security": [
@@ -2218,7 +2218,10 @@ exports[`openapi generators > converts empty config correctly 1`] = `
         "operationId": "findPayloadMigrationById",
         "responses": {
           "200": {
-            "$ref": "#/components/responses/MutatePayloadMigrationResponse",
+            "$ref": "#/components/responses/PayloadMigrationResponse",
+          },
+          "404": {
+            "$ref": "#/components/responses/PayloadMigrationNotFoundResponse",
           },
         },
         "security": [
@@ -2270,10 +2273,7 @@ exports[`openapi generators > converts empty config correctly 1`] = `
         },
         "responses": {
           "200": {
-            "$ref": "#/components/responses/PayloadMigrationResponse",
-          },
-          "404": {
-            "$ref": "#/components/responses/PayloadMigrationNotFoundResponse",
+            "$ref": "#/components/responses/MutatePayloadMigrationResponse",
           },
         },
         "security": [
@@ -2444,7 +2444,10 @@ exports[`openapi generators > converts empty config correctly 1`] = `
         "operationId": "findPayloadPreferenceById",
         "responses": {
           "200": {
-            "$ref": "#/components/responses/MutatePayloadPreferenceResponse",
+            "$ref": "#/components/responses/PayloadPreferenceResponse",
+          },
+          "404": {
+            "$ref": "#/components/responses/PayloadPreferenceNotFoundResponse",
           },
         },
         "security": [
@@ -2496,10 +2499,7 @@ exports[`openapi generators > converts empty config correctly 1`] = `
         },
         "responses": {
           "200": {
-            "$ref": "#/components/responses/PayloadPreferenceResponse",
-          },
-          "404": {
-            "$ref": "#/components/responses/PayloadPreferenceNotFoundResponse",
+            "$ref": "#/components/responses/MutatePayloadPreferenceResponse",
           },
         },
         "security": [
@@ -2682,7 +2682,10 @@ exports[`openapi generators > converts empty config correctly 1`] = `
         "operationId": "findUsersById",
         "responses": {
           "200": {
-            "$ref": "#/components/responses/MutateUsersResponse",
+            "$ref": "#/components/responses/UsersResponse",
+          },
+          "404": {
+            "$ref": "#/components/responses/UsersNotFoundResponse",
           },
         },
         "security": [
@@ -2734,10 +2737,7 @@ exports[`openapi generators > converts empty config correctly 1`] = `
         },
         "responses": {
           "200": {
-            "$ref": "#/components/responses/UsersResponse",
-          },
-          "404": {
-            "$ref": "#/components/responses/UsersNotFoundResponse",
+            "$ref": "#/components/responses/MutateUsersResponse",
           },
         },
         "security": [
@@ -5383,7 +5383,10 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         "operationId": "findPageById",
         "responses": {
           "200": {
-            "$ref": "#/components/responses/MutatePageResponse",
+            "$ref": "#/components/responses/PageResponse",
+          },
+          "404": {
+            "$ref": "#/components/responses/PageNotFoundResponse",
           },
         },
         "security": [
@@ -5435,10 +5438,7 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         },
         "responses": {
           "200": {
-            "$ref": "#/components/responses/PageResponse",
-          },
-          "404": {
-            "$ref": "#/components/responses/PageNotFoundResponse",
+            "$ref": "#/components/responses/MutatePageResponse",
           },
         },
         "security": [
@@ -5609,7 +5609,10 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         "operationId": "findPayloadLockedDocumentById",
         "responses": {
           "200": {
-            "$ref": "#/components/responses/MutatePayloadLockedDocumentResponse",
+            "$ref": "#/components/responses/PayloadLockedDocumentResponse",
+          },
+          "404": {
+            "$ref": "#/components/responses/PayloadLockedDocumentNotFoundResponse",
           },
         },
         "security": [
@@ -5661,10 +5664,7 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         },
         "responses": {
           "200": {
-            "$ref": "#/components/responses/PayloadLockedDocumentResponse",
-          },
-          "404": {
-            "$ref": "#/components/responses/PayloadLockedDocumentNotFoundResponse",
+            "$ref": "#/components/responses/MutatePayloadLockedDocumentResponse",
           },
         },
         "security": [
@@ -5837,7 +5837,10 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         "operationId": "findPayloadMigrationById",
         "responses": {
           "200": {
-            "$ref": "#/components/responses/MutatePayloadMigrationResponse",
+            "$ref": "#/components/responses/PayloadMigrationResponse",
+          },
+          "404": {
+            "$ref": "#/components/responses/PayloadMigrationNotFoundResponse",
           },
         },
         "security": [
@@ -5889,10 +5892,7 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         },
         "responses": {
           "200": {
-            "$ref": "#/components/responses/PayloadMigrationResponse",
-          },
-          "404": {
-            "$ref": "#/components/responses/PayloadMigrationNotFoundResponse",
+            "$ref": "#/components/responses/MutatePayloadMigrationResponse",
           },
         },
         "security": [
@@ -6063,7 +6063,10 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         "operationId": "findPayloadPreferenceById",
         "responses": {
           "200": {
-            "$ref": "#/components/responses/MutatePayloadPreferenceResponse",
+            "$ref": "#/components/responses/PayloadPreferenceResponse",
+          },
+          "404": {
+            "$ref": "#/components/responses/PayloadPreferenceNotFoundResponse",
           },
         },
         "security": [
@@ -6115,10 +6118,7 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         },
         "responses": {
           "200": {
-            "$ref": "#/components/responses/PayloadPreferenceResponse",
-          },
-          "404": {
-            "$ref": "#/components/responses/PayloadPreferenceNotFoundResponse",
+            "$ref": "#/components/responses/MutatePayloadPreferenceResponse",
           },
         },
         "security": [
@@ -6301,7 +6301,10 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         "operationId": "findUsersById",
         "responses": {
           "200": {
-            "$ref": "#/components/responses/MutateUsersResponse",
+            "$ref": "#/components/responses/UsersResponse",
+          },
+          "404": {
+            "$ref": "#/components/responses/UsersNotFoundResponse",
           },
         },
         "security": [
@@ -6353,10 +6356,7 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         },
         "responses": {
           "200": {
-            "$ref": "#/components/responses/UsersResponse",
-          },
-          "404": {
-            "$ref": "#/components/responses/UsersNotFoundResponse",
+            "$ref": "#/components/responses/MutateUsersResponse",
           },
         },
         "security": [
@@ -8863,7 +8863,10 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         "operationId": "findEventById",
         "responses": {
           "200": {
-            "$ref": "#/components/responses/MutateEventResponse",
+            "$ref": "#/components/responses/EventResponse",
+          },
+          "404": {
+            "$ref": "#/components/responses/EventNotFoundResponse",
           },
         },
         "security": [
@@ -8915,10 +8918,7 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         },
         "responses": {
           "200": {
-            "$ref": "#/components/responses/EventResponse",
-          },
-          "404": {
-            "$ref": "#/components/responses/EventNotFoundResponse",
+            "$ref": "#/components/responses/MutateEventResponse",
           },
         },
         "security": [
@@ -9089,7 +9089,10 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         "operationId": "findPayloadLockedDocumentById",
         "responses": {
           "200": {
-            "$ref": "#/components/responses/MutatePayloadLockedDocumentResponse",
+            "$ref": "#/components/responses/PayloadLockedDocumentResponse",
+          },
+          "404": {
+            "$ref": "#/components/responses/PayloadLockedDocumentNotFoundResponse",
           },
         },
         "security": [
@@ -9141,10 +9144,7 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         },
         "responses": {
           "200": {
-            "$ref": "#/components/responses/PayloadLockedDocumentResponse",
-          },
-          "404": {
-            "$ref": "#/components/responses/PayloadLockedDocumentNotFoundResponse",
+            "$ref": "#/components/responses/MutatePayloadLockedDocumentResponse",
           },
         },
         "security": [
@@ -9317,7 +9317,10 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         "operationId": "findPayloadMigrationById",
         "responses": {
           "200": {
-            "$ref": "#/components/responses/MutatePayloadMigrationResponse",
+            "$ref": "#/components/responses/PayloadMigrationResponse",
+          },
+          "404": {
+            "$ref": "#/components/responses/PayloadMigrationNotFoundResponse",
           },
         },
         "security": [
@@ -9369,10 +9372,7 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         },
         "responses": {
           "200": {
-            "$ref": "#/components/responses/PayloadMigrationResponse",
-          },
-          "404": {
-            "$ref": "#/components/responses/PayloadMigrationNotFoundResponse",
+            "$ref": "#/components/responses/MutatePayloadMigrationResponse",
           },
         },
         "security": [
@@ -9543,7 +9543,10 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         "operationId": "findPayloadPreferenceById",
         "responses": {
           "200": {
-            "$ref": "#/components/responses/MutatePayloadPreferenceResponse",
+            "$ref": "#/components/responses/PayloadPreferenceResponse",
+          },
+          "404": {
+            "$ref": "#/components/responses/PayloadPreferenceNotFoundResponse",
           },
         },
         "security": [
@@ -9595,10 +9598,7 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         },
         "responses": {
           "200": {
-            "$ref": "#/components/responses/PayloadPreferenceResponse",
-          },
-          "404": {
-            "$ref": "#/components/responses/PayloadPreferenceNotFoundResponse",
+            "$ref": "#/components/responses/MutatePayloadPreferenceResponse",
           },
         },
         "security": [
@@ -9781,7 +9781,10 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         "operationId": "findUsersById",
         "responses": {
           "200": {
-            "$ref": "#/components/responses/MutateUsersResponse",
+            "$ref": "#/components/responses/UsersResponse",
+          },
+          "404": {
+            "$ref": "#/components/responses/UsersNotFoundResponse",
           },
         },
         "security": [
@@ -9833,10 +9836,7 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         },
         "responses": {
           "200": {
-            "$ref": "#/components/responses/UsersResponse",
-          },
-          "404": {
-            "$ref": "#/components/responses/UsersNotFoundResponse",
+            "$ref": "#/components/responses/MutateUsersResponse",
           },
         },
         "security": [
@@ -11906,7 +11906,10 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
         "operationId": "findPayloadLockedDocumentById",
         "responses": {
           "200": {
-            "$ref": "#/components/responses/MutatePayloadLockedDocumentResponse",
+            "$ref": "#/components/responses/PayloadLockedDocumentResponse",
+          },
+          "404": {
+            "$ref": "#/components/responses/PayloadLockedDocumentNotFoundResponse",
           },
         },
         "security": [
@@ -11958,10 +11961,7 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
         },
         "responses": {
           "200": {
-            "$ref": "#/components/responses/PayloadLockedDocumentResponse",
-          },
-          "404": {
-            "$ref": "#/components/responses/PayloadLockedDocumentNotFoundResponse",
+            "$ref": "#/components/responses/MutatePayloadLockedDocumentResponse",
           },
         },
         "security": [
@@ -12134,7 +12134,10 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
         "operationId": "findPayloadMigrationById",
         "responses": {
           "200": {
-            "$ref": "#/components/responses/MutatePayloadMigrationResponse",
+            "$ref": "#/components/responses/PayloadMigrationResponse",
+          },
+          "404": {
+            "$ref": "#/components/responses/PayloadMigrationNotFoundResponse",
           },
         },
         "security": [
@@ -12186,10 +12189,7 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
         },
         "responses": {
           "200": {
-            "$ref": "#/components/responses/PayloadMigrationResponse",
-          },
-          "404": {
-            "$ref": "#/components/responses/PayloadMigrationNotFoundResponse",
+            "$ref": "#/components/responses/MutatePayloadMigrationResponse",
           },
         },
         "security": [
@@ -12360,7 +12360,10 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
         "operationId": "findPayloadPreferenceById",
         "responses": {
           "200": {
-            "$ref": "#/components/responses/MutatePayloadPreferenceResponse",
+            "$ref": "#/components/responses/PayloadPreferenceResponse",
+          },
+          "404": {
+            "$ref": "#/components/responses/PayloadPreferenceNotFoundResponse",
           },
         },
         "security": [
@@ -12412,10 +12415,7 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
         },
         "responses": {
           "200": {
-            "$ref": "#/components/responses/PayloadPreferenceResponse",
-          },
-          "404": {
-            "$ref": "#/components/responses/PayloadPreferenceNotFoundResponse",
+            "$ref": "#/components/responses/MutatePayloadPreferenceResponse",
           },
         },
         "security": [
@@ -12598,7 +12598,10 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
         "operationId": "findUserById",
         "responses": {
           "200": {
-            "$ref": "#/components/responses/MutateUserResponse",
+            "$ref": "#/components/responses/UserResponse",
+          },
+          "404": {
+            "$ref": "#/components/responses/UserNotFoundResponse",
           },
         },
         "security": [
@@ -12650,10 +12653,7 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
         },
         "responses": {
           "200": {
-            "$ref": "#/components/responses/UserResponse",
-          },
-          "404": {
-            "$ref": "#/components/responses/UserNotFoundResponse",
+            "$ref": "#/components/responses/MutateUserResponse",
           },
         },
         "security": [
@@ -15024,7 +15024,10 @@ exports[`openapi generators > handles non-default collection 1`] = `
         "operationId": "findPayloadLockedDocumentById",
         "responses": {
           "200": {
-            "$ref": "#/components/responses/MutatePayloadLockedDocumentResponse",
+            "$ref": "#/components/responses/PayloadLockedDocumentResponse",
+          },
+          "404": {
+            "$ref": "#/components/responses/PayloadLockedDocumentNotFoundResponse",
           },
         },
         "security": [
@@ -15076,10 +15079,7 @@ exports[`openapi generators > handles non-default collection 1`] = `
         },
         "responses": {
           "200": {
-            "$ref": "#/components/responses/PayloadLockedDocumentResponse",
-          },
-          "404": {
-            "$ref": "#/components/responses/PayloadLockedDocumentNotFoundResponse",
+            "$ref": "#/components/responses/MutatePayloadLockedDocumentResponse",
           },
         },
         "security": [
@@ -15252,7 +15252,10 @@ exports[`openapi generators > handles non-default collection 1`] = `
         "operationId": "findPayloadMigrationById",
         "responses": {
           "200": {
-            "$ref": "#/components/responses/MutatePayloadMigrationResponse",
+            "$ref": "#/components/responses/PayloadMigrationResponse",
+          },
+          "404": {
+            "$ref": "#/components/responses/PayloadMigrationNotFoundResponse",
           },
         },
         "security": [
@@ -15304,10 +15307,7 @@ exports[`openapi generators > handles non-default collection 1`] = `
         },
         "responses": {
           "200": {
-            "$ref": "#/components/responses/PayloadMigrationResponse",
-          },
-          "404": {
-            "$ref": "#/components/responses/PayloadMigrationNotFoundResponse",
+            "$ref": "#/components/responses/MutatePayloadMigrationResponse",
           },
         },
         "security": [
@@ -15478,7 +15478,10 @@ exports[`openapi generators > handles non-default collection 1`] = `
         "operationId": "findPayloadPreferenceById",
         "responses": {
           "200": {
-            "$ref": "#/components/responses/MutatePayloadPreferenceResponse",
+            "$ref": "#/components/responses/PayloadPreferenceResponse",
+          },
+          "404": {
+            "$ref": "#/components/responses/PayloadPreferenceNotFoundResponse",
           },
         },
         "security": [
@@ -15530,10 +15533,7 @@ exports[`openapi generators > handles non-default collection 1`] = `
         },
         "responses": {
           "200": {
-            "$ref": "#/components/responses/PayloadPreferenceResponse",
-          },
-          "404": {
-            "$ref": "#/components/responses/PayloadPreferenceNotFoundResponse",
+            "$ref": "#/components/responses/MutatePayloadPreferenceResponse",
           },
         },
         "security": [
@@ -15704,7 +15704,10 @@ exports[`openapi generators > handles non-default collection 1`] = `
         "operationId": "findPostById",
         "responses": {
           "200": {
-            "$ref": "#/components/responses/MutatePostResponse",
+            "$ref": "#/components/responses/PostResponse",
+          },
+          "404": {
+            "$ref": "#/components/responses/PostNotFoundResponse",
           },
         },
         "security": [
@@ -15756,10 +15759,7 @@ exports[`openapi generators > handles non-default collection 1`] = `
         },
         "responses": {
           "200": {
-            "$ref": "#/components/responses/PostResponse",
-          },
-          "404": {
-            "$ref": "#/components/responses/PostNotFoundResponse",
+            "$ref": "#/components/responses/MutatePostResponse",
           },
         },
         "security": [
@@ -15942,7 +15942,10 @@ exports[`openapi generators > handles non-default collection 1`] = `
         "operationId": "findUsersById",
         "responses": {
           "200": {
-            "$ref": "#/components/responses/MutateUsersResponse",
+            "$ref": "#/components/responses/UsersResponse",
+          },
+          "404": {
+            "$ref": "#/components/responses/UsersNotFoundResponse",
           },
         },
         "security": [
@@ -15994,10 +15997,7 @@ exports[`openapi generators > handles non-default collection 1`] = `
         },
         "responses": {
           "200": {
-            "$ref": "#/components/responses/UsersResponse",
-          },
-          "404": {
-            "$ref": "#/components/responses/UsersNotFoundResponse",
+            "$ref": "#/components/responses/MutateUsersResponse",
           },
         },
         "security": [

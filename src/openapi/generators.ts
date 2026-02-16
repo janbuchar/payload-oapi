@@ -481,9 +481,7 @@ const generateCollectionOperations = async (
         }),
         summary: `Find a ${singular} by ID`,
         tags,
-        responses: {
-          200: composeRef('responses', singular, { prefix: 'Mutate' }),
-        },
+        responses: singleObjectResponses,
         security: (await isOpenToPublic(collection.config.access.read)) ? [] : [apiKeySecurity],
       },
       patch: {
@@ -491,7 +489,9 @@ const generateCollectionOperations = async (
         summary: `Update a ${singular}`,
         tags,
         requestBody: composeRef('requestBodies', singular, { suffix: 'Patch' }),
-        responses: singleObjectResponses,
+        responses: {
+          200: composeRef('responses', singular, { prefix: 'Mutate' }),
+        },
         security: (await isOpenToPublic(collection.config.access.update)) ? [] : [apiKeySecurity],
       },
       delete: {
