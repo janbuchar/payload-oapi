@@ -1,22 +1,22 @@
 import type { Collection, SanitizedGlobalConfig } from 'payload'
-import type { PluginOptions } from '../types.js'
+import type { FilterOptions } from '../types.js'
 
 export const shouldIncludeCollection = (
   collection: Collection,
-  options: PluginOptions,
+  filters: FilterOptions,
 ): boolean => {
   const { slug } = collection.config
 
-  if (options.hideInternalCollections && slug.startsWith('payload-')) {
+  if (filters.hideInternalCollections && slug.startsWith('payload-')) {
     return false
   }
 
-  if (options.excludeCollections?.includes(slug)) {
+  if (filters.excludeCollections?.includes(slug)) {
     return false
   }
 
-  if (options.includeCollections !== undefined) {
-    return options.includeCollections.includes(slug)
+  if (filters.includeCollections !== undefined) {
+    return filters.includeCollections.includes(slug)
   }
 
   return true
@@ -24,16 +24,16 @@ export const shouldIncludeCollection = (
 
 export const shouldIncludeGlobal = (
   global: SanitizedGlobalConfig,
-  options: PluginOptions,
+  filters: FilterOptions,
 ): boolean => {
   const { slug } = global
 
-  if (options.excludeGlobals?.includes(slug)) {
+  if (filters.excludeGlobals?.includes(slug)) {
     return false
   }
 
-  if (options.includeGlobals !== undefined) {
-    return options.includeGlobals.includes(slug)
+  if (filters.includeGlobals !== undefined) {
+    return filters.includeGlobals.includes(slug)
   }
 
   return true

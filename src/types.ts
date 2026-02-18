@@ -6,17 +6,21 @@ export interface OpenAPIMetadata {
   description?: string
 }
 
+export interface FilterOptions {
+  includeCollections?: string[]
+  excludeCollections?: string[]
+  hideInternalCollections?: boolean
+  includeGlobals?: string[]
+  excludeGlobals?: string[]
+}
+
 export interface PluginOptions {
   enabled?: boolean
   openapiVersion?: OpenAPIVersion
   specEndpoint?: string
   authEndpoint?: string
   metadata: OpenAPIMetadata
-  includeCollections?: string[]
-  excludeCollections?: string[]
-  hideInternalCollections?: boolean
-  includeGlobals?: string[]
-  excludeGlobals?: string[]
+  filters?: FilterOptions
 }
 
 export type SanitizedPluginOptions = Required<Omit<PluginOptions, 'enabled' | 'specEndpoint'>>

@@ -598,10 +598,12 @@ const generateComponents = (
   }
 
   const collections = Object.values(req.payload.collections).filter(collection =>
-    shouldIncludeCollection(collection, options),
+    shouldIncludeCollection(collection, options.filters),
   )
 
-  const globals = req.payload.globals.config.filter(global => shouldIncludeGlobal(global, options))
+  const globals = req.payload.globals.config.filter(global =>
+    shouldIncludeGlobal(global, options.filters),
+  )
 
   for (const collection of collections) {
     const { singular } = collectionName(collection)
@@ -654,10 +656,11 @@ export const generateV30Spec = async (
 ): Promise<OpenAPIV3.Document> => {
   const { schemas, requestBodies, responses } = generateComponents(req, options)
 
+  const filters = options.filters ?? {}
   const collections = Object.values(req.payload.collections).filter(collection =>
-    shouldIncludeCollection(collection, options),
+    shouldIncludeCollection(collection, filters),
   )
-  const globals = req.payload.globals.config.filter(global => shouldIncludeGlobal(global, options))
+  const globals = req.payload.globals.config.filter(global => shouldIncludeGlobal(global, filters))
 
   const spec = {
     openapi: '3.0.3',
@@ -669,7 +672,7 @@ export const generateV30Spec = async (
       ...(await Promise.all(globals.map(generateGlobalOperations))),
     ),
     components: {
-      securitySchemes: generateSecuritySchemes(options.authEndpoint ?? '/openapi-auth'),
+      securitySchemes: generateSecuritySchemes(options.authEndpoint),
       schemas: await mapValuesAsync(jsonSchemaToOpenapiSchema, schemas),
       requestBodies: await mapValuesAsync(
         async requestBody => ({
@@ -717,10 +720,11 @@ export const generateV31Spec = async (
 ): Promise<OpenAPIV3_1.Document> => {
   const { schemas, requestBodies, responses } = generateComponents(req, options)
 
+  const filters = options.filters ?? {}
   const collections = Object.values(req.payload.collections).filter(collection =>
-    shouldIncludeCollection(collection, options),
+    shouldIncludeCollection(collection, filters),
   )
-  const globals = req.payload.globals.config.filter(global => shouldIncludeGlobal(global, options))
+  const globals = req.payload.globals.config.filter(global => shouldIncludeGlobal(global, filters))
 
   const spec = {
     openapi: '3.1.0',
@@ -732,7 +736,7 @@ export const generateV31Spec = async (
       ...(await Promise.all(globals.map(generateGlobalOperations))),
     ),
     components: {
-      securitySchemes: generateSecuritySchemes(options.authEndpoint ?? '/openapi-auth'),
+      securitySchemes: generateSecuritySchemes(options.authEndpoint),
       schemas: schemas as Record<string, OpenAPIV3_1.SchemaObject>,
       requestBodies,
       responses,

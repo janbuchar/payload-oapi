@@ -63,6 +63,7 @@ describe('openapi generators', () => {
         openapiVersion: '3.0',
         authEndpoint: '/api/auth',
         metadata: { title: 'Test API', version: '1.0' },
+        filters: {},
       },
     )
 
@@ -93,6 +94,7 @@ describe('openapi generators', () => {
         openapiVersion: '3.0',
         authEndpoint: '/api/auth',
         metadata: { title: 'Test API', version: '1.0' },
+        filters: {},
       },
     )
 
@@ -142,6 +144,7 @@ describe('openapi generators', () => {
         openapiVersion: '3.0',
         authEndpoint: '/api/auth',
         metadata: { title: 'Test API', version: '1.0' },
+        filters: {},
       },
     )
 
@@ -175,6 +178,7 @@ describe('openapi generators', () => {
         openapiVersion: '3.0',
         authEndpoint: '/api/auth',
         metadata: { title: 'Test API', version: '1.0' },
+        filters: {},
       },
     )
 
@@ -202,6 +206,7 @@ describe('openapi generators', () => {
         openapiVersion: '3.0',
         authEndpoint: '/api/auth',
         metadata: { title: 'Test API', version: '1.0' },
+        filters: {},
       },
     )
 
@@ -224,7 +229,7 @@ describe('openapi generators', () => {
           openapiVersion: '3.0',
           authEndpoint: '/api/auth',
           metadata: { title: 'Test API', version: '1.0' },
-          includeCollections: ['posts'],
+          filters: { includeCollections: ['posts'] },
         },
       )
 
@@ -243,7 +248,7 @@ describe('openapi generators', () => {
           openapiVersion: '3.0',
           authEndpoint: '/api/auth',
           metadata: { title: 'Test API', version: '1.0' },
-          excludeCollections: ['users'],
+          filters: { excludeCollections: ['users'] },
         },
       )
 
@@ -262,7 +267,7 @@ describe('openapi generators', () => {
           openapiVersion: '3.0',
           authEndpoint: '/api/auth',
           metadata: { title: 'Test API', version: '1.0' },
-          hideInternalCollections: true,
+          filters: { hideInternalCollections: true },
         },
       )
 
@@ -283,7 +288,7 @@ describe('openapi generators', () => {
           openapiVersion: '3.0',
           authEndpoint: '/api/auth',
           metadata: { title: 'Test API', version: '1.0' },
-          includeCollections: [],
+          filters: { includeCollections: [] },
         },
       )
 
@@ -311,7 +316,7 @@ describe('openapi generators', () => {
           openapiVersion: '3.0',
           authEndpoint: '/api/auth',
           metadata: { title: 'Test API', version: '1.0' },
-          includeGlobals: ['settings'],
+          filters: { includeGlobals: ['settings'] },
         },
       )
 
@@ -338,7 +343,7 @@ describe('openapi generators', () => {
           openapiVersion: '3.0',
           authEndpoint: '/api/auth',
           metadata: { title: 'Test API', version: '1.0' },
-          excludeGlobals: ['footer'],
+          filters: { excludeGlobals: ['footer'] },
         },
       )
 

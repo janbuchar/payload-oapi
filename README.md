@@ -71,7 +71,7 @@ buildConfig({
 
 ## 3. Filter collections and globals (optional)
 
-Control which collections and globals appear in the OpenAPI spec:
+Control which collections and globals appear in the OpenAPI spec using the `filters` option:
 
 - `includeCollections` / `excludeCollections` — filter collections by slug
 - `includeGlobals` / `excludeGlobals` — filter globals by slug
@@ -83,9 +83,11 @@ Example:
 openapi({
   openapiVersion: '3.0',
   metadata: { title: 'Dev API', version: '0.0.1' },
-  includeCollections: ['posts', 'categories'],
-  excludeGlobals: ['footer'],
-  hideInternalCollections: true,
+  filters: {
+    includeCollections: ['posts', 'categories'],
+    excludeGlobals: ['footer'],
+    hideInternalCollections: true,
+  },
 })
 ```
 
