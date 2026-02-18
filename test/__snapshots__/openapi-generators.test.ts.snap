@@ -196,6 +196,50 @@ exports[`openapi generators > converts empty config correctly 1`] = `
         },
         "description": "Payload Preference",
       },
+      "UsersForgotPasswordRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "email": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "email",
+              ],
+              "title": "Forgot password request",
+              "type": "object",
+            },
+          },
+        },
+        "description": "Forgot password request for users",
+      },
+      "UsersLoginRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "email": {
+                  "type": "string",
+                },
+                "password": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "email",
+                "password",
+              ],
+              "title": "Login request",
+              "type": "object",
+            },
+          },
+        },
+        "description": "Login request for users",
+      },
       "UsersPatchRequestBody": {
         "content": {
           "application/json": {
@@ -289,6 +333,50 @@ exports[`openapi generators > converts empty config correctly 1`] = `
           },
         },
         "description": "users",
+      },
+      "UsersResetPasswordRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "password": {
+                  "type": "string",
+                },
+                "token": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "token",
+                "password",
+              ],
+              "title": "Reset password request",
+              "type": "object",
+            },
+          },
+        },
+        "description": "Reset password request for users",
+      },
+      "UsersUnlockRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "email": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "email",
+              ],
+              "title": "Unlock request",
+              "type": "object",
+            },
+          },
+        },
+        "description": "Unlock request for users",
       },
     },
     "responses": {
@@ -699,6 +787,16 @@ exports[`openapi generators > converts empty config correctly 1`] = `
         },
         "description": "Payload Preference object",
       },
+      "UsersForgotPasswordResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersForgotPassword",
+            },
+          },
+        },
+        "description": "users forgot password object",
+      },
       "UsersListResponse": {
         "content": {
           "application/json": {
@@ -758,9 +856,59 @@ exports[`openapi generators > converts empty config correctly 1`] = `
         },
         "description": "List of users",
       },
+      "UsersLoginResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersLogin",
+            },
+          },
+        },
+        "description": "users auth object",
+      },
+      "UsersLogoutResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersLogout",
+            },
+          },
+        },
+        "description": "users logout response",
+      },
+      "UsersMeResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersMe",
+            },
+          },
+        },
+        "description": "users me response",
+      },
       "UsersNotFoundResponse": {
         "content": {},
         "description": "users not found",
+      },
+      "UsersRefreshTokenResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersRefreshToken",
+            },
+          },
+        },
+        "description": "users refresh token response",
+      },
+      "UsersResetPasswordResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersResetPassword",
+            },
+          },
+        },
+        "description": "users reset password response",
       },
       "UsersResponse": {
         "content": {
@@ -771,6 +919,26 @@ exports[`openapi generators > converts empty config correctly 1`] = `
           },
         },
         "description": "users object",
+      },
+      "UsersUnlockResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersUnlock",
+            },
+          },
+        },
+        "description": "users unlock response",
+      },
+      "UsersVerifyResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersVerify",
+            },
+          },
+        },
+        "description": "users verify response",
       },
     },
     "schemas": {
@@ -1493,6 +1661,132 @@ exports[`openapi generators > converts empty config correctly 1`] = `
         "title": "users",
         "type": "object",
       },
+      "UsersForgotPassword": {
+        "properties": {
+          "message": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "message",
+        ],
+        "title": "Forgot password response",
+      },
+      "UsersLogin": {
+        "properties": {
+          "exp": {
+            "type": "number",
+          },
+          "message": {
+            "type": "string",
+          },
+          "token": {
+            "type": "string",
+          },
+          "user": {
+            "additionalProperties": false,
+            "properties": {
+              "_verified": {
+                "type": "boolean",
+              },
+              "createdAt": {
+                "format": "date-time",
+                "type": "string",
+              },
+              "email": {
+                "type": "string",
+              },
+              "id": {
+                "type": "string",
+              },
+              "updatedAt": {
+                "format": "date-time",
+                "type": "string",
+              },
+            },
+            "required": [
+              "id",
+              "email",
+              "_verified",
+              "createdAt",
+              "updatedAt",
+            ],
+            "type": "object",
+          },
+        },
+        "required": [
+          "message",
+          "user",
+          "token",
+          "exp",
+        ],
+        "title": "Login response",
+      },
+      "UsersLogout": {
+        "properties": {
+          "message": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "message",
+        ],
+        "title": "Logout response",
+      },
+      "UsersMe": {
+        "properties": {
+          "collection": {
+            "type": "string",
+          },
+          "exp": {
+            "type": "number",
+          },
+          "token": {
+            "type": "string",
+          },
+          "user": {
+            "additionalProperties": false,
+            "properties": {
+              "_strategy": {
+                "type": "string",
+              },
+              "_verified": {
+                "type": "boolean",
+              },
+              "createdAt": {
+                "format": "date-time",
+                "type": "string",
+              },
+              "email": {
+                "type": "string",
+              },
+              "id": {
+                "type": "string",
+              },
+              "updatedAt": {
+                "format": "date-time",
+                "type": "string",
+              },
+            },
+            "required": [
+              "id",
+              "email",
+              "_verified",
+              "createdAt",
+              "updatedAt",
+              "_strategy",
+            ],
+            "type": "object",
+          },
+        },
+        "required": [
+          "user",
+          "collection",
+          "token",
+          "exp",
+        ],
+        "title": "Me response",
+      },
       "UsersQueryOperations": {
         "properties": {
           "createdAt": {
@@ -1809,6 +2103,114 @@ exports[`openapi generators > converts empty config correctly 1`] = `
         ],
         "title": "users query disjunction",
         "type": "object",
+      },
+      "UsersRefreshToken": {
+        "properties": {
+          "exp": {
+            "type": "number",
+          },
+          "message": {
+            "type": "string",
+          },
+          "refreshedToken": {
+            "type": "string",
+          },
+          "user": {
+            "additionalProperties": false,
+            "properties": {
+              "collection": {
+                "type": "string",
+              },
+              "email": {
+                "type": "string",
+              },
+              "id": {
+                "type": "string",
+              },
+            },
+            "required": [
+              "id",
+              "email",
+              "collection",
+            ],
+            "type": "object",
+          },
+        },
+        "required": [
+          "message",
+          "user",
+          "refreshedToken",
+          "exp",
+        ],
+        "title": "Refresh token response",
+      },
+      "UsersResetPassword": {
+        "properties": {
+          "message": {
+            "type": "string",
+          },
+          "token": {
+            "type": "string",
+          },
+          "user": {
+            "additionalProperties": false,
+            "properties": {
+              "_verified": {
+                "type": "boolean",
+              },
+              "createdAt": {
+                "format": "date-time",
+                "type": "string",
+              },
+              "email": {
+                "type": "string",
+              },
+              "id": {
+                "type": "string",
+              },
+              "updatedAt": {
+                "format": "date-time",
+                "type": "string",
+              },
+            },
+            "required": [
+              "id",
+              "email",
+              "_verified",
+              "createdAt",
+              "updatedAt",
+            ],
+            "type": "object",
+          },
+        },
+        "required": [
+          "message",
+          "token",
+          "user",
+        ],
+        "title": "Reset password response",
+      },
+      "UsersUnlock": {
+        "properties": {
+          "message": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "message",
+        ],
+        "title": "Unlock response",
+      },
+      "UsersVerify": {
+        "properties": {
+          "message": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "message",
+        ],
+        "title": "Verify user response",
       },
       "supportedTimezones": {
         "example": "Europe/Prague",
@@ -2657,6 +3059,133 @@ exports[`openapi generators > converts empty config correctly 1`] = `
         ],
       },
     },
+    "/api/users/forgot-password": {
+      "post": {
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersForgotPasswordRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersForgotPasswordResponse",
+          },
+        },
+        "summary": "Forgot password for users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/login": {
+      "post": {
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersLoginRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersLoginResponse",
+          },
+        },
+        "summary": "Log in to users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/logout": {
+      "post": {
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersLogoutResponse",
+          },
+        },
+        "summary": "Log out of users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/me": {
+      "post": {
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersMeResponse",
+          },
+        },
+        "summary": "Get current users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/refresh-token": {
+      "post": {
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersRefreshTokenResponse",
+          },
+        },
+        "summary": "Refresh token for users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/reset-password": {
+      "post": {
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersResetPasswordRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersResetPasswordResponse",
+          },
+        },
+        "summary": "Reset password for users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/unlock": {
+      "post": {
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersUnlockRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersUnlockResponse",
+          },
+        },
+        "summary": "Unlock users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/verify/{token}": {
+      "parameters": [
+        {
+          "description": "Verification token for users",
+          "in": "path",
+          "name": "token",
+          "required": true,
+          "schema": {
+            "type": "string",
+          },
+        },
+      ],
+      "post": {
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersVerifyResponse",
+          },
+        },
+        "summary": "Verify users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
     "/api/users/{id}": {
       "delete": {
         "operationId": "deleteUsers",
@@ -3194,6 +3723,50 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         },
         "description": "Payload Preference",
       },
+      "UsersForgotPasswordRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "email": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "email",
+              ],
+              "title": "Forgot password request",
+              "type": "object",
+            },
+          },
+        },
+        "description": "Forgot password request for users",
+      },
+      "UsersLoginRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "email": {
+                  "type": "string",
+                },
+                "password": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "email",
+                "password",
+              ],
+              "title": "Login request",
+              "type": "object",
+            },
+          },
+        },
+        "description": "Login request for users",
+      },
       "UsersPatchRequestBody": {
         "content": {
           "application/json": {
@@ -3287,6 +3860,50 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
           },
         },
         "description": "users",
+      },
+      "UsersResetPasswordRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "password": {
+                  "type": "string",
+                },
+                "token": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "token",
+                "password",
+              ],
+              "title": "Reset password request",
+              "type": "object",
+            },
+          },
+        },
+        "description": "Reset password request for users",
+      },
+      "UsersUnlockRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "email": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "email",
+              ],
+              "title": "Unlock request",
+              "type": "object",
+            },
+          },
+        },
+        "description": "Unlock request for users",
       },
     },
     "responses": {
@@ -3817,6 +4434,16 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         },
         "description": "Payload Preference object",
       },
+      "UsersForgotPasswordResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersForgotPassword",
+            },
+          },
+        },
+        "description": "users forgot password object",
+      },
       "UsersListResponse": {
         "content": {
           "application/json": {
@@ -3876,9 +4503,59 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         },
         "description": "List of users",
       },
+      "UsersLoginResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersLogin",
+            },
+          },
+        },
+        "description": "users auth object",
+      },
+      "UsersLogoutResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersLogout",
+            },
+          },
+        },
+        "description": "users logout response",
+      },
+      "UsersMeResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersMe",
+            },
+          },
+        },
+        "description": "users me response",
+      },
       "UsersNotFoundResponse": {
         "content": {},
         "description": "users not found",
+      },
+      "UsersRefreshTokenResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersRefreshToken",
+            },
+          },
+        },
+        "description": "users refresh token response",
+      },
+      "UsersResetPasswordResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersResetPassword",
+            },
+          },
+        },
+        "description": "users reset password response",
       },
       "UsersResponse": {
         "content": {
@@ -3889,6 +4566,26 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
           },
         },
         "description": "users object",
+      },
+      "UsersUnlockResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersUnlock",
+            },
+          },
+        },
+        "description": "users unlock response",
+      },
+      "UsersVerifyResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersVerify",
+            },
+          },
+        },
+        "description": "users verify response",
       },
     },
     "schemas": {
@@ -4888,6 +5585,132 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         "title": "users",
         "type": "object",
       },
+      "UsersForgotPassword": {
+        "properties": {
+          "message": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "message",
+        ],
+        "title": "Forgot password response",
+      },
+      "UsersLogin": {
+        "properties": {
+          "exp": {
+            "type": "number",
+          },
+          "message": {
+            "type": "string",
+          },
+          "token": {
+            "type": "string",
+          },
+          "user": {
+            "additionalProperties": false,
+            "properties": {
+              "_verified": {
+                "type": "boolean",
+              },
+              "createdAt": {
+                "format": "date-time",
+                "type": "string",
+              },
+              "email": {
+                "type": "string",
+              },
+              "id": {
+                "type": "string",
+              },
+              "updatedAt": {
+                "format": "date-time",
+                "type": "string",
+              },
+            },
+            "required": [
+              "id",
+              "email",
+              "_verified",
+              "createdAt",
+              "updatedAt",
+            ],
+            "type": "object",
+          },
+        },
+        "required": [
+          "message",
+          "user",
+          "token",
+          "exp",
+        ],
+        "title": "Login response",
+      },
+      "UsersLogout": {
+        "properties": {
+          "message": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "message",
+        ],
+        "title": "Logout response",
+      },
+      "UsersMe": {
+        "properties": {
+          "collection": {
+            "type": "string",
+          },
+          "exp": {
+            "type": "number",
+          },
+          "token": {
+            "type": "string",
+          },
+          "user": {
+            "additionalProperties": false,
+            "properties": {
+              "_strategy": {
+                "type": "string",
+              },
+              "_verified": {
+                "type": "boolean",
+              },
+              "createdAt": {
+                "format": "date-time",
+                "type": "string",
+              },
+              "email": {
+                "type": "string",
+              },
+              "id": {
+                "type": "string",
+              },
+              "updatedAt": {
+                "format": "date-time",
+                "type": "string",
+              },
+            },
+            "required": [
+              "id",
+              "email",
+              "_verified",
+              "createdAt",
+              "updatedAt",
+              "_strategy",
+            ],
+            "type": "object",
+          },
+        },
+        "required": [
+          "user",
+          "collection",
+          "token",
+          "exp",
+        ],
+        "title": "Me response",
+      },
       "UsersQueryOperations": {
         "properties": {
           "createdAt": {
@@ -5204,6 +6027,114 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         ],
         "title": "users query disjunction",
         "type": "object",
+      },
+      "UsersRefreshToken": {
+        "properties": {
+          "exp": {
+            "type": "number",
+          },
+          "message": {
+            "type": "string",
+          },
+          "refreshedToken": {
+            "type": "string",
+          },
+          "user": {
+            "additionalProperties": false,
+            "properties": {
+              "collection": {
+                "type": "string",
+              },
+              "email": {
+                "type": "string",
+              },
+              "id": {
+                "type": "string",
+              },
+            },
+            "required": [
+              "id",
+              "email",
+              "collection",
+            ],
+            "type": "object",
+          },
+        },
+        "required": [
+          "message",
+          "user",
+          "refreshedToken",
+          "exp",
+        ],
+        "title": "Refresh token response",
+      },
+      "UsersResetPassword": {
+        "properties": {
+          "message": {
+            "type": "string",
+          },
+          "token": {
+            "type": "string",
+          },
+          "user": {
+            "additionalProperties": false,
+            "properties": {
+              "_verified": {
+                "type": "boolean",
+              },
+              "createdAt": {
+                "format": "date-time",
+                "type": "string",
+              },
+              "email": {
+                "type": "string",
+              },
+              "id": {
+                "type": "string",
+              },
+              "updatedAt": {
+                "format": "date-time",
+                "type": "string",
+              },
+            },
+            "required": [
+              "id",
+              "email",
+              "_verified",
+              "createdAt",
+              "updatedAt",
+            ],
+            "type": "object",
+          },
+        },
+        "required": [
+          "message",
+          "token",
+          "user",
+        ],
+        "title": "Reset password response",
+      },
+      "UsersUnlock": {
+        "properties": {
+          "message": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "message",
+        ],
+        "title": "Unlock response",
+      },
+      "UsersVerify": {
+        "properties": {
+          "message": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "message",
+        ],
+        "title": "Verify user response",
       },
       "supportedTimezones": {
         "example": "Europe/Prague",
@@ -6276,6 +7207,133 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         ],
       },
     },
+    "/api/users/forgot-password": {
+      "post": {
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersForgotPasswordRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersForgotPasswordResponse",
+          },
+        },
+        "summary": "Forgot password for users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/login": {
+      "post": {
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersLoginRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersLoginResponse",
+          },
+        },
+        "summary": "Log in to users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/logout": {
+      "post": {
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersLogoutResponse",
+          },
+        },
+        "summary": "Log out of users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/me": {
+      "post": {
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersMeResponse",
+          },
+        },
+        "summary": "Get current users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/refresh-token": {
+      "post": {
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersRefreshTokenResponse",
+          },
+        },
+        "summary": "Refresh token for users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/reset-password": {
+      "post": {
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersResetPasswordRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersResetPasswordResponse",
+          },
+        },
+        "summary": "Reset password for users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/unlock": {
+      "post": {
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersUnlockRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersUnlockResponse",
+          },
+        },
+        "summary": "Unlock users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/verify/{token}": {
+      "parameters": [
+        {
+          "description": "Verification token for users",
+          "in": "path",
+          "name": "token",
+          "required": true,
+          "schema": {
+            "type": "string",
+          },
+        },
+      ],
+      "post": {
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersVerifyResponse",
+          },
+        },
+        "summary": "Verify users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
     "/api/users/{id}": {
       "delete": {
         "operationId": "deleteUsers",
@@ -6619,6 +7677,50 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         },
         "description": "Payload Preference",
       },
+      "UsersForgotPasswordRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "email": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "email",
+              ],
+              "title": "Forgot password request",
+              "type": "object",
+            },
+          },
+        },
+        "description": "Forgot password request for users",
+      },
+      "UsersLoginRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "email": {
+                  "type": "string",
+                },
+                "password": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "email",
+                "password",
+              ],
+              "title": "Login request",
+              "type": "object",
+            },
+          },
+        },
+        "description": "Login request for users",
+      },
       "UsersPatchRequestBody": {
         "content": {
           "application/json": {
@@ -6712,6 +7814,50 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
           },
         },
         "description": "users",
+      },
+      "UsersResetPasswordRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "password": {
+                  "type": "string",
+                },
+                "token": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "token",
+                "password",
+              ],
+              "title": "Reset password request",
+              "type": "object",
+            },
+          },
+        },
+        "description": "Reset password request for users",
+      },
+      "UsersUnlockRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "email": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "email",
+              ],
+              "title": "Unlock request",
+              "type": "object",
+            },
+          },
+        },
+        "description": "Unlock request for users",
       },
     },
     "responses": {
@@ -7242,6 +8388,16 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         },
         "description": "Payload Preference object",
       },
+      "UsersForgotPasswordResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersForgotPassword",
+            },
+          },
+        },
+        "description": "users forgot password object",
+      },
       "UsersListResponse": {
         "content": {
           "application/json": {
@@ -7301,9 +8457,59 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         },
         "description": "List of users",
       },
+      "UsersLoginResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersLogin",
+            },
+          },
+        },
+        "description": "users auth object",
+      },
+      "UsersLogoutResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersLogout",
+            },
+          },
+        },
+        "description": "users logout response",
+      },
+      "UsersMeResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersMe",
+            },
+          },
+        },
+        "description": "users me response",
+      },
       "UsersNotFoundResponse": {
         "content": {},
         "description": "users not found",
+      },
+      "UsersRefreshTokenResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersRefreshToken",
+            },
+          },
+        },
+        "description": "users refresh token response",
+      },
+      "UsersResetPasswordResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersResetPassword",
+            },
+          },
+        },
+        "description": "users reset password response",
       },
       "UsersResponse": {
         "content": {
@@ -7314,6 +8520,26 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
           },
         },
         "description": "users object",
+      },
+      "UsersUnlockResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersUnlock",
+            },
+          },
+        },
+        "description": "users unlock response",
+      },
+      "UsersVerifyResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersVerify",
+            },
+          },
+        },
+        "description": "users verify response",
       },
     },
     "schemas": {
@@ -8366,6 +9592,132 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         "title": "users",
         "type": "object",
       },
+      "UsersForgotPassword": {
+        "properties": {
+          "message": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "message",
+        ],
+        "title": "Forgot password response",
+      },
+      "UsersLogin": {
+        "properties": {
+          "exp": {
+            "type": "number",
+          },
+          "message": {
+            "type": "string",
+          },
+          "token": {
+            "type": "string",
+          },
+          "user": {
+            "additionalProperties": false,
+            "properties": {
+              "_verified": {
+                "type": "boolean",
+              },
+              "createdAt": {
+                "format": "date-time",
+                "type": "string",
+              },
+              "email": {
+                "type": "string",
+              },
+              "id": {
+                "type": "string",
+              },
+              "updatedAt": {
+                "format": "date-time",
+                "type": "string",
+              },
+            },
+            "required": [
+              "id",
+              "email",
+              "_verified",
+              "createdAt",
+              "updatedAt",
+            ],
+            "type": "object",
+          },
+        },
+        "required": [
+          "message",
+          "user",
+          "token",
+          "exp",
+        ],
+        "title": "Login response",
+      },
+      "UsersLogout": {
+        "properties": {
+          "message": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "message",
+        ],
+        "title": "Logout response",
+      },
+      "UsersMe": {
+        "properties": {
+          "collection": {
+            "type": "string",
+          },
+          "exp": {
+            "type": "number",
+          },
+          "token": {
+            "type": "string",
+          },
+          "user": {
+            "additionalProperties": false,
+            "properties": {
+              "_strategy": {
+                "type": "string",
+              },
+              "_verified": {
+                "type": "boolean",
+              },
+              "createdAt": {
+                "format": "date-time",
+                "type": "string",
+              },
+              "email": {
+                "type": "string",
+              },
+              "id": {
+                "type": "string",
+              },
+              "updatedAt": {
+                "format": "date-time",
+                "type": "string",
+              },
+            },
+            "required": [
+              "id",
+              "email",
+              "_verified",
+              "createdAt",
+              "updatedAt",
+              "_strategy",
+            ],
+            "type": "object",
+          },
+        },
+        "required": [
+          "user",
+          "collection",
+          "token",
+          "exp",
+        ],
+        "title": "Me response",
+      },
       "UsersQueryOperations": {
         "properties": {
           "createdAt": {
@@ -8682,6 +10034,114 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         ],
         "title": "users query disjunction",
         "type": "object",
+      },
+      "UsersRefreshToken": {
+        "properties": {
+          "exp": {
+            "type": "number",
+          },
+          "message": {
+            "type": "string",
+          },
+          "refreshedToken": {
+            "type": "string",
+          },
+          "user": {
+            "additionalProperties": false,
+            "properties": {
+              "collection": {
+                "type": "string",
+              },
+              "email": {
+                "type": "string",
+              },
+              "id": {
+                "type": "string",
+              },
+            },
+            "required": [
+              "id",
+              "email",
+              "collection",
+            ],
+            "type": "object",
+          },
+        },
+        "required": [
+          "message",
+          "user",
+          "refreshedToken",
+          "exp",
+        ],
+        "title": "Refresh token response",
+      },
+      "UsersResetPassword": {
+        "properties": {
+          "message": {
+            "type": "string",
+          },
+          "token": {
+            "type": "string",
+          },
+          "user": {
+            "additionalProperties": false,
+            "properties": {
+              "_verified": {
+                "type": "boolean",
+              },
+              "createdAt": {
+                "format": "date-time",
+                "type": "string",
+              },
+              "email": {
+                "type": "string",
+              },
+              "id": {
+                "type": "string",
+              },
+              "updatedAt": {
+                "format": "date-time",
+                "type": "string",
+              },
+            },
+            "required": [
+              "id",
+              "email",
+              "_verified",
+              "createdAt",
+              "updatedAt",
+            ],
+            "type": "object",
+          },
+        },
+        "required": [
+          "message",
+          "token",
+          "user",
+        ],
+        "title": "Reset password response",
+      },
+      "UsersUnlock": {
+        "properties": {
+          "message": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "message",
+        ],
+        "title": "Unlock response",
+      },
+      "UsersVerify": {
+        "properties": {
+          "message": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "message",
+        ],
+        "title": "Verify user response",
       },
       "supportedTimezones": {
         "example": "Europe/Prague",
@@ -9756,6 +11216,133 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         ],
       },
     },
+    "/api/users/forgot-password": {
+      "post": {
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersForgotPasswordRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersForgotPasswordResponse",
+          },
+        },
+        "summary": "Forgot password for users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/login": {
+      "post": {
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersLoginRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersLoginResponse",
+          },
+        },
+        "summary": "Log in to users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/logout": {
+      "post": {
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersLogoutResponse",
+          },
+        },
+        "summary": "Log out of users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/me": {
+      "post": {
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersMeResponse",
+          },
+        },
+        "summary": "Get current users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/refresh-token": {
+      "post": {
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersRefreshTokenResponse",
+          },
+        },
+        "summary": "Refresh token for users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/reset-password": {
+      "post": {
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersResetPasswordRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersResetPasswordResponse",
+          },
+        },
+        "summary": "Reset password for users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/unlock": {
+      "post": {
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersUnlockRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersUnlockResponse",
+          },
+        },
+        "summary": "Unlock users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/verify/{token}": {
+      "parameters": [
+        {
+          "description": "Verification token for users",
+          "in": "path",
+          "name": "token",
+          "required": true,
+          "schema": {
+            "type": "string",
+          },
+        },
+      ],
+      "post": {
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersVerifyResponse",
+          },
+        },
+        "summary": "Verify users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
     "/api/users/{id}": {
       "delete": {
         "operationId": "deleteUsers",
@@ -10055,6 +11642,50 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
         },
         "description": "Payload Preference",
       },
+      "UserForgotPasswordRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "email": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "email",
+              ],
+              "title": "Forgot password request",
+              "type": "object",
+            },
+          },
+        },
+        "description": "Forgot password request for User",
+      },
+      "UserLoginRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "email": {
+                  "type": "string",
+                },
+                "password": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "email",
+                "password",
+              ],
+              "title": "Login request",
+              "type": "object",
+            },
+          },
+        },
+        "description": "Login request for User",
+      },
       "UserPatchRequestBody": {
         "content": {
           "application/json": {
@@ -10186,6 +11817,50 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
           },
         },
         "description": "User",
+      },
+      "UserResetPasswordRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "password": {
+                  "type": "string",
+                },
+                "token": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "token",
+                "password",
+              ],
+              "title": "Reset password request",
+              "type": "object",
+            },
+          },
+        },
+        "description": "Reset password request for User",
+      },
+      "UserUnlockRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "email": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "email",
+              ],
+              "title": "Unlock request",
+              "type": "object",
+            },
+          },
+        },
+        "description": "Unlock request for User",
       },
     },
     "responses": {
@@ -10596,6 +12271,16 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
         },
         "description": "Payload Preference object",
       },
+      "UserForgotPasswordResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UserForgotPassword",
+            },
+          },
+        },
+        "description": "User forgot password object",
+      },
       "UserListResponse": {
         "content": {
           "application/json": {
@@ -10655,9 +12340,59 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
         },
         "description": "List of Users",
       },
+      "UserLoginResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UserLogin",
+            },
+          },
+        },
+        "description": "User auth object",
+      },
+      "UserLogoutResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UserLogout",
+            },
+          },
+        },
+        "description": "User logout response",
+      },
+      "UserMeResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UserMe",
+            },
+          },
+        },
+        "description": "User me response",
+      },
       "UserNotFoundResponse": {
         "content": {},
         "description": "User not found",
+      },
+      "UserRefreshTokenResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UserRefreshToken",
+            },
+          },
+        },
+        "description": "User refresh token response",
+      },
+      "UserResetPasswordResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UserResetPassword",
+            },
+          },
+        },
+        "description": "User reset password response",
       },
       "UserResponse": {
         "content": {
@@ -10668,6 +12403,26 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
           },
         },
         "description": "User object",
+      },
+      "UserUnlockResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UserUnlock",
+            },
+          },
+        },
+        "description": "User unlock response",
+      },
+      "UserVerifyResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UserVerify",
+            },
+          },
+        },
+        "description": "User verify response",
       },
     },
     "schemas": {
@@ -11409,6 +13164,132 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
         "title": "User",
         "type": "object",
       },
+      "UserForgotPassword": {
+        "properties": {
+          "message": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "message",
+        ],
+        "title": "Forgot password response",
+      },
+      "UserLogin": {
+        "properties": {
+          "exp": {
+            "type": "number",
+          },
+          "message": {
+            "type": "string",
+          },
+          "token": {
+            "type": "string",
+          },
+          "user": {
+            "additionalProperties": false,
+            "properties": {
+              "_verified": {
+                "type": "boolean",
+              },
+              "createdAt": {
+                "format": "date-time",
+                "type": "string",
+              },
+              "email": {
+                "type": "string",
+              },
+              "id": {
+                "type": "string",
+              },
+              "updatedAt": {
+                "format": "date-time",
+                "type": "string",
+              },
+            },
+            "required": [
+              "id",
+              "email",
+              "_verified",
+              "createdAt",
+              "updatedAt",
+            ],
+            "type": "object",
+          },
+        },
+        "required": [
+          "message",
+          "user",
+          "token",
+          "exp",
+        ],
+        "title": "Login response",
+      },
+      "UserLogout": {
+        "properties": {
+          "message": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "message",
+        ],
+        "title": "Logout response",
+      },
+      "UserMe": {
+        "properties": {
+          "collection": {
+            "type": "string",
+          },
+          "exp": {
+            "type": "number",
+          },
+          "token": {
+            "type": "string",
+          },
+          "user": {
+            "additionalProperties": false,
+            "properties": {
+              "_strategy": {
+                "type": "string",
+              },
+              "_verified": {
+                "type": "boolean",
+              },
+              "createdAt": {
+                "format": "date-time",
+                "type": "string",
+              },
+              "email": {
+                "type": "string",
+              },
+              "id": {
+                "type": "string",
+              },
+              "updatedAt": {
+                "format": "date-time",
+                "type": "string",
+              },
+            },
+            "required": [
+              "id",
+              "email",
+              "_verified",
+              "createdAt",
+              "updatedAt",
+              "_strategy",
+            ],
+            "type": "object",
+          },
+        },
+        "required": [
+          "user",
+          "collection",
+          "token",
+          "exp",
+        ],
+        "title": "Me response",
+      },
       "UserQueryOperations": {
         "properties": {
           "createdAt": {
@@ -11725,6 +13606,114 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
         ],
         "title": "User query disjunction",
         "type": "object",
+      },
+      "UserRefreshToken": {
+        "properties": {
+          "exp": {
+            "type": "number",
+          },
+          "message": {
+            "type": "string",
+          },
+          "refreshedToken": {
+            "type": "string",
+          },
+          "user": {
+            "additionalProperties": false,
+            "properties": {
+              "collection": {
+                "type": "string",
+              },
+              "email": {
+                "type": "string",
+              },
+              "id": {
+                "type": "string",
+              },
+            },
+            "required": [
+              "id",
+              "email",
+              "collection",
+            ],
+            "type": "object",
+          },
+        },
+        "required": [
+          "message",
+          "user",
+          "refreshedToken",
+          "exp",
+        ],
+        "title": "Refresh token response",
+      },
+      "UserResetPassword": {
+        "properties": {
+          "message": {
+            "type": "string",
+          },
+          "token": {
+            "type": "string",
+          },
+          "user": {
+            "additionalProperties": false,
+            "properties": {
+              "_verified": {
+                "type": "boolean",
+              },
+              "createdAt": {
+                "format": "date-time",
+                "type": "string",
+              },
+              "email": {
+                "type": "string",
+              },
+              "id": {
+                "type": "string",
+              },
+              "updatedAt": {
+                "format": "date-time",
+                "type": "string",
+              },
+            },
+            "required": [
+              "id",
+              "email",
+              "_verified",
+              "createdAt",
+              "updatedAt",
+            ],
+            "type": "object",
+          },
+        },
+        "required": [
+          "message",
+          "token",
+          "user",
+        ],
+        "title": "Reset password response",
+      },
+      "UserUnlock": {
+        "properties": {
+          "message": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "message",
+        ],
+        "title": "Unlock response",
+      },
+      "UserVerify": {
+        "properties": {
+          "message": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "message",
+        ],
+        "title": "Verify user response",
       },
       "supportedTimezones": {
         "example": "Europe/Prague",
@@ -12573,6 +14562,133 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
         ],
       },
     },
+    "/api/users/forgot-password": {
+      "post": {
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UserForgotPasswordRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UserForgotPasswordResponse",
+          },
+        },
+        "summary": "Forgot password for User",
+        "tags": [
+          "Users",
+        ],
+      },
+    },
+    "/api/users/login": {
+      "post": {
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UserLoginRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UserLoginResponse",
+          },
+        },
+        "summary": "Log in to User",
+        "tags": [
+          "Users",
+        ],
+      },
+    },
+    "/api/users/logout": {
+      "post": {
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UserLogoutResponse",
+          },
+        },
+        "summary": "Log out of User",
+        "tags": [
+          "Users",
+        ],
+      },
+    },
+    "/api/users/me": {
+      "post": {
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UserMeResponse",
+          },
+        },
+        "summary": "Get current User",
+        "tags": [
+          "Users",
+        ],
+      },
+    },
+    "/api/users/refresh-token": {
+      "post": {
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UserRefreshTokenResponse",
+          },
+        },
+        "summary": "Refresh token for User",
+        "tags": [
+          "Users",
+        ],
+      },
+    },
+    "/api/users/reset-password": {
+      "post": {
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UserResetPasswordRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UserResetPasswordResponse",
+          },
+        },
+        "summary": "Reset password for User",
+        "tags": [
+          "Users",
+        ],
+      },
+    },
+    "/api/users/unlock": {
+      "post": {
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UserUnlockRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UserUnlockResponse",
+          },
+        },
+        "summary": "Unlock User",
+        "tags": [
+          "Users",
+        ],
+      },
+    },
+    "/api/users/verify/{token}": {
+      "parameters": [
+        {
+          "description": "Verification token for User",
+          "in": "path",
+          "name": "token",
+          "required": true,
+          "schema": {
+            "type": "string",
+          },
+        },
+      ],
+      "post": {
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UserVerifyResponse",
+          },
+        },
+        "summary": "Verify User",
+        "tags": [
+          "Users",
+        ],
+      },
+    },
     "/api/users/{id}": {
       "delete": {
         "operationId": "deleteUser",
@@ -12910,6 +15026,50 @@ exports[`openapi generators > handles non-default collection 1`] = `
         },
         "description": "Post",
       },
+      "UsersForgotPasswordRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "email": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "email",
+              ],
+              "title": "Forgot password request",
+              "type": "object",
+            },
+          },
+        },
+        "description": "Forgot password request for users",
+      },
+      "UsersLoginRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "email": {
+                  "type": "string",
+                },
+                "password": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "email",
+                "password",
+              ],
+              "title": "Login request",
+              "type": "object",
+            },
+          },
+        },
+        "description": "Login request for users",
+      },
       "UsersPatchRequestBody": {
         "content": {
           "application/json": {
@@ -13003,6 +15163,50 @@ exports[`openapi generators > handles non-default collection 1`] = `
           },
         },
         "description": "users",
+      },
+      "UsersResetPasswordRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "password": {
+                  "type": "string",
+                },
+                "token": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "token",
+                "password",
+              ],
+              "title": "Reset password request",
+              "type": "object",
+            },
+          },
+        },
+        "description": "Reset password request for users",
+      },
+      "UsersUnlockRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "email": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "email",
+              ],
+              "title": "Unlock request",
+              "type": "object",
+            },
+          },
+        },
+        "description": "Unlock request for users",
       },
     },
     "responses": {
@@ -13533,6 +15737,16 @@ exports[`openapi generators > handles non-default collection 1`] = `
         },
         "description": "Post object",
       },
+      "UsersForgotPasswordResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersForgotPassword",
+            },
+          },
+        },
+        "description": "users forgot password object",
+      },
       "UsersListResponse": {
         "content": {
           "application/json": {
@@ -13592,9 +15806,59 @@ exports[`openapi generators > handles non-default collection 1`] = `
         },
         "description": "List of users",
       },
+      "UsersLoginResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersLogin",
+            },
+          },
+        },
+        "description": "users auth object",
+      },
+      "UsersLogoutResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersLogout",
+            },
+          },
+        },
+        "description": "users logout response",
+      },
+      "UsersMeResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersMe",
+            },
+          },
+        },
+        "description": "users me response",
+      },
       "UsersNotFoundResponse": {
         "content": {},
         "description": "users not found",
+      },
+      "UsersRefreshTokenResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersRefreshToken",
+            },
+          },
+        },
+        "description": "users refresh token response",
+      },
+      "UsersResetPasswordResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersResetPassword",
+            },
+          },
+        },
+        "description": "users reset password response",
       },
       "UsersResponse": {
         "content": {
@@ -13605,6 +15869,26 @@ exports[`openapi generators > handles non-default collection 1`] = `
           },
         },
         "description": "users object",
+      },
+      "UsersUnlockResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersUnlock",
+            },
+          },
+        },
+        "description": "users unlock response",
+      },
+      "UsersVerifyResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersVerify",
+            },
+          },
+        },
+        "description": "users verify response",
       },
     },
     "schemas": {
@@ -14527,6 +16811,132 @@ exports[`openapi generators > handles non-default collection 1`] = `
         "title": "users",
         "type": "object",
       },
+      "UsersForgotPassword": {
+        "properties": {
+          "message": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "message",
+        ],
+        "title": "Forgot password response",
+      },
+      "UsersLogin": {
+        "properties": {
+          "exp": {
+            "type": "number",
+          },
+          "message": {
+            "type": "string",
+          },
+          "token": {
+            "type": "string",
+          },
+          "user": {
+            "additionalProperties": false,
+            "properties": {
+              "_verified": {
+                "type": "boolean",
+              },
+              "createdAt": {
+                "format": "date-time",
+                "type": "string",
+              },
+              "email": {
+                "type": "string",
+              },
+              "id": {
+                "type": "string",
+              },
+              "updatedAt": {
+                "format": "date-time",
+                "type": "string",
+              },
+            },
+            "required": [
+              "id",
+              "email",
+              "_verified",
+              "createdAt",
+              "updatedAt",
+            ],
+            "type": "object",
+          },
+        },
+        "required": [
+          "message",
+          "user",
+          "token",
+          "exp",
+        ],
+        "title": "Login response",
+      },
+      "UsersLogout": {
+        "properties": {
+          "message": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "message",
+        ],
+        "title": "Logout response",
+      },
+      "UsersMe": {
+        "properties": {
+          "collection": {
+            "type": "string",
+          },
+          "exp": {
+            "type": "number",
+          },
+          "token": {
+            "type": "string",
+          },
+          "user": {
+            "additionalProperties": false,
+            "properties": {
+              "_strategy": {
+                "type": "string",
+              },
+              "_verified": {
+                "type": "boolean",
+              },
+              "createdAt": {
+                "format": "date-time",
+                "type": "string",
+              },
+              "email": {
+                "type": "string",
+              },
+              "id": {
+                "type": "string",
+              },
+              "updatedAt": {
+                "format": "date-time",
+                "type": "string",
+              },
+            },
+            "required": [
+              "id",
+              "email",
+              "_verified",
+              "createdAt",
+              "updatedAt",
+              "_strategy",
+            ],
+            "type": "object",
+          },
+        },
+        "required": [
+          "user",
+          "collection",
+          "token",
+          "exp",
+        ],
+        "title": "Me response",
+      },
       "UsersQueryOperations": {
         "properties": {
           "createdAt": {
@@ -14843,6 +17253,114 @@ exports[`openapi generators > handles non-default collection 1`] = `
         ],
         "title": "users query disjunction",
         "type": "object",
+      },
+      "UsersRefreshToken": {
+        "properties": {
+          "exp": {
+            "type": "number",
+          },
+          "message": {
+            "type": "string",
+          },
+          "refreshedToken": {
+            "type": "string",
+          },
+          "user": {
+            "additionalProperties": false,
+            "properties": {
+              "collection": {
+                "type": "string",
+              },
+              "email": {
+                "type": "string",
+              },
+              "id": {
+                "type": "string",
+              },
+            },
+            "required": [
+              "id",
+              "email",
+              "collection",
+            ],
+            "type": "object",
+          },
+        },
+        "required": [
+          "message",
+          "user",
+          "refreshedToken",
+          "exp",
+        ],
+        "title": "Refresh token response",
+      },
+      "UsersResetPassword": {
+        "properties": {
+          "message": {
+            "type": "string",
+          },
+          "token": {
+            "type": "string",
+          },
+          "user": {
+            "additionalProperties": false,
+            "properties": {
+              "_verified": {
+                "type": "boolean",
+              },
+              "createdAt": {
+                "format": "date-time",
+                "type": "string",
+              },
+              "email": {
+                "type": "string",
+              },
+              "id": {
+                "type": "string",
+              },
+              "updatedAt": {
+                "format": "date-time",
+                "type": "string",
+              },
+            },
+            "required": [
+              "id",
+              "email",
+              "_verified",
+              "createdAt",
+              "updatedAt",
+            ],
+            "type": "object",
+          },
+        },
+        "required": [
+          "message",
+          "token",
+          "user",
+        ],
+        "title": "Reset password response",
+      },
+      "UsersUnlock": {
+        "properties": {
+          "message": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "message",
+        ],
+        "title": "Unlock response",
+      },
+      "UsersVerify": {
+        "properties": {
+          "message": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "message",
+        ],
+        "title": "Verify user response",
       },
       "supportedTimezones": {
         "example": "Europe/Prague",
@@ -15912,6 +18430,133 @@ exports[`openapi generators > handles non-default collection 1`] = `
           },
         ],
         "summary": "Create a new users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/forgot-password": {
+      "post": {
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersForgotPasswordRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersForgotPasswordResponse",
+          },
+        },
+        "summary": "Forgot password for users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/login": {
+      "post": {
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersLoginRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersLoginResponse",
+          },
+        },
+        "summary": "Log in to users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/logout": {
+      "post": {
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersLogoutResponse",
+          },
+        },
+        "summary": "Log out of users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/me": {
+      "post": {
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersMeResponse",
+          },
+        },
+        "summary": "Get current users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/refresh-token": {
+      "post": {
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersRefreshTokenResponse",
+          },
+        },
+        "summary": "Refresh token for users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/reset-password": {
+      "post": {
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersResetPasswordRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersResetPasswordResponse",
+          },
+        },
+        "summary": "Reset password for users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/unlock": {
+      "post": {
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersUnlockRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersUnlockResponse",
+          },
+        },
+        "summary": "Unlock users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/verify/{token}": {
+      "parameters": [
+        {
+          "description": "Verification token for users",
+          "in": "path",
+          "name": "token",
+          "required": true,
+          "schema": {
+            "type": "string",
+          },
+        },
+      ],
+      "post": {
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersVerifyResponse",
+          },
+        },
+        "summary": "Verify users",
         "tags": [
           "users",
         ],
