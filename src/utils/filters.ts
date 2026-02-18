@@ -15,11 +15,11 @@ export const shouldIncludeCollection = (
     return false
   }
 
-  if (filters.includeCollections !== undefined) {
-    return filters.includeCollections.includes(slug)
+  if (filters.includeCollections === undefined) {
+    return true
   }
 
-  return true
+  return filters.includeCollections.includes(slug)
 }
 
 export const shouldIncludeGlobal = (
