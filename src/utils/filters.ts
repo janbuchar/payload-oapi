@@ -32,9 +32,9 @@ export const shouldIncludeGlobal = (
     return false
   }
 
-  if (filters.includeGlobals !== undefined) {
-    return filters.includeGlobals.includes(slug)
+  if (filters.includeGlobals === undefined) {
+    return true
   }
 
-  return true
+  return filters.includeGlobals.includes(slug)
 }
