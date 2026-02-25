@@ -83,6 +83,42 @@ describe('openapi generators', () => {
     )
   })
 
+  test('handles non-default api route', async () => {
+    const payload = await buildPayload({
+      collections: [Posts],
+      routes: {
+        api: '/payload-api'
+      }
+    })
+
+    const spec = await generateV30Spec(
+      { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
+      {
+        openapiVersion: '3.0',
+        authEndpoint: '/payload-api/auth',
+        metadata: { title: 'Test API', version: '1.0' },
+        filters: {},
+      },
+    )
+
+    expect(spec).toMatchSnapshot()
+
+    expect(new Set(Object.keys(spec.paths))).toEqual(
+      new Set([
+        '/payload-api/posts',
+        '/payload-api/posts/{id}',
+        '/payload-api/users',
+        '/payload-api/users/{id}',
+        '/payload-api/payload-locked-documents',
+        '/payload-api/payload-locked-documents/{id}',
+        '/payload-api/payload-preferences',
+        '/payload-api/payload-preferences/{id}',
+        '/payload-api/payload-migrations',
+        '/payload-api/payload-migrations/{id}',
+      ]),
+    )
+  })
+
   test('handles non-default collection', async () => {
     const payload = await buildPayload({
       collections: [Posts],
