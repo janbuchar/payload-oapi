@@ -4,12 +4,13 @@ export const apiKeySecurity = { ApiKey: [] }
 
 export const generateSecuritySchemes = (
   tokenUrl: string,
+  apiRoute: string,
 ): Record<string, OpenAPIV3.SecuritySchemeObject & OpenAPIV3_1.SecuritySchemeObject> => ({
   ApiKey: {
     type: 'oauth2',
     flows: {
       password: {
-        tokenUrl: `/api/${tokenUrl}`,
+        tokenUrl: `${apiRoute}/${tokenUrl}`,
         scopes: {},
       },
     },
