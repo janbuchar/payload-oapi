@@ -437,15 +437,9 @@ const generateCollectionOperations = async (
                 { type: 'object' },
                 {
                   anyOf: [
-                    composeRef('schemas', singular, {
-                      suffix: 'QueryOperations',
-                    }),
-                    composeRef('schemas', singular, {
-                      suffix: 'QueryOperationsAnd',
-                    }),
-                    composeRef('schemas', singular, {
-                      suffix: 'QueryOperationsOr',
-                    }),
+                    composeRef('schemas', singular, { suffix: 'QueryOperations' }),
+                    composeRef('schemas', singular, { suffix: 'QueryOperationsAnd' }),
+                    composeRef('schemas', singular, { suffix: 'QueryOperationsOr' }),
                   ],
                 },
               ],
@@ -556,10 +550,7 @@ const generateGlobalSchemas = (
   )
 
   return {
-    [componentName('schemas', globalName(global))]: {
-      ...schema,
-      title: globalName(global),
-    },
+    [componentName('schemas', globalName(global))]: { ...schema, title: globalName(global) },
     [componentName('schemas', globalName(global), { suffix: 'Read' })]: {
       title: `${globalName(global)} (if present)`,
       oneOf: [schema, { type: 'object', properties: {} }],
