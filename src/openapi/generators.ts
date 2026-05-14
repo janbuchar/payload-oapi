@@ -389,6 +389,7 @@ const isOpenToPublic = async (checker: Access): Promise<boolean> => {
 
 const generateCollectionOperations = async (
   collection: Collection,
+  apiBasePath: string,
 ): Promise<Record<string, OpenAPIV3.PathItemObject & OpenAPIV3_1.PathItemObject>> => {
   const { slug } = collection.config
   const { singular, plural } = collectionName(collection)
@@ -400,7 +401,7 @@ const generateCollectionOperations = async (
   } satisfies OpenAPIV3_1.ResponsesObject & OpenAPIV3.ResponsesObject
 
   return {
-    [`/api/${slug}`]: {
+    [`${apiBasePath}/${slug}`]: {
       get: {
         operationId: componentName('schemas', plural, { prefix: 'list' }),
         summary: `Retrieve a list of ${plural}`,
@@ -436,9 +437,15 @@ const generateCollectionOperations = async (
                 { type: 'object' },
                 {
                   anyOf: [
-                    composeRef('schemas', singular, { suffix: 'QueryOperations' }),
-                    composeRef('schemas', singular, { suffix: 'QueryOperationsAnd' }),
-                    composeRef('schemas', singular, { suffix: 'QueryOperationsOr' }),
+                    composeRef('schemas', singular, {
+                      suffix: 'QueryOperations',
+                    }),
+                    composeRef('schemas', singular, {
+                      suffix: 'QueryOperationsAnd',
+                    }),
+                    composeRef('schemas', singular, {
+                      suffix: 'QueryOperationsOr',
+                    }),
                   ],
                 },
               ],
@@ -462,7 +469,7 @@ const generateCollectionOperations = async (
         security: (await isOpenToPublic(collection.config.access.create)) ? [] : [apiKeySecurity],
       },
     },
-    [`/api/${slug}/{id}`]: {
+    [`${apiBasePath}/${slug}/{id}`]: {
       parameters: [
         ...baseQueryParams,
         {
@@ -549,7 +556,10 @@ const generateGlobalSchemas = (
   )
 
   return {
-    [componentName('schemas', globalName(global))]: { ...schema, title: globalName(global) },
+    [componentName('schemas', globalName(global))]: {
+      ...schema,
+      title: globalName(global),
+    },
     [componentName('schemas', globalName(global), { suffix: 'Read' })]: {
       title: `${globalName(global)} (if present)`,
       oneOf: [schema, { type: 'object', properties: {} }],
@@ -563,13 +573,14 @@ const generateGlobalSchemas = (
 
 const generateGlobalOperations = async (
   global: SanitizedGlobalConfig,
+  apiBasePath: string,
 ): Promise<Record<string, OpenAPIV3.PathItemObject & OpenAPIV3_1.PathItemObject>> => {
   const slug = global.slug
   const singular = globalName(global)
   const tags = [singular]
 
   return {
-    [`/api/globals/${slug}`]: {
+    [`${apiBasePath}/globals/${slug}`]: {
       get: {
         summary: `Get the ${singular}`,
         tags,
@@ -670,8 +681,14 @@ export const generateV30Spec = async (
     servers: [{ url: `${req.protocol}//${req.headers.get('host')}` }],
     paths: Object.assign(
       {},
-      ...(await Promise.all(collections.map(generateCollectionOperations))),
-      ...(await Promise.all(globals.map(generateGlobalOperations))),
+      ...(await Promise.all(
+        collections.map(collection =>
+          generateCollectionOperations(collection, options.apiBasePath),
+        ),
+      )),
+      ...(await Promise.all(
+        globals.map(global => generateGlobalOperations(global, options.apiBasePath)),
+      )),
     ),
     components: {
       securitySchemes: generateSecuritySchemes(options.authEndpoint),
@@ -734,8 +751,14 @@ export const generateV31Spec = async (
     servers: [{ url: `${req.protocol}//${req.headers.get('host')}` }],
     paths: Object.assign(
       {},
-      ...(await Promise.all(collections.map(generateCollectionOperations))),
-      ...(await Promise.all(globals.map(generateGlobalOperations))),
+      ...(await Promise.all(
+        collections.map(collection =>
+          generateCollectionOperations(collection, options.apiBasePath),
+        ),
+      )),
+      ...(await Promise.all(
+        globals.map(global => generateGlobalOperations(global, options.apiBasePath)),
+      )),
     ),
     components: {
       securitySchemes: generateSecuritySchemes(options.authEndpoint),

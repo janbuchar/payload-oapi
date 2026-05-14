@@ -21,6 +21,7 @@ export interface PluginOptions {
   authEndpoint?: string
   metadata: OpenAPIMetadata
   filters?: FilterOptions
+  apiBasePath?: string
 }
 
 export type SanitizedPluginOptions = Required<Omit<PluginOptions, 'enabled' | 'specEndpoint'>>

@@ -58,12 +58,17 @@ describe('openapi generators', () => {
     const payload = await buildPayload({})
 
     const spec = await generateV30Spec(
-      { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
+      {
+        protocol: 'https',
+        headers: new Headers({ host: 'localhost' }),
+        payload,
+      },
       {
         openapiVersion: '3.0',
         authEndpoint: '/api/auth',
         metadata: { title: 'Test API', version: '1.0' },
         filters: {},
+        apiBasePath: '/api',
       },
     )
 
@@ -89,12 +94,17 @@ describe('openapi generators', () => {
     })
 
     const spec = await generateV30Spec(
-      { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
+      {
+        protocol: 'https',
+        headers: new Headers({ host: 'localhost' }),
+        payload,
+      },
       {
         openapiVersion: '3.0',
         authEndpoint: '/api/auth',
         metadata: { title: 'Test API', version: '1.0' },
         filters: {},
+        apiBasePath: '/api',
       },
     )
 
@@ -139,12 +149,17 @@ describe('openapi generators', () => {
     })
 
     const spec = await generateV30Spec(
-      { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
+      {
+        protocol: 'https',
+        headers: new Headers({ host: 'localhost' }),
+        payload,
+      },
       {
         openapiVersion: '3.0',
         authEndpoint: '/api/auth',
         metadata: { title: 'Test API', version: '1.0' },
         filters: {},
+        apiBasePath: '/api',
       },
     )
 
@@ -173,12 +188,17 @@ describe('openapi generators', () => {
     })
 
     const spec = await generateV30Spec(
-      { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
+      {
+        protocol: 'https',
+        headers: new Headers({ host: 'localhost' }),
+        payload,
+      },
       {
         openapiVersion: '3.0',
         authEndpoint: '/api/auth',
         metadata: { title: 'Test API', version: '1.0' },
         filters: {},
+        apiBasePath: '/api',
       },
     )
 
@@ -201,12 +221,17 @@ describe('openapi generators', () => {
     })
 
     const spec = await generateV30Spec(
-      { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
+      {
+        protocol: 'https',
+        headers: new Headers({ host: 'localhost' }),
+        payload,
+      },
       {
         openapiVersion: '3.0',
         authEndpoint: '/api/auth',
         metadata: { title: 'Test API', version: '1.0' },
         filters: {},
+        apiBasePath: '/api',
       },
     )
 
@@ -224,12 +249,17 @@ describe('openapi generators', () => {
       })
 
       const spec = await generateV30Spec(
-        { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
+        {
+          protocol: 'https',
+          headers: new Headers({ host: 'localhost' }),
+          payload,
+        },
         {
           openapiVersion: '3.0',
           authEndpoint: '/api/auth',
           metadata: { title: 'Test API', version: '1.0' },
           filters: { includeCollections: ['posts'] },
+          apiBasePath: '/api',
         },
       )
 
@@ -243,12 +273,17 @@ describe('openapi generators', () => {
       })
 
       const spec = await generateV30Spec(
-        { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
+        {
+          protocol: 'https',
+          headers: new Headers({ host: 'localhost' }),
+          payload,
+        },
         {
           openapiVersion: '3.0',
           authEndpoint: '/api/auth',
           metadata: { title: 'Test API', version: '1.0' },
           filters: { excludeCollections: ['users'] },
+          apiBasePath: '/api',
         },
       )
 
@@ -262,12 +297,17 @@ describe('openapi generators', () => {
       })
 
       const spec = await generateV30Spec(
-        { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
+        {
+          protocol: 'https',
+          headers: new Headers({ host: 'localhost' }),
+          payload,
+        },
         {
           openapiVersion: '3.0',
           authEndpoint: '/api/auth',
           metadata: { title: 'Test API', version: '1.0' },
           filters: { hideInternalCollections: true },
+          apiBasePath: '/api',
         },
       )
 
@@ -283,12 +323,17 @@ describe('openapi generators', () => {
       })
 
       const spec = await generateV30Spec(
-        { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
+        {
+          protocol: 'https',
+          headers: new Headers({ host: 'localhost' }),
+          payload,
+        },
         {
           openapiVersion: '3.0',
           authEndpoint: '/api/auth',
           metadata: { title: 'Test API', version: '1.0' },
           filters: { includeCollections: [] },
+          apiBasePath: '/api',
         },
       )
 
@@ -311,12 +356,17 @@ describe('openapi generators', () => {
       })
 
       const spec = await generateV30Spec(
-        { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
+        {
+          protocol: 'https',
+          headers: new Headers({ host: 'localhost' }),
+          payload,
+        },
         {
           openapiVersion: '3.0',
           authEndpoint: '/api/auth',
           metadata: { title: 'Test API', version: '1.0' },
           filters: { includeGlobals: ['settings'] },
+          apiBasePath: '/api',
         },
       )
 
@@ -338,17 +388,48 @@ describe('openapi generators', () => {
       })
 
       const spec = await generateV30Spec(
-        { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
+        {
+          protocol: 'https',
+          headers: new Headers({ host: 'localhost' }),
+          payload,
+        },
         {
           openapiVersion: '3.0',
           authEndpoint: '/api/auth',
           metadata: { title: 'Test API', version: '1.0' },
           filters: { excludeGlobals: ['footer'] },
+          apiBasePath: '/api',
         },
       )
 
       expect(spec.paths['/api/globals/settings']).toBeDefined()
       expect(spec.paths['/api/globals/footer']).toBeUndefined()
     })
+  })
+
+  test('apiBasePath option changes operation paths', async () => {
+    const payload = await buildPayload({
+      collections: [Posts],
+    })
+
+    const spec = await generateV30Spec(
+      {
+        protocol: 'https',
+        headers: new Headers({ host: 'localhost' }),
+        payload,
+      },
+      {
+        openapiVersion: '3.0',
+        authEndpoint: '/api/auth',
+        metadata: { title: 'Test API', version: '1.0' },
+        filters: { hideInternalCollections: true },
+        apiBasePath: '/api/custom',
+      },
+    )
+
+    expect(spec.paths['/api/custom/posts']).toBeDefined()
+    expect(spec.paths['/api/custom/payload-preferences']).toBeUndefined()
+    expect(spec.paths['/api/custom/payload-migrations']).toBeUndefined()
+    expect(spec.paths['/api/custom/payload-locked-documents']).toBeUndefined()
   })
 })
