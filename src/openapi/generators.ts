@@ -663,6 +663,15 @@ const generateComponents = (
   return { schemas, requestBodies, responses }
 }
 
+/**
+ * Prefer the `apiBasePath` from plugin options (not null),
+ * otherwise use the currently configured api route from payload.
+ */
+const getApiBasePath = (
+  options: SanitizedPluginOptions,
+  req: Pick<PayloadRequest, 'payload'>,
+): string => (options.apiBasePath !== null ? options.apiBasePath : req.payload.config.routes.api)
+
 export const generateV30Spec = async (
   req: Pick<PayloadRequest, 'payload' | 'protocol' | 'headers'>,
   options: SanitizedPluginOptions,
@@ -674,6 +683,7 @@ export const generateV30Spec = async (
     shouldIncludeCollection(collection, filters),
   )
   const globals = req.payload.globals.config.filter(global => shouldIncludeGlobal(global, filters))
+  const apiBasePath = getApiBasePath(options, req)
 
   const spec = {
     openapi: '3.0.3',
@@ -682,13 +692,9 @@ export const generateV30Spec = async (
     paths: Object.assign(
       {},
       ...(await Promise.all(
-        collections.map(collection =>
-          generateCollectionOperations(collection, options.apiBasePath),
-        ),
+        collections.map(collection => generateCollectionOperations(collection, apiBasePath)),
       )),
-      ...(await Promise.all(
-        globals.map(global => generateGlobalOperations(global, options.apiBasePath)),
-      )),
+      ...(await Promise.all(globals.map(global => generateGlobalOperations(global, apiBasePath)))),
     ),
     components: {
       securitySchemes: generateSecuritySchemes(options.authEndpoint),
@@ -744,6 +750,7 @@ export const generateV31Spec = async (
     shouldIncludeCollection(collection, filters),
   )
   const globals = req.payload.globals.config.filter(global => shouldIncludeGlobal(global, filters))
+  const apiBasePath = getApiBasePath(options, req)
 
   const spec = {
     openapi: '3.1.0',
@@ -752,13 +759,9 @@ export const generateV31Spec = async (
     paths: Object.assign(
       {},
       ...(await Promise.all(
-        collections.map(collection =>
-          generateCollectionOperations(collection, options.apiBasePath),
-        ),
+        collections.map(collection => generateCollectionOperations(collection, apiBasePath)),
       )),
-      ...(await Promise.all(
-        globals.map(global => generateGlobalOperations(global, options.apiBasePath)),
-      )),
+      ...(await Promise.all(globals.map(global => generateGlobalOperations(global, apiBasePath)))),
     ),
     components: {
       securitySchemes: generateSecuritySchemes(options.authEndpoint),

@@ -10,7 +10,7 @@ const openapi =
     metadata,
     enabled = true,
     filters = {},
-    apiBasePath,
+    apiBasePath = null,
   }: PluginOptions): Plugin =>
   ({ endpoints = [], ...config }) => {
     if (!enabled) {
@@ -29,7 +29,7 @@ const openapi =
             metadata,
             authEndpoint,
             filters,
-            apiBasePath: apiBasePath ?? config.routes?.api ?? '/api',
+            apiBasePath,
           }),
         },
         {
