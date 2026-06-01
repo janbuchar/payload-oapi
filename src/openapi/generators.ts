@@ -389,6 +389,7 @@ const isOpenToPublic = async (checker: Access): Promise<boolean> => {
 
 const generateCollectionOperations = async (
   collection: Collection,
+  apiBasePath: string,
 ): Promise<Record<string, OpenAPIV3.PathItemObject & OpenAPIV3_1.PathItemObject>> => {
   const { slug } = collection.config
   const { singular, plural } = collectionName(collection)
@@ -400,7 +401,7 @@ const generateCollectionOperations = async (
   } satisfies OpenAPIV3_1.ResponsesObject & OpenAPIV3.ResponsesObject
 
   return {
-    [`/api/${slug}`]: {
+    [`${apiBasePath}/${slug}`]: {
       get: {
         operationId: componentName('schemas', plural, { prefix: 'list' }),
         summary: `Retrieve a list of ${plural}`,
@@ -462,7 +463,7 @@ const generateCollectionOperations = async (
         security: (await isOpenToPublic(collection.config.access.create)) ? [] : [apiKeySecurity],
       },
     },
-    [`/api/${slug}/{id}`]: {
+    [`${apiBasePath}/${slug}/{id}`]: {
       parameters: [
         ...baseQueryParams,
         {
@@ -563,13 +564,14 @@ const generateGlobalSchemas = (
 
 const generateGlobalOperations = async (
   global: SanitizedGlobalConfig,
+  apiBasePath: string,
 ): Promise<Record<string, OpenAPIV3.PathItemObject & OpenAPIV3_1.PathItemObject>> => {
   const slug = global.slug
   const singular = globalName(global)
   const tags = [singular]
 
   return {
-    [`/api/globals/${slug}`]: {
+    [`${apiBasePath}/globals/${slug}`]: {
       get: {
         summary: `Get the ${singular}`,
         tags,
@@ -652,6 +654,15 @@ const generateComponents = (
   return { schemas, requestBodies, responses }
 }
 
+/**
+ * Prefer the `apiBasePath` from plugin options (not null),
+ * otherwise use the currently configured api route from payload.
+ */
+const getApiBasePath = (
+  options: SanitizedPluginOptions,
+  req: Pick<PayloadRequest, 'payload'>,
+): string => (options.apiBasePath !== null ? options.apiBasePath : req.payload.config.routes.api)
+
 export const generateV30Spec = async (
   req: Pick<PayloadRequest, 'payload' | 'protocol' | 'headers'>,
   options: SanitizedPluginOptions,
@@ -663,6 +674,7 @@ export const generateV30Spec = async (
     shouldIncludeCollection(collection, filters),
   )
   const globals = req.payload.globals.config.filter(global => shouldIncludeGlobal(global, filters))
+  const apiBasePath = getApiBasePath(options, req)
 
   const spec = {
     openapi: '3.0.3',
@@ -670,8 +682,10 @@ export const generateV30Spec = async (
     servers: [{ url: `${req.protocol}//${req.headers.get('host')}` }],
     paths: Object.assign(
       {},
-      ...(await Promise.all(collections.map(generateCollectionOperations))),
-      ...(await Promise.all(globals.map(generateGlobalOperations))),
+      ...(await Promise.all(
+        collections.map(collection => generateCollectionOperations(collection, apiBasePath)),
+      )),
+      ...(await Promise.all(globals.map(global => generateGlobalOperations(global, apiBasePath)))),
     ),
     components: {
       securitySchemes: generateSecuritySchemes(options.authEndpoint),
@@ -727,6 +741,7 @@ export const generateV31Spec = async (
     shouldIncludeCollection(collection, filters),
   )
   const globals = req.payload.globals.config.filter(global => shouldIncludeGlobal(global, filters))
+  const apiBasePath = getApiBasePath(options, req)
 
   const spec = {
     openapi: '3.1.0',
@@ -734,8 +749,10 @@ export const generateV31Spec = async (
     servers: [{ url: `${req.protocol}//${req.headers.get('host')}` }],
     paths: Object.assign(
       {},
-      ...(await Promise.all(collections.map(generateCollectionOperations))),
-      ...(await Promise.all(globals.map(generateGlobalOperations))),
+      ...(await Promise.all(
+        collections.map(collection => generateCollectionOperations(collection, apiBasePath)),
+      )),
+      ...(await Promise.all(globals.map(global => generateGlobalOperations(global, apiBasePath)))),
     ),
     components: {
       securitySchemes: generateSecuritySchemes(options.authEndpoint),
