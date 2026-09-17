@@ -1,7 +1,9 @@
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
+import { sqliteAdapter } from '@payloadcms/db-sqlite'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { MongoMemoryServer } from 'mongodb-memory-server'
 import mongoose from 'mongoose'
+import type { OpenAPIV3 } from 'openapi-types'
 import {
   BasePayload,
   buildConfig,
@@ -31,10 +33,9 @@ describe('openapi generators', () => {
   })
 
   const buildPayload = async (
-    inputConfig: Omit<Config, 'db' | 'secret' | 'typescript'>,
+    inputConfig: Omit<Config, 'db' | 'secret' | 'typescript'> & Partial<Config>,
   ): Promise<Payload> => {
     const config = await buildConfig({
-      ...inputConfig,
       db: mongooseAdapter({
         url: mongo.getUri(),
       }),
@@ -42,6 +43,7 @@ describe('openapi generators', () => {
       typescript: {
         autoGenerate: false,
       },
+      ...inputConfig,
     })
 
     return await new BasePayload().init({ config })
@@ -87,8 +89,8 @@ describe('openapi generators', () => {
     const payload = await buildPayload({
       collections: [Posts],
       routes: {
-        api: '/payload-api'
-      }
+        api: '/payload-api',
+      },
     })
 
     const spec = await generateV30Spec(
@@ -247,6 +249,33 @@ describe('openapi generators', () => {
     )
 
     expect(spec).toMatchSnapshot()
+  })
+
+  test('respects default ID type from db adapter', async () => {
+    const payload = await buildPayload({
+      // SQLite defaults to numeric IDs, mongo to text
+      db: sqliteAdapter({
+        client: { url: ':memory:' },
+      }),
+      collections: [Posts],
+    })
+
+    const spec = await generateV30Spec(
+      { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
+      {
+        openapiVersion: '3.0',
+        authEndpoint: '/api/auth',
+        metadata: { title: 'Test API', version: '1.0' },
+      },
+    )
+
+    expect(spec).toMatchSnapshot()
+
+    const post = spec.components?.schemas?.Post as OpenAPIV3.SchemaObject
+    expect(post.properties?.id).toEqual({ type: 'number' })
+    expect(spec.paths['/api/posts/{id}']?.parameters).toContainEqual(
+      expect.objectContaining({ name: 'id', schema: { type: 'number' } }),
+    )
   })
 
   describe('collection filtering', () => {
