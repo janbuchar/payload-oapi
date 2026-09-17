@@ -89,12 +89,15 @@ const composeRef = (
   $ref: `#/components/${type}/${componentName(type, name, options)}`,
 })
 
+const idSchema = (config: SanitizedConfig): { type: 'number' } | { type: 'string' } =>
+  config.db.defaultIDType === 'number' ? { type: 'number' } : { type: 'string' }
+
 const generateSchemaObject = (config: SanitizedConfig, collection: Collection): JSONSchema4 => {
   const schema = entityToJSONSchema(
     config,
     removeInterfaceNames(collection.config), // the `interfaceName` option causes `entityToJSONSchema` to add a reference to a non-existing schema
     new Map(),
-    'text',
+    config.db.defaultIDType,
     undefined,
   )
 
@@ -114,14 +117,18 @@ const generateSchemaObject = (config: SanitizedConfig, collection: Collection): 
 
 type RequestBodyType = 'post' | 'patch'
 
-const requestBodySchema = (fields: Array<Field>, schema: JSONSchema4): JSONSchema4 => ({
+const requestBodySchema = (
+  config: SanitizedConfig,
+  fields: Array<Field>,
+  schema: JSONSchema4,
+): JSONSchema4 => ({
   ...schema,
   properties: Object.fromEntries(
     Object.entries(schema.properties ?? {}).map(([fieldName, schema]) => {
       const field = fields.find(field => (field as FieldBase).name === fieldName)
       if (field?.type === 'relationship') {
         const target = Array.isArray(field.relationTo) ? field.relationTo : [field.relationTo]
-        return [fieldName, { type: 'string', description: `ID of the ${target.join('/')}` }]
+        return [fieldName, { ...idSchema(config), description: `ID of the ${target.join('/')}` }]
       }
 
       return [fieldName, schema]
@@ -138,7 +145,7 @@ const generateRequestBodySchema = (
     config,
     removeInterfaceNames(collection.config), // the `interfaceName` option causes `entityToJSONSchema` to add a reference to a non-existing schema
     new Map(),
-    'text',
+    config.db.defaultIDType,
     undefined,
   )
 
@@ -162,7 +169,11 @@ const generateRequestBodySchema = (
     description: collectionName(collection).singular,
     content: {
       'application/json': {
-        schema: requestBodySchema(collection.config.fields, schema) as OpenAPIV3_1.SchemaObject,
+        schema: requestBodySchema(
+          config,
+          collection.config.fields,
+          schema,
+        ) as OpenAPIV3_1.SchemaObject,
       },
     },
   }
@@ -279,6 +290,7 @@ const generateQueryOperationSchemas = (collection: Collection): Record<string, J
 }
 
 const generateCollectionResponses = (
+  config: SanitizedConfig,
   collection: Collection,
 ): Record<string, OpenAPIV3_1.ResponseObject & OpenAPIV3.ResponseObject> => {
   const { singular, plural } = collectionName(collection)
@@ -306,7 +318,7 @@ const generateCollectionResponses = (
                   {
                     type: 'object',
                     properties: {
-                      id: { type: 'string' },
+                      id: idSchema(config),
                       createdAt: {
                         type: 'string',
                         format: 'date-time',
@@ -388,6 +400,7 @@ const isOpenToPublic = async (checker: Access): Promise<boolean> => {
 }
 
 const generateCollectionOperations = async (
+  config: SanitizedConfig,
   collection: Collection,
 ): Promise<Record<string, OpenAPIV3.PathItemObject & OpenAPIV3_1.PathItemObject>> => {
   const { slug } = collection.config
@@ -470,9 +483,7 @@ const generateCollectionOperations = async (
           name: 'id',
           description: `ID of the ${singular}`,
           required: true,
-          schema: {
-            type: 'string',
-          },
+          schema: idSchema(config),
         },
       ],
       get: {
@@ -544,7 +555,7 @@ const generateGlobalSchemas = (
     config,
     removeInterfaceNames(global),
     new Map(),
-    'text',
+    config.db.defaultIDType,
     undefined,
   )
 
@@ -555,7 +566,7 @@ const generateGlobalSchemas = (
       oneOf: [schema, { type: 'object', properties: {} }],
     },
     [componentName('schemas', globalName(global), { suffix: 'Write' })]: {
-      ...requestBodySchema(global.fields, schema),
+      ...requestBodySchema(config, global.fields, schema),
       title: `${globalName(global)} (writable fields)`,
     },
   }
@@ -599,13 +610,12 @@ const generateComponents = (
     },
   }
 
+  const filters = options.filters ?? {}
   const collections = Object.values(req.payload.collections).filter(collection =>
-    shouldIncludeCollection(collection, options.filters),
+    shouldIncludeCollection(collection, filters),
   )
 
-  const globals = req.payload.globals.config.filter(global =>
-    shouldIncludeGlobal(global, options.filters),
-  )
+  const globals = req.payload.globals.config.filter(global => shouldIncludeGlobal(global, filters))
 
   for (const collection of collections) {
     const { singular } = collectionName(collection)
@@ -643,7 +653,7 @@ const generateComponents = (
 
   const responses: Record<string, OpenAPIV3_1.ResponseObject> = Object.assign(
     {},
-    ...collections.map(generateCollectionResponses),
+    ...collections.map(collection => generateCollectionResponses(req.payload.config, collection)),
     ...globals.map(global => ({
       [componentName('responses', globalName(global))]: generateGlobalResponse(global),
     })),
@@ -670,7 +680,9 @@ export const generateV30Spec = async (
     servers: [{ url: `${req.protocol}//${req.headers.get('host')}` }],
     paths: Object.assign(
       {},
-      ...(await Promise.all(collections.map(generateCollectionOperations))),
+      ...(await Promise.all(
+        collections.map(collection => generateCollectionOperations(req.payload.config, collection)),
+      )),
       ...(await Promise.all(globals.map(generateGlobalOperations))),
     ),
     components: {
@@ -734,7 +746,9 @@ export const generateV31Spec = async (
     servers: [{ url: `${req.protocol}//${req.headers.get('host')}` }],
     paths: Object.assign(
       {},
-      ...(await Promise.all(collections.map(generateCollectionOperations))),
+      ...(await Promise.all(
+        collections.map(collection => generateCollectionOperations(req.payload.config, collection)),
+      )),
       ...(await Promise.all(globals.map(generateGlobalOperations))),
     ),
     components: {
