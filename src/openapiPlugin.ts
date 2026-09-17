@@ -10,6 +10,7 @@ const openapi =
     metadata,
     enabled = true,
     filters = {},
+    apiBasePath = null,
   }: PluginOptions): Plugin =>
   ({ endpoints = [], ...config }) => {
     if (!enabled) {
@@ -28,6 +29,7 @@ const openapi =
             metadata,
             authEndpoint,
             filters,
+            apiBasePath,
           }),
         },
         {

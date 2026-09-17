@@ -402,6 +402,7 @@ const isOpenToPublic = async (checker: Access): Promise<boolean> => {
 const generateCollectionOperations = async (
   config: SanitizedConfig,
   collection: Collection,
+  apiRoute: string,
 ): Promise<Record<string, OpenAPIV3.PathItemObject & OpenAPIV3_1.PathItemObject>> => {
   const { slug } = collection.config
   const { singular, plural } = collectionName(collection)
@@ -413,7 +414,7 @@ const generateCollectionOperations = async (
   } satisfies OpenAPIV3_1.ResponsesObject & OpenAPIV3.ResponsesObject
 
   return {
-    [`/api/${slug}`]: {
+    [`${apiRoute}/${slug}`]: {
       get: {
         operationId: componentName('schemas', plural, { prefix: 'list' }),
         summary: `Retrieve a list of ${plural}`,
@@ -475,7 +476,7 @@ const generateCollectionOperations = async (
         security: (await isOpenToPublic(collection.config.access.create)) ? [] : [apiKeySecurity],
       },
     },
-    [`/api/${slug}/{id}`]: {
+    [`${apiRoute}/${slug}/{id}`]: {
       parameters: [
         ...baseQueryParams,
         {
@@ -574,13 +575,14 @@ const generateGlobalSchemas = (
 
 const generateGlobalOperations = async (
   global: SanitizedGlobalConfig,
+  apiRoute: string,
 ): Promise<Record<string, OpenAPIV3.PathItemObject & OpenAPIV3_1.PathItemObject>> => {
   const slug = global.slug
   const singular = globalName(global)
   const tags = [singular]
 
   return {
-    [`/api/globals/${slug}`]: {
+    [`${apiRoute}/globals/${slug}`]: {
       get: {
         summary: `Get the ${singular}`,
         tags,
@@ -673,6 +675,7 @@ export const generateV30Spec = async (
     shouldIncludeCollection(collection, filters),
   )
   const globals = req.payload.globals.config.filter(global => shouldIncludeGlobal(global, filters))
+  const apiRoute = options.apiBasePath ?? req.payload.config.routes.api
 
   const spec = {
     openapi: '3.0.3',
@@ -681,12 +684,14 @@ export const generateV30Spec = async (
     paths: Object.assign(
       {},
       ...(await Promise.all(
-        collections.map(collection => generateCollectionOperations(req.payload.config, collection)),
+        collections.map(collection =>
+          generateCollectionOperations(req.payload.config, collection, apiRoute),
+        ),
       )),
-      ...(await Promise.all(globals.map(generateGlobalOperations))),
+      ...(await Promise.all(globals.map(global => generateGlobalOperations(global, apiRoute)))),
     ),
     components: {
-      securitySchemes: generateSecuritySchemes(options.authEndpoint),
+      securitySchemes: generateSecuritySchemes(options.authEndpoint, apiRoute),
       schemas: await mapValuesAsync(jsonSchemaToOpenapiSchema, schemas),
       requestBodies: await mapValuesAsync(
         async requestBody => ({
@@ -739,6 +744,7 @@ export const generateV31Spec = async (
     shouldIncludeCollection(collection, filters),
   )
   const globals = req.payload.globals.config.filter(global => shouldIncludeGlobal(global, filters))
+  const apiRoute = options.apiBasePath ?? req.payload.config.routes.api
 
   const spec = {
     openapi: '3.1.0',
@@ -747,12 +753,14 @@ export const generateV31Spec = async (
     paths: Object.assign(
       {},
       ...(await Promise.all(
-        collections.map(collection => generateCollectionOperations(req.payload.config, collection)),
+        collections.map(collection =>
+          generateCollectionOperations(req.payload.config, collection, apiRoute),
+        ),
       )),
-      ...(await Promise.all(globals.map(generateGlobalOperations))),
+      ...(await Promise.all(globals.map(global => generateGlobalOperations(global, apiRoute)))),
     ),
     components: {
-      securitySchemes: generateSecuritySchemes(options.authEndpoint),
+      securitySchemes: generateSecuritySchemes(options.authEndpoint, apiRoute),
       schemas: schemas as Record<string, OpenAPIV3_1.SchemaObject>,
       requestBodies,
       responses,

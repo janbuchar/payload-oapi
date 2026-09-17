@@ -1,8 +1,9 @@
 import type { Plugin } from 'payload'
+import { apiRoute } from './utils/routes.js'
 
 const scalar =
   ({
-    specEndpoint = '/api/openapi.json',
+    specEndpoint,
     docsUrl = '/docs',
     enabled = true,
   }: {
@@ -15,6 +16,8 @@ const scalar =
       return { ...config, endpoints }
     }
 
+    const specUrl = specEndpoint ?? `${apiRoute(config)}/openapi.json`
+
     return {
       ...config,
       endpoints: [
@@ -23,7 +26,7 @@ const scalar =
           method: 'get',
           path: docsUrl,
           handler: async req => {
-            const fullSpecUrl = `${req.protocol}//${req.headers.get('host')}${specEndpoint}`
+            const fullSpecUrl = `${req.protocol}//${req.headers.get('host')}${specUrl}`
 
             const html = `
               <!DOCTYPE html>
