@@ -675,7 +675,7 @@ export const generateV30Spec = async (
     shouldIncludeCollection(collection, filters),
   )
   const globals = req.payload.globals.config.filter(global => shouldIncludeGlobal(global, filters))
-  const apiRoute = req.payload.config.routes.api
+  const apiRoute = options.apiBasePath ?? req.payload.config.routes.api
 
   const spec = {
     openapi: '3.0.3',
@@ -744,7 +744,7 @@ export const generateV31Spec = async (
     shouldIncludeCollection(collection, filters),
   )
   const globals = req.payload.globals.config.filter(global => shouldIncludeGlobal(global, filters))
-  const apiRoute = req.payload.config.routes.api
+  const apiRoute = options.apiBasePath ?? req.payload.config.routes.api
 
   const spec = {
     openapi: '3.1.0',

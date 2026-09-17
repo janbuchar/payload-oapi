@@ -1,8 +1,9 @@
 import type { Plugin } from 'payload'
+import { apiRoute } from './utils/routes.js'
 
 const redoc =
   ({
-    specEndpoint = '/api/openapi.json',
+    specEndpoint,
     docsUrl = '/docs',
     enabled = true,
   }: {
@@ -14,6 +15,9 @@ const redoc =
     if (!enabled) {
       return { ...config, endpoints }
     }
+
+    const specUrl = specEndpoint ?? `${apiRoute(config)}/openapi.json`
+
     return {
       ...config,
       endpoints: [
@@ -43,7 +47,7 @@ const redoc =
                   </style>
                 </head>
                 <body>
-                  <redoc spec-url="${req.protocol}//${req.headers.get('host')}${specEndpoint}"></redoc>
+                  <redoc spec-url="${req.protocol}//${req.headers.get('host')}${specUrl}"></redoc>
                   <script src="https://cdn.jsdelivr.net/npm/redoc@2.4.0/bundles/redoc.standalone.js"></script>
                 </body>
               </html>`,

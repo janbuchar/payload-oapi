@@ -91,6 +91,19 @@ openapi({
 })
 ```
 
+## 4. Override the API base path (optional)
+
+Generated operation paths are prefixed with your Payload `routes.api` setting. Set `apiBasePath` if clients reach the
+API under a different prefix, e.g. behind a reverse proxy:
+
+```typescript
+openapi({
+  openapiVersion: '3.0',
+  metadata: { title: 'Dev API', version: '0.0.1' },
+  apiBasePath: '/public-api',
+})
+```
+
 # Usage
 
 Unless you configured it otherwise, your spec will be accessible via <https://your-payload.com/api/openapi.json>. If you

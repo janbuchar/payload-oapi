@@ -1,8 +1,9 @@
 import type { Plugin } from 'payload'
+import { apiRoute } from './utils/routes.js'
 
 const rapidoc =
   ({
-    specEndpoint = '/api/openapi.json',
+    specEndpoint,
     docsUrl = '/docs',
     enabled = true,
   }: {
@@ -14,6 +15,8 @@ const rapidoc =
     if (!enabled) {
       return { ...config, endpoints }
     }
+
+    const specUrl = specEndpoint ?? `${apiRoute(config)}/openapi.json`
 
     return {
       ...config,
@@ -38,7 +41,7 @@ const rapidoc =
               </head>
               <body>
               <script src="https://cdn.jsdelivr.net/npm/rapidoc@9.3.8/dist/rapidoc-min.js" type="module"></script>
-              <rapi-doc spec-url="${req.protocol}//${req.headers.get('host')}${specEndpoint}"></rapi-doc>
+              <rapi-doc spec-url="${req.protocol}//${req.headers.get('host')}${specUrl}"></rapi-doc>
               </body>
               </html>`,
               { headers: { 'content-type': 'text/html' } },

@@ -1820,7 +1820,7 @@ exports[`openapi generators > converts empty config correctly 1`] = `
         "flows": {
           "password": {
             "scopes": {},
-            "tokenUrl": "/api//api/auth",
+            "tokenUrl": "/api/auth",
           },
         },
         "type": "oauth2",
@@ -5215,7 +5215,7 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         "flows": {
           "password": {
             "scopes": {},
-            "tokenUrl": "/api//api/auth",
+            "tokenUrl": "/api/auth",
           },
         },
         "type": "oauth2",
@@ -8693,7 +8693,7 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         "flows": {
           "password": {
             "scopes": {},
-            "tokenUrl": "/api//api/auth",
+            "tokenUrl": "/api/auth",
           },
         },
         "type": "oauth2",
@@ -11736,7 +11736,7 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
         "flows": {
           "password": {
             "scopes": {},
-            "tokenUrl": "/api//api/auth",
+            "tokenUrl": "/api/auth",
           },
         },
         "type": "oauth2",
@@ -14854,7 +14854,7 @@ exports[`openapi generators > handles non-default api route 1`] = `
         "flows": {
           "password": {
             "scopes": {},
-            "tokenUrl": "/payload-api//payload-api/auth",
+            "tokenUrl": "/payload-api/auth",
           },
         },
         "type": "oauth2",
@@ -18198,7 +18198,7 @@ exports[`openapi generators > handles non-default collection 1`] = `
         "flows": {
           "password": {
             "scopes": {},
-            "tokenUrl": "/api//api/auth",
+            "tokenUrl": "/api/auth",
           },
         },
         "type": "oauth2",
@@ -21542,7 +21542,7 @@ exports[`openapi generators > respects default ID type from db adapter 1`] = `
         "flows": {
           "password": {
             "scopes": {},
-            "tokenUrl": "/api//api/auth",
+            "tokenUrl": "/api/auth",
           },
         },
         "type": "oauth2",

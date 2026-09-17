@@ -63,9 +63,10 @@ describe('openapi generators', () => {
       { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
       {
         openapiVersion: '3.0',
-        authEndpoint: '/api/auth',
+        authEndpoint: '/auth',
         metadata: { title: 'Test API', version: '1.0' },
         filters: {},
+        apiBasePath: null,
       },
     )
 
@@ -97,9 +98,10 @@ describe('openapi generators', () => {
       { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
       {
         openapiVersion: '3.0',
-        authEndpoint: '/payload-api/auth',
+        authEndpoint: '/auth',
         metadata: { title: 'Test API', version: '1.0' },
         filters: {},
+        apiBasePath: null,
       },
     )
 
@@ -119,6 +121,33 @@ describe('openapi generators', () => {
         '/payload-api/payload-migrations/{id}',
       ]),
     )
+
+    const apiKey = spec.components?.securitySchemes?.ApiKey as OpenAPIV3.OAuth2SecurityScheme
+    expect(apiKey.flows.password?.tokenUrl).toBe('/payload-api/auth')
+  })
+
+  test('apiBasePath overrides the api route', async () => {
+    const payload = await buildPayload({
+      collections: [Posts],
+      routes: {
+        api: '/payload-api',
+      },
+    })
+
+    const spec = await generateV30Spec(
+      { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
+      {
+        openapiVersion: '3.0',
+        authEndpoint: '/auth',
+        metadata: { title: 'Test API', version: '1.0' },
+        filters: { hideInternalCollections: true },
+        apiBasePath: '/proxied',
+      },
+    )
+
+    expect(new Set(Object.keys(spec.paths))).toEqual(
+      new Set(['/proxied/posts', '/proxied/posts/{id}', '/proxied/users', '/proxied/users/{id}']),
+    )
   })
 
   test('handles non-default collection', async () => {
@@ -130,9 +159,10 @@ describe('openapi generators', () => {
       { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
       {
         openapiVersion: '3.0',
-        authEndpoint: '/api/auth',
+        authEndpoint: '/auth',
         metadata: { title: 'Test API', version: '1.0' },
         filters: {},
+        apiBasePath: null,
       },
     )
 
@@ -180,9 +210,10 @@ describe('openapi generators', () => {
       { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
       {
         openapiVersion: '3.0',
-        authEndpoint: '/api/auth',
+        authEndpoint: '/auth',
         metadata: { title: 'Test API', version: '1.0' },
         filters: {},
+        apiBasePath: null,
       },
     )
 
@@ -214,9 +245,10 @@ describe('openapi generators', () => {
       { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
       {
         openapiVersion: '3.0',
-        authEndpoint: '/api/auth',
+        authEndpoint: '/auth',
         metadata: { title: 'Test API', version: '1.0' },
         filters: {},
+        apiBasePath: null,
       },
     )
 
@@ -242,9 +274,10 @@ describe('openapi generators', () => {
       { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
       {
         openapiVersion: '3.0',
-        authEndpoint: '/api/auth',
+        authEndpoint: '/auth',
         metadata: { title: 'Test API', version: '1.0' },
         filters: {},
+        apiBasePath: null,
       },
     )
 
@@ -264,7 +297,7 @@ describe('openapi generators', () => {
       { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
       {
         openapiVersion: '3.0',
-        authEndpoint: '/api/auth',
+        authEndpoint: '/auth',
         metadata: { title: 'Test API', version: '1.0' },
       },
     )
@@ -292,9 +325,10 @@ describe('openapi generators', () => {
         { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
         {
           openapiVersion: '3.0',
-          authEndpoint: '/api/auth',
+          authEndpoint: '/auth',
           metadata: { title: 'Test API', version: '1.0' },
           filters: { includeCollections: ['posts'] },
+          apiBasePath: null,
         },
       )
 
@@ -311,9 +345,10 @@ describe('openapi generators', () => {
         { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
         {
           openapiVersion: '3.0',
-          authEndpoint: '/api/auth',
+          authEndpoint: '/auth',
           metadata: { title: 'Test API', version: '1.0' },
           filters: { excludeCollections: ['users'] },
+          apiBasePath: null,
         },
       )
 
@@ -330,9 +365,10 @@ describe('openapi generators', () => {
         { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
         {
           openapiVersion: '3.0',
-          authEndpoint: '/api/auth',
+          authEndpoint: '/auth',
           metadata: { title: 'Test API', version: '1.0' },
           filters: { hideInternalCollections: true },
+          apiBasePath: null,
         },
       )
 
@@ -351,9 +387,10 @@ describe('openapi generators', () => {
         { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
         {
           openapiVersion: '3.0',
-          authEndpoint: '/api/auth',
+          authEndpoint: '/auth',
           metadata: { title: 'Test API', version: '1.0' },
           filters: { includeCollections: [] },
+          apiBasePath: null,
         },
       )
 
@@ -379,9 +416,10 @@ describe('openapi generators', () => {
         { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
         {
           openapiVersion: '3.0',
-          authEndpoint: '/api/auth',
+          authEndpoint: '/auth',
           metadata: { title: 'Test API', version: '1.0' },
           filters: { includeGlobals: ['settings'] },
+          apiBasePath: null,
         },
       )
 
@@ -406,9 +444,10 @@ describe('openapi generators', () => {
         { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
         {
           openapiVersion: '3.0',
-          authEndpoint: '/api/auth',
+          authEndpoint: '/auth',
           metadata: { title: 'Test API', version: '1.0' },
           filters: { excludeGlobals: ['footer'] },
+          apiBasePath: null,
         },
       )
 

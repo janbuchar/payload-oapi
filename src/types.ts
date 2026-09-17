@@ -21,6 +21,8 @@ export interface PluginOptions {
   authEndpoint?: string
   metadata: OpenAPIMetadata
   filters?: FilterOptions
+  /** Path prefix for generated operations, defaults to the Payload `routes.api` setting. */
+  apiBasePath?: string | null
 }
 
 export type SanitizedPluginOptions = Required<Omit<PluginOptions, 'enabled' | 'specEndpoint'>>
