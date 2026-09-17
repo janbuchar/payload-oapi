@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.5] - 2025-09-11
+
+### 🚀 Features
+
+- Add operationId to specs (#58)
+- Add request body to patch requests (#57)
+
+### 🐛 Bug Fixes
+
+- Incorrect imports on FeaturePet.ts and payload.config.ts (#62)
+
+### ⚙️ Miscellaneous Tasks
+
+- Update dependencies (#63)
+- Only commit changes to package.json and changelog on release (#66)
+- Fix release.yml syntax
+
 ## [0.2.4] - 2025-07-21
 
 ### 🚀 Features
@@ -17,6 +34,7 @@ All notable changes to this project will be documented in this file.
 ### ⚙️ Miscellaneous Tasks
 
 - Update git-cliff-action (#49)
+- *(release)* 0.2.4 [skip ci]
 
 ## [0.2.3] - 2025-05-31
 

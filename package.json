@@ -1,7 +1,7 @@
 {
   "name": "payload-oapi",
   "description": "An OpenAPI plugin for Payload CMS",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "homepage:": "https://github.com/janbuchar/payload-oapi",
   "repository:": "https://github.com/janbuchar/payload-oapi",
   "main": "dist/index.js",
@@ -45,6 +45,7 @@
   "devDependencies": {
     "@biomejs/biome": "^2.2.2",
     "@payloadcms/db-mongodb": "^3.53.0",
+    "@payloadcms/db-sqlite": "^3.53.0",
     "@payloadcms/next": "^3.53.0",
     "@payloadcms/richtext-lexical": "^3.53.0",
     "@types/react": "19.1.11",

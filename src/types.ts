@@ -6,12 +6,23 @@ export interface OpenAPIMetadata {
   description?: string
 }
 
+export interface FilterOptions {
+  includeCollections?: string[]
+  excludeCollections?: string[]
+  hideInternalCollections?: boolean
+  includeGlobals?: string[]
+  excludeGlobals?: string[]
+}
+
 export interface PluginOptions {
   enabled?: boolean
   openapiVersion?: OpenAPIVersion
   specEndpoint?: string
   authEndpoint?: string
   metadata: OpenAPIMetadata
+  filters?: FilterOptions
+  /** Path prefix for generated operations, defaults to the Payload `routes.api` setting. */
+  apiBasePath?: string | null
 }
 
 export type SanitizedPluginOptions = Required<Omit<PluginOptions, 'enabled' | 'specEndpoint'>>
