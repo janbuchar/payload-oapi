@@ -5,10 +5,10 @@ import type { OpenAPIV3, OpenAPIV3_1 } from 'openapi-types'
 import type {
   Access,
   AccessArgs,
-  Block,
   Collection,
   Field,
   FieldBase,
+  FlattenedBlock,
   PayloadRequest,
   RadioField,
   SanitizedCollectionConfig,
@@ -68,9 +68,8 @@ const adjustRefTargets = (
         return `#/components/schemas/${componentName('schemas', globalName(global))}`
       }
 
-      const blockName = payload.blocks?.[name]?.slug
-      if (blockName !== undefined) {
-        return `#/components/schemas/${componentName('schemas', blockName)}`
+      if (payload.blocks?.[name] !== undefined) {
+        return `#/components/schemas/${componentName('schemas', name)}`
       }
 
       throw new Error(`Unknown reference: ${name}`)
@@ -78,7 +77,11 @@ const adjustRefTargets = (
   })
 }
 
-const removeInterfaceNames = (target: SanitizedCollectionConfig | SanitizedGlobalConfig) =>
+const removeInterfaceNames = <
+  T extends SanitizedCollectionConfig | SanitizedGlobalConfig | FlattenedBlock,
+>(
+  target: T,
+): T =>
   create(target, draft =>
     visitObjectNodes(draft, (subject, key) => {
       if (key === 'interfaceName') {
@@ -607,43 +610,57 @@ const generateGlobalOperations = async (
   }
 }
 
-const generateBlockSchemas = (
-  config: SanitizedConfig,
-  block: Block,
-): Record<string, JSONSchema4> => {
+const generateBlockSchema = (config: SanitizedConfig, block: FlattenedBlock): JSONSchema4 => {
   const schema = entityToJSONSchema(
     config,
-    removeInterfaceNames(block as any), // TODO fix types in removeInterfaceNames
+    // `entityToJSONSchema` only reads `slug`, `flattenedFields` and `typescript` off the entity,
+    // all of which a flattened block has; its signature is just narrower than its needs.
+    removeInterfaceNames(block) as unknown as SanitizedCollectionConfig,
     new Map(),
     config.db.defaultIDType,
     undefined,
   )
 
-  const blockName = block.slug
+  const properties = Object.fromEntries(
+    Object.entries(schema.properties ?? {}).filter(([property]) => {
+      const field = block.flattenedFields.find(field => field.name === property)
 
-  // This is copy-paste from fieldsToJSONSchema
-  // I have no idea why there is no correct generation of the scheme,
-  // I hope that someone can understand this.
-  // This code is needed in order to add a compulsory blockType field to the block
-  const blockSchema = {
-    type: 'object',
-    additionalProperties: false,
-    properties: {
-      ...schema.properties,
-      blockType: {
-        const: blockName,
-      },
-    },
-    required: ['blockType', ...(schema.required as string[])],
-  }
+      return !isHiddenField(field)
+    }),
+  )
+
+  // `entityToJSONSchema` describes a document, so it promotes the block's payload-managed `id` to
+  // required. Inline blocks keep it optional, and clients must not have to invent one on write.
+  const required = ((schema.required ?? []) as string[]).filter(
+    property => property !== 'id' && properties[property] !== undefined,
+  )
 
   return {
-    [componentName('schemas', blockName)]: { ...blockSchema, title: blockName },
-    [componentName('schemas', blockName, { suffix: 'Write' })]: {
-      ...requestBodySchema(config, block.fields, schema),
-      title: `${blockName} (writable fields)`,
-    },
-  } as JSONSchema4
+    ...schema,
+    title: block.slug,
+    // Only the inline-block path in `fieldsToJSONSchema` adds the discriminator.
+    properties: { ...properties, blockType: { const: block.slug } },
+    required: ['blockType', ...required],
+  }
+}
+
+/**
+ * Collections, globals and blocks share one component namespace, so a name clash would otherwise
+ * silently replace an already generated schema and corrupt every `$ref` pointing at it.
+ */
+const defineSchemas = (
+  schemas: Record<string, JSONSchema4>,
+  additions: Record<string, JSONSchema4>,
+): void => {
+  for (const [name, schema] of Object.entries(additions)) {
+    if (name in schemas) {
+      throw new Error(
+        `Duplicate OpenAPI schema name "${name}" - rename the colliding collection, global or block`,
+      )
+    }
+
+    schemas[name] = schema
+  }
 }
 
 const generateComponents = (
@@ -666,24 +683,23 @@ const generateComponents = (
 
   for (const collection of collections) {
     const { singular } = collectionName(collection)
-    schemas[componentName('schemas', singular)] = generateSchemaObject(
-      req.payload.config,
-      collection,
-    )
+    defineSchemas(schemas, {
+      [componentName('schemas', singular)]: generateSchemaObject(req.payload.config, collection),
+    })
   }
 
   for (const collection of collections) {
-    Object.assign(schemas, generateQueryOperationSchemas(collection))
+    defineSchemas(schemas, generateQueryOperationSchemas(collection))
   }
 
   for (const global of globals) {
-    Object.assign(schemas, generateGlobalSchemas(req.payload.config, global))
+    defineSchemas(schemas, generateGlobalSchemas(req.payload.config, global))
   }
 
-  if (req.payload.blocks) {
-    for (const block of Object.values(req.payload.blocks)) {
-      Object.assign(schemas, generateBlockSchemas(req.payload.config, block))
-    }
+  for (const block of Object.values(req.payload.blocks ?? {})) {
+    defineSchemas(schemas, {
+      [componentName('schemas', block.slug)]: generateBlockSchema(req.payload.config, block),
+    })
   }
 
   const requestBodies: Record<string, OpenAPIV3_1.RequestBodyObject> = {}

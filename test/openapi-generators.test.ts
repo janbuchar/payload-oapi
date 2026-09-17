@@ -255,6 +255,79 @@ describe('openapi generators', () => {
     expect(spec).toMatchSnapshot()
   })
 
+  test('handles blocks referenced from the config', async () => {
+    const Page: CollectionConfig = {
+      slug: 'pages',
+      fields: [
+        {
+          name: 'content',
+          type: 'blocks',
+          blocks: [],
+          blockReferences: ['contentBlock'],
+        },
+      ],
+    }
+    const payload = await buildPayload({
+      blocks: [
+        {
+          slug: 'contentBlock',
+          fields: [
+            { name: 'heading', type: 'text', required: true },
+            { name: 'internalNote', type: 'text', hidden: true },
+          ],
+        },
+      ],
+      collections: [Page],
+    })
+
+    const spec = await generateV30Spec(
+      { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
+      {
+        openapiVersion: '3.0',
+        authEndpoint: '/auth',
+        metadata: { title: 'Test API', version: '1.0' },
+        filters: {},
+        apiBasePath: null,
+      },
+    )
+
+    expect(spec).toMatchSnapshot()
+
+    const block = spec.components?.schemas?.ContentBlock as OpenAPIV3.SchemaObject
+    expect(block.properties?.internalNote).toBeUndefined()
+    // payload assigns block ids itself, so a write payload must not be required to carry one
+    expect(block.required).toEqual(['blockType', 'heading'])
+
+    const page = spec.components?.schemas?.Page as OpenAPIV3.SchemaObject
+    const content = page.properties?.content as OpenAPIV3.ArraySchemaObject
+    expect(content.items).toEqual({ oneOf: [{ $ref: '#/components/schemas/ContentBlock' }] })
+  })
+
+  test('rejects a block whose schema name collides with a collection', async () => {
+    const payload = await buildPayload({
+      blocks: [{ slug: 'page', fields: [{ name: 'heading', type: 'text' }] }],
+      collections: [
+        {
+          slug: 'pages',
+          fields: [{ name: 'content', type: 'blocks', blocks: [], blockReferences: ['page'] }],
+        },
+      ],
+    })
+
+    await expect(
+      generateV30Spec(
+        { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
+        {
+          openapiVersion: '3.0',
+          authEndpoint: '/auth',
+          metadata: { title: 'Test API', version: '1.0' },
+          filters: {},
+          apiBasePath: null,
+        },
+      ),
+    ).rejects.toThrow('Duplicate OpenAPI schema name "Page"')
+  })
+
   test('handles datetime field with timezones correctly', async () => {
     const Event: CollectionConfig = {
       slug: 'events',
