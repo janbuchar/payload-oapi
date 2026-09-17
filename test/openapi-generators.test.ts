@@ -13,13 +13,29 @@ import {
   type Payload,
 } from 'payload'
 import { afterEach, beforeAll, beforeEach, describe, expect, test } from 'vitest'
-
 import { generateV30Spec } from '../src/openapi/generators'
 
 const Posts: CollectionConfig = {
   slug: 'posts',
   fields: [{ type: 'text', name: 'title' }],
 }
+
+/**
+ * Paths Payload serves for an auth collection under the default auth config: no `verify`, so no
+ * `/verify/{id}`, but `maxLoginAttempts` defaults above zero, so `/unlock` is real.
+ */
+const authPaths = (apiRoute: string, slug: string): Array<string> => [
+  `${apiRoute}/${slug}/login`,
+  `${apiRoute}/${slug}/logout`,
+  `${apiRoute}/${slug}/me`,
+  `${apiRoute}/${slug}/refresh-token`,
+  `${apiRoute}/${slug}/forgot-password`,
+  `${apiRoute}/${slug}/reset-password`,
+  `${apiRoute}/${slug}/first-register`,
+  `${apiRoute}/${slug}/unlock`,
+  `${apiRoute}/${slug}/init`,
+  `${apiRoute}/access`,
+]
 
 describe('openapi generators', () => {
   let mongo: MongoMemoryServer
@@ -82,6 +98,7 @@ describe('openapi generators', () => {
         '/api/payload-preferences/{id}',
         '/api/payload-migrations',
         '/api/payload-migrations/{id}',
+        ...authPaths('/api', 'users'),
       ]),
     )
   })
@@ -119,6 +136,7 @@ describe('openapi generators', () => {
         '/payload-api/payload-preferences/{id}',
         '/payload-api/payload-migrations',
         '/payload-api/payload-migrations/{id}',
+        ...authPaths('/payload-api', 'users'),
       ]),
     )
 
@@ -146,7 +164,13 @@ describe('openapi generators', () => {
     )
 
     expect(new Set(Object.keys(spec.paths))).toEqual(
-      new Set(['/proxied/posts', '/proxied/posts/{id}', '/proxied/users', '/proxied/users/{id}']),
+      new Set([
+        '/proxied/posts',
+        '/proxied/posts/{id}',
+        '/proxied/users',
+        '/proxied/users/{id}',
+        ...authPaths('/proxied', 'users'),
+      ]),
     )
   })
 
@@ -180,6 +204,7 @@ describe('openapi generators', () => {
         '/api/payload-preferences/{id}',
         '/api/payload-migrations',
         '/api/payload-migrations/{id}',
+        ...authPaths('/api', 'users'),
       ]),
     )
   })
@@ -490,6 +515,175 @@ describe('openapi generators', () => {
       const payload = await buildPayload({ collections: [Contacts] })
 
       await expect(generate(payload)).rejects.toThrow('Unknown reference: PhoneNumber')
+    })
+  })
+
+  describe('auth endpoints', () => {
+    const specFor = async (collections: Array<CollectionConfig>) => {
+      const payload = await buildPayload({ collections })
+
+      return await generateV30Spec(
+        { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
+        {
+          openapiVersion: '3.0',
+          authEndpoint: '/auth',
+          metadata: { title: 'Test API', version: '1.0' },
+          filters: { hideInternalCollections: true },
+          apiBasePath: null,
+        },
+      )
+    }
+
+    /** Resolves a `#/components/<type>/<name>` pointer, so assertions never guess component names. */
+    const follow = <T>(spec: OpenAPIV3.Document, target: unknown): T => {
+      const { $ref } = target as OpenAPIV3.ReferenceObject
+      const [, , type, name] = $ref.split('/')
+      const components = spec.components as unknown as Record<string, Record<string, T>>
+
+      expect(components[type]?.[name]).toBeDefined()
+
+      return components[type][name]
+    }
+
+    const responseSchema = (spec: OpenAPIV3.Document, path: string, method: 'get' | 'post') => {
+      const operation = spec.paths[path]?.[method]
+      const response = follow<OpenAPIV3.ResponseObject>(spec, operation?.responses['200'])
+
+      return follow<OpenAPIV3.NonArraySchemaObject>(
+        spec,
+        response.content?.['application/json']?.schema,
+      )
+    }
+
+    test('collections without auth get no auth operations', async () => {
+      const spec = await specFor([Posts])
+
+      expect(spec.paths['/api/posts/login']).toBeUndefined()
+      expect(spec.paths['/api/posts/me']).toBeUndefined()
+      expect(spec.paths['/api/users/login']).toBeDefined()
+    })
+
+    test('me is a GET, matching the route Payload registers', async () => {
+      const spec = await specFor([Posts])
+
+      expect(Object.keys(spec.paths['/api/users/me'] ?? {})).toEqual(['get'])
+      expect(Object.keys(spec.paths['/api/users/logout'] ?? {})).toEqual(['post'])
+    })
+
+    test('authenticated operations require the api key, public ones do not', async () => {
+      const spec = await specFor([Posts])
+
+      expect(spec.paths['/api/users/me']?.get?.security).toEqual([{ ApiKey: [] }])
+      expect(spec.paths['/api/users/refresh-token']?.post?.security).toEqual([{ ApiKey: [] }])
+      expect(spec.paths['/api/users/login']?.post?.security).toEqual([])
+      expect(spec.paths['/api/users/forgot-password']?.post?.security).toEqual([])
+    })
+
+    test('disableLocalStrategy drops the password-based operations', async () => {
+      const spec = await specFor([
+        { slug: 'users', auth: { disableLocalStrategy: true }, fields: [] },
+      ])
+
+      expect(spec.paths['/api/users/login']).toBeUndefined()
+      expect(spec.paths['/api/users/forgot-password']).toBeUndefined()
+      expect(spec.paths['/api/users/reset-password']).toBeUndefined()
+      expect(spec.paths['/api/users/first-register']).toBeUndefined()
+      expect(spec.paths['/api/users/unlock']).toBeUndefined()
+      // Cookie-based operations survive - a custom strategy still issues and clears them.
+      expect(spec.paths['/api/users/me']).toBeDefined()
+      expect(spec.paths['/api/users/logout']).toBeDefined()
+    })
+
+    test('unlock is documented only when lockout is enabled', async () => {
+      const spec = await specFor([{ slug: 'users', auth: { maxLoginAttempts: 0 }, fields: [] }])
+
+      expect(spec.paths['/api/users/unlock']).toBeUndefined()
+      expect(spec.paths['/api/users/login']).toBeDefined()
+    })
+
+    test('verify is documented only when email verification is enabled', async () => {
+      const spec = await specFor([{ slug: 'users', auth: { verify: true }, fields: [] }])
+
+      expect(spec.paths['/api/users/verify/{id}']?.post).toBeDefined()
+    })
+
+    test('login body follows loginWithUsername', async () => {
+      const spec = await specFor([
+        {
+          slug: 'users',
+          auth: { loginWithUsername: { allowEmailLogin: false, requireUsername: true } },
+          fields: [],
+        },
+      ])
+
+      const body = follow<OpenAPIV3.RequestBodyObject>(
+        spec,
+        spec.paths['/api/users/login']?.post?.requestBody,
+      )
+      const schema = body.content['application/json'].schema as OpenAPIV3.NonArraySchemaObject
+
+      expect(Object.keys(schema.properties ?? {})).toEqual(['username', 'password'])
+      expect(schema.required).toEqual(['username', 'password'])
+    })
+
+    test('login accepts either identifier when both are allowed', async () => {
+      const spec = await specFor([
+        { slug: 'users', auth: { loginWithUsername: { allowEmailLogin: true } }, fields: [] },
+      ])
+
+      const body = follow<OpenAPIV3.RequestBodyObject>(
+        spec,
+        spec.paths['/api/users/login']?.post?.requestBody,
+      )
+      const schema = body.content['application/json'].schema as OpenAPIV3.NonArraySchemaObject
+
+      expect(schema.required).toEqual(['password'])
+      expect(schema.anyOf).toEqual([{ required: ['email'] }, { required: ['username'] }])
+    })
+
+    test('auth responses reference the collection schema rather than a generic user', async () => {
+      const spec = await specFor([Posts])
+
+      const login = responseSchema(spec, '/api/users/login', 'post')
+      const collection = follow<OpenAPIV3.NonArraySchemaObject>(spec, login.properties?.user)
+
+      expect(collection.title).toBe('users')
+      expect(collection.properties?.email).toBeDefined()
+    })
+
+    test('removeTokenFromResponses omits the token it does not return', async () => {
+      const spec = await specFor([
+        { slug: 'users', auth: { removeTokenFromResponses: true }, fields: [] },
+      ])
+
+      const login = responseSchema(spec, '/api/users/login', 'post')
+      const refresh = responseSchema(spec, '/api/users/refresh-token', 'post')
+
+      expect(login.properties?.token).toBeUndefined()
+      expect(refresh.properties?.refreshedToken).toBeUndefined()
+    })
+
+    test('the message response shape is defined once, not per collection', async () => {
+      const spec = await specFor([
+        { slug: 'admins', auth: true, fields: [] },
+        { slug: 'editors', auth: true, fields: [] },
+      ])
+
+      const shared = { $ref: '#/components/responses/AuthMessageResponse' }
+
+      expect(spec.paths['/api/admins/logout']?.post?.responses['200']).toEqual(shared)
+      expect(spec.paths['/api/editors/logout']?.post?.responses['200']).toEqual(shared)
+      expect(spec.components?.schemas?.AuthMessage).toBeDefined()
+    })
+
+    test('access is emitted once, not per auth collection', async () => {
+      const spec = await specFor([
+        { slug: 'admins', auth: true, fields: [] },
+        { slug: 'editors', auth: true, fields: [] },
+      ])
+
+      expect(spec.paths['/api/access']?.get).toBeDefined()
+      expect(spec.paths['/api/admins/access']).toBeUndefined()
     })
   })
 

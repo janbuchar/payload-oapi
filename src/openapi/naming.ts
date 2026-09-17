@@ -1,3 +1,4 @@
+import type { OpenAPIV3, OpenAPIV3_1 } from 'openapi-types'
 import type { Collection, SanitizedGlobalConfig } from 'payload'
 import { camelize } from '../utils/strings.js'
 
@@ -66,3 +67,11 @@ export const componentName = (
 
   return name
 }
+
+export const composeRef = (
+  type: ComponentType,
+  name: string,
+  options?: { suffix?: string; prefix?: string },
+): OpenAPIV3_1.ReferenceObject & OpenAPIV3.ReferenceObject => ({
+  $ref: `#/components/${type}/${componentName(type, name, options)}`,
+})

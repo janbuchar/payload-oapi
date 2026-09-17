@@ -21,7 +21,17 @@ import type { SanitizedPluginOptions } from '../types.js'
 import { isHiddenField } from '../utils/fields.js'
 import { shouldIncludeCollection, shouldIncludeGlobal } from '../utils/filters.js'
 import { mapValuesAsync, visitObjectNodes } from '../utils/objects.js'
-import { type ComponentType, collectionName, componentName, globalName } from './naming.js'
+import {
+  generateAuthOperations,
+  generateAuthRequestBodies,
+  generateAuthResponses,
+  generateAuthRootOperations,
+  generateAuthSchemas,
+  hasAuthEndpoints,
+  sharedAuthResponses,
+  sharedAuthSchemas,
+} from './authEndpoints.js'
+import { collectionName, componentName, composeRef, globalName } from './naming.js'
 import { apiKeySecurity, generateSecuritySchemes } from './securitySchemes.js'
 
 const baseQueryParams: Array<OpenAPIV3.ParameterObject & OpenAPIV3_1.ParameterObject> = [
@@ -118,14 +128,6 @@ const removeInterfaceNames = <
       }
     }),
   )
-
-const composeRef = (
-  type: ComponentType,
-  name: string,
-  options?: { suffix?: string; prefix?: string },
-): OpenAPIV3_1.ReferenceObject & OpenAPIV3.ReferenceObject => ({
-  $ref: `#/components/${type}/${componentName(type, name, options)}`,
-})
 
 const idSchema = (config: SanitizedConfig): { type: 'number' } | { type: 'string' } =>
   config.db.defaultIDType === 'number' ? { type: 'number' } : { type: 'string' }
@@ -768,6 +770,16 @@ const generateComponents = (
     })
   }
 
+  const authCollections = collections.filter(hasAuthEndpoints)
+
+  if (authCollections.length > 0) {
+    defineSchemas(schemas, sharedAuthSchemas)
+  }
+
+  for (const collection of authCollections) {
+    defineSchemas(schemas, generateAuthSchemas(collection))
+  }
+
   const requestBodies: Record<string, OpenAPIV3_1.RequestBodyObject> = {}
 
   for (const collection of collections) {
@@ -786,12 +798,18 @@ const generateComponents = (
       generateGlobalRequestBody(global)
   }
 
+  for (const collection of authCollections) {
+    Object.assign(requestBodies, generateAuthRequestBodies(collection))
+  }
+
   const responses: Record<string, OpenAPIV3_1.ResponseObject> = Object.assign(
     {},
     ...collections.map(collection => generateCollectionResponses(req.payload.config, collection)),
     ...globals.map(global => ({
       [componentName('responses', globalName(global))]: generateGlobalResponse(global),
     })),
+    authCollections.length > 0 ? sharedAuthResponses : {},
+    ...authCollections.map(generateAuthResponses),
   )
 
   const liftedDefinitions = defineReferencedDefinitions(req.payload, schemas, {
@@ -803,32 +821,44 @@ const generateComponents = (
   return { schemas, requestBodies, responses, liftedDefinitions }
 }
 
-export const generateV30Spec = async (
-  req: Pick<PayloadRequest, 'payload' | 'protocol' | 'headers'>,
+const generatePaths = async (
+  req: Pick<PayloadRequest, 'payload'>,
   options: SanitizedPluginOptions,
-): Promise<OpenAPIV3.Document> => {
-  const { schemas, requestBodies, responses, liftedDefinitions } = generateComponents(req, options)
-
+): Promise<Record<string, OpenAPIV3.PathItemObject & OpenAPIV3_1.PathItemObject>> => {
   const filters = options.filters ?? {}
   const collections = Object.values(req.payload.collections).filter(collection =>
     shouldIncludeCollection(collection, filters),
   )
   const globals = req.payload.globals.config.filter(global => shouldIncludeGlobal(global, filters))
   const apiRoute = options.apiBasePath ?? req.payload.config.routes.api
+  const authCollections = collections.filter(hasAuthEndpoints)
+
+  return Object.assign(
+    {},
+    ...(await Promise.all(
+      collections.map(collection =>
+        generateCollectionOperations(req.payload.config, collection, apiRoute),
+      ),
+    )),
+    ...(await Promise.all(globals.map(global => generateGlobalOperations(global, apiRoute)))),
+    ...authCollections.map(collection => generateAuthOperations(collection, apiRoute)),
+    authCollections.length > 0 ? generateAuthRootOperations(apiRoute) : {},
+  )
+}
+
+export const generateV30Spec = async (
+  req: Pick<PayloadRequest, 'payload' | 'protocol' | 'headers'>,
+  options: SanitizedPluginOptions,
+): Promise<OpenAPIV3.Document> => {
+  const { schemas, requestBodies, responses, liftedDefinitions } = generateComponents(req, options)
+
+  const apiRoute = options.apiBasePath ?? req.payload.config.routes.api
 
   const spec = {
     openapi: '3.0.3',
     info: options.metadata,
     servers: [{ url: `${req.protocol}//${req.headers.get('host')}` }],
-    paths: Object.assign(
-      {},
-      ...(await Promise.all(
-        collections.map(collection =>
-          generateCollectionOperations(req.payload.config, collection, apiRoute),
-        ),
-      )),
-      ...(await Promise.all(globals.map(global => generateGlobalOperations(global, apiRoute)))),
-    ),
+    paths: await generatePaths(req, options),
     components: {
       securitySchemes: generateSecuritySchemes(options.authEndpoint, apiRoute),
       schemas: await mapValuesAsync(jsonSchemaToOpenapiSchema, schemas),
@@ -878,26 +908,13 @@ export const generateV31Spec = async (
 ): Promise<OpenAPIV3_1.Document> => {
   const { schemas, requestBodies, responses, liftedDefinitions } = generateComponents(req, options)
 
-  const filters = options.filters ?? {}
-  const collections = Object.values(req.payload.collections).filter(collection =>
-    shouldIncludeCollection(collection, filters),
-  )
-  const globals = req.payload.globals.config.filter(global => shouldIncludeGlobal(global, filters))
   const apiRoute = options.apiBasePath ?? req.payload.config.routes.api
 
   const spec = {
     openapi: '3.1.0',
     info: options.metadata,
     servers: [{ url: `${req.protocol}//${req.headers.get('host')}` }],
-    paths: Object.assign(
-      {},
-      ...(await Promise.all(
-        collections.map(collection =>
-          generateCollectionOperations(req.payload.config, collection, apiRoute),
-        ),
-      )),
-      ...(await Promise.all(globals.map(global => generateGlobalOperations(global, apiRoute)))),
-    ),
+    paths: await generatePaths(req, options),
     components: {
       securitySchemes: generateSecuritySchemes(options.authEndpoint, apiRoute),
       schemas: schemas as Record<string, OpenAPIV3_1.SchemaObject>,
