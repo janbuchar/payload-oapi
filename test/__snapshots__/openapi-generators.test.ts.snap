@@ -196,6 +196,52 @@ exports[`openapi generators > converts empty config correctly 1`] = `
         },
         "description": "Payload Preference",
       },
+      "UsersForgotPasswordRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "email": {
+                  "format": "email",
+                  "type": "string",
+                },
+              },
+              "required": [
+                "email",
+              ],
+              "type": "object",
+            },
+          },
+        },
+        "description": "Identifier of the users to send a reset token to",
+        "required": true,
+      },
+      "UsersLoginRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "email": {
+                  "format": "email",
+                  "type": "string",
+                },
+                "password": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "email",
+                "password",
+              ],
+              "type": "object",
+            },
+          },
+        },
+        "description": "Credentials of the users to log in",
+        "required": true,
+      },
       "UsersPatchRequestBody": {
         "content": {
           "application/json": {
@@ -290,8 +336,83 @@ exports[`openapi generators > converts empty config correctly 1`] = `
         },
         "description": "users",
       },
+      "UsersResetPasswordRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "password": {
+                  "type": "string",
+                },
+                "token": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "token",
+                "password",
+              ],
+              "type": "object",
+            },
+          },
+        },
+        "description": "Reset token and new password for the users",
+        "required": true,
+      },
+      "UsersUnlockRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "email": {
+                  "format": "email",
+                  "type": "string",
+                },
+              },
+              "required": [
+                "email",
+              ],
+              "type": "object",
+            },
+          },
+        },
+        "description": "Identifier of the users to unlock",
+        "required": true,
+      },
     },
     "responses": {
+      "AuthAccessResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AuthAccess",
+            },
+          },
+        },
+        "description": "Resolved permissions for the authenticated user",
+      },
+      "AuthInitResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AuthInit",
+            },
+          },
+        },
+        "description": "Whether the collection already has at least one document",
+      },
+      "AuthMessageResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AuthMessage",
+            },
+          },
+        },
+        "description": "Operation result message",
+      },
       "MutatePayloadLockedDocumentResponse": {
         "content": {
           "application/json": {
@@ -758,9 +879,49 @@ exports[`openapi generators > converts empty config correctly 1`] = `
         },
         "description": "List of users",
       },
+      "UsersLoginResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersLogin",
+            },
+          },
+        },
+        "description": "The logged in users and its token",
+      },
+      "UsersMeResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersMe",
+            },
+          },
+        },
+        "description": "The currently authenticated users, if any",
+      },
       "UsersNotFoundResponse": {
         "content": {},
         "description": "users not found",
+      },
+      "UsersRefreshTokenResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersRefreshToken",
+            },
+          },
+        },
+        "description": "The users and its refreshed token",
+      },
+      "UsersResetPasswordResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersResetPassword",
+            },
+          },
+        },
+        "description": "The users whose password was reset",
       },
       "UsersResponse": {
         "content": {
@@ -774,6 +935,34 @@ exports[`openapi generators > converts empty config correctly 1`] = `
       },
     },
     "schemas": {
+      "AuthAccess": {
+        "description": "Resolved permissions for the authenticated user, keyed by collection and global",
+        "type": "object",
+      },
+      "AuthInit": {
+        "additionalProperties": false,
+        "properties": {
+          "initialized": {
+            "type": "boolean",
+          },
+        },
+        "required": [
+          "initialized",
+        ],
+        "type": "object",
+      },
+      "AuthMessage": {
+        "additionalProperties": false,
+        "properties": {
+          "message": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "message",
+        ],
+        "type": "object",
+      },
       "PayloadLockedDocument": {
         "additionalProperties": false,
         "properties": {
@@ -1493,6 +1682,52 @@ exports[`openapi generators > converts empty config correctly 1`] = `
         "title": "users",
         "type": "object",
       },
+      "UsersLogin": {
+        "additionalProperties": false,
+        "properties": {
+          "exp": {
+            "type": "number",
+          },
+          "message": {
+            "type": "string",
+          },
+          "token": {
+            "type": "string",
+          },
+          "user": {
+            "$ref": "#/components/schemas/Users",
+          },
+        },
+        "required": [
+          "message",
+          "user",
+        ],
+        "type": "object",
+      },
+      "UsersMe": {
+        "additionalProperties": false,
+        "properties": {
+          "collection": {
+            "type": "string",
+          },
+          "exp": {
+            "type": "number",
+          },
+          "message": {
+            "type": "string",
+          },
+          "token": {
+            "type": "string",
+          },
+          "user": {
+            "$ref": "#/components/schemas/Users",
+          },
+        },
+        "required": [
+          "message",
+        ],
+        "type": "object",
+      },
       "UsersQueryOperations": {
         "properties": {
           "createdAt": {
@@ -1810,6 +2045,48 @@ exports[`openapi generators > converts empty config correctly 1`] = `
         "title": "users query disjunction",
         "type": "object",
       },
+      "UsersRefreshToken": {
+        "additionalProperties": false,
+        "properties": {
+          "exp": {
+            "type": "number",
+          },
+          "message": {
+            "type": "string",
+          },
+          "refreshedToken": {
+            "type": "string",
+          },
+          "user": {
+            "$ref": "#/components/schemas/Users",
+          },
+        },
+        "required": [
+          "message",
+          "user",
+          "exp",
+        ],
+        "type": "object",
+      },
+      "UsersResetPassword": {
+        "additionalProperties": false,
+        "properties": {
+          "message": {
+            "type": "string",
+          },
+          "token": {
+            "type": "string",
+          },
+          "user": {
+            "$ref": "#/components/schemas/Users",
+          },
+        },
+        "required": [
+          "message",
+          "user",
+        ],
+        "type": "object",
+      },
       "supportedTimezones": {
         "example": "Europe/Prague",
         "type": "string",
@@ -1833,6 +2110,25 @@ exports[`openapi generators > converts empty config correctly 1`] = `
   },
   "openapi": "3.0.3",
   "paths": {
+    "/api/access": {
+      "get": {
+        "operationId": "access",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AuthAccessResponse",
+          },
+        },
+        "security": [
+          {
+            "ApiKey": [],
+          },
+        ],
+        "summary": "Retrieve the permissions of the authenticated user",
+        "tags": [
+          "auth",
+        ],
+      },
+    },
     "/api/payload-locked-documents": {
       "get": {
         "operationId": "listPayloadLockedDocuments",
@@ -2657,6 +2953,173 @@ exports[`openapi generators > converts empty config correctly 1`] = `
         ],
       },
     },
+    "/api/users/first-register": {
+      "post": {
+        "description": "Only succeeds while no users exist.",
+        "operationId": "firstRegisterUsers",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersLoginResponse",
+          },
+        },
+        "security": [],
+        "summary": "Create the first users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/forgot-password": {
+      "post": {
+        "operationId": "forgotPasswordUsers",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersForgotPasswordRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AuthMessageResponse",
+          },
+        },
+        "security": [],
+        "summary": "Send a password reset token to a users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/init": {
+      "get": {
+        "operationId": "initUsers",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AuthInitResponse",
+          },
+        },
+        "security": [],
+        "summary": "Check whether any users exist",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/login": {
+      "post": {
+        "operationId": "loginUsers",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersLoginRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersLoginResponse",
+          },
+        },
+        "security": [],
+        "summary": "Log in as a users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/logout": {
+      "post": {
+        "operationId": "logoutUsers",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AuthMessageResponse",
+          },
+        },
+        "security": [
+          {
+            "ApiKey": [],
+          },
+        ],
+        "summary": "Log out the current users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/me": {
+      "get": {
+        "operationId": "meUsers",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersMeResponse",
+          },
+        },
+        "security": [
+          {
+            "ApiKey": [],
+          },
+        ],
+        "summary": "Retrieve the currently authenticated users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/refresh-token": {
+      "post": {
+        "operationId": "refreshTokenUsers",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersRefreshTokenResponse",
+          },
+        },
+        "security": [
+          {
+            "ApiKey": [],
+          },
+        ],
+        "summary": "Refresh the token of the current users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/reset-password": {
+      "post": {
+        "operationId": "resetPasswordUsers",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersResetPasswordRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersResetPasswordResponse",
+          },
+        },
+        "security": [],
+        "summary": "Reset the password of a users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/unlock": {
+      "post": {
+        "operationId": "unlockUsers",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersUnlockRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AuthMessageResponse",
+          },
+        },
+        "security": [
+          {
+            "ApiKey": [],
+          },
+        ],
+        "summary": "Unlock a locked out users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
     "/api/users/{id}": {
       "delete": {
         "operationId": "deleteUsers",
@@ -3194,6 +3657,52 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         },
         "description": "Payload Preference",
       },
+      "UsersForgotPasswordRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "email": {
+                  "format": "email",
+                  "type": "string",
+                },
+              },
+              "required": [
+                "email",
+              ],
+              "type": "object",
+            },
+          },
+        },
+        "description": "Identifier of the users to send a reset token to",
+        "required": true,
+      },
+      "UsersLoginRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "email": {
+                  "format": "email",
+                  "type": "string",
+                },
+                "password": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "email",
+                "password",
+              ],
+              "type": "object",
+            },
+          },
+        },
+        "description": "Credentials of the users to log in",
+        "required": true,
+      },
       "UsersPatchRequestBody": {
         "content": {
           "application/json": {
@@ -3288,8 +3797,83 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         },
         "description": "users",
       },
+      "UsersResetPasswordRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "password": {
+                  "type": "string",
+                },
+                "token": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "token",
+                "password",
+              ],
+              "type": "object",
+            },
+          },
+        },
+        "description": "Reset token and new password for the users",
+        "required": true,
+      },
+      "UsersUnlockRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "email": {
+                  "format": "email",
+                  "type": "string",
+                },
+              },
+              "required": [
+                "email",
+              ],
+              "type": "object",
+            },
+          },
+        },
+        "description": "Identifier of the users to unlock",
+        "required": true,
+      },
     },
     "responses": {
+      "AuthAccessResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AuthAccess",
+            },
+          },
+        },
+        "description": "Resolved permissions for the authenticated user",
+      },
+      "AuthInitResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AuthInit",
+            },
+          },
+        },
+        "description": "Whether the collection already has at least one document",
+      },
+      "AuthMessageResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AuthMessage",
+            },
+          },
+        },
+        "description": "Operation result message",
+      },
       "MutatePageResponse": {
         "content": {
           "application/json": {
@@ -3876,9 +4460,49 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         },
         "description": "List of users",
       },
+      "UsersLoginResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersLogin",
+            },
+          },
+        },
+        "description": "The logged in users and its token",
+      },
+      "UsersMeResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersMe",
+            },
+          },
+        },
+        "description": "The currently authenticated users, if any",
+      },
       "UsersNotFoundResponse": {
         "content": {},
         "description": "users not found",
+      },
+      "UsersRefreshTokenResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersRefreshToken",
+            },
+          },
+        },
+        "description": "The users and its refreshed token",
+      },
+      "UsersResetPasswordResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersResetPassword",
+            },
+          },
+        },
+        "description": "The users whose password was reset",
       },
       "UsersResponse": {
         "content": {
@@ -3892,6 +4516,34 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
       },
     },
     "schemas": {
+      "AuthAccess": {
+        "description": "Resolved permissions for the authenticated user, keyed by collection and global",
+        "type": "object",
+      },
+      "AuthInit": {
+        "additionalProperties": false,
+        "properties": {
+          "initialized": {
+            "type": "boolean",
+          },
+        },
+        "required": [
+          "initialized",
+        ],
+        "type": "object",
+      },
+      "AuthMessage": {
+        "additionalProperties": false,
+        "properties": {
+          "message": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "message",
+        ],
+        "type": "object",
+      },
       "Page": {
         "additionalProperties": false,
         "properties": {
@@ -4888,6 +5540,52 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         "title": "users",
         "type": "object",
       },
+      "UsersLogin": {
+        "additionalProperties": false,
+        "properties": {
+          "exp": {
+            "type": "number",
+          },
+          "message": {
+            "type": "string",
+          },
+          "token": {
+            "type": "string",
+          },
+          "user": {
+            "$ref": "#/components/schemas/Users",
+          },
+        },
+        "required": [
+          "message",
+          "user",
+        ],
+        "type": "object",
+      },
+      "UsersMe": {
+        "additionalProperties": false,
+        "properties": {
+          "collection": {
+            "type": "string",
+          },
+          "exp": {
+            "type": "number",
+          },
+          "message": {
+            "type": "string",
+          },
+          "token": {
+            "type": "string",
+          },
+          "user": {
+            "$ref": "#/components/schemas/Users",
+          },
+        },
+        "required": [
+          "message",
+        ],
+        "type": "object",
+      },
       "UsersQueryOperations": {
         "properties": {
           "createdAt": {
@@ -5205,6 +5903,48 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         "title": "users query disjunction",
         "type": "object",
       },
+      "UsersRefreshToken": {
+        "additionalProperties": false,
+        "properties": {
+          "exp": {
+            "type": "number",
+          },
+          "message": {
+            "type": "string",
+          },
+          "refreshedToken": {
+            "type": "string",
+          },
+          "user": {
+            "$ref": "#/components/schemas/Users",
+          },
+        },
+        "required": [
+          "message",
+          "user",
+          "exp",
+        ],
+        "type": "object",
+      },
+      "UsersResetPassword": {
+        "additionalProperties": false,
+        "properties": {
+          "message": {
+            "type": "string",
+          },
+          "token": {
+            "type": "string",
+          },
+          "user": {
+            "$ref": "#/components/schemas/Users",
+          },
+        },
+        "required": [
+          "message",
+          "user",
+        ],
+        "type": "object",
+      },
       "supportedTimezones": {
         "example": "Europe/Prague",
         "type": "string",
@@ -5228,6 +5968,25 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
   },
   "openapi": "3.0.3",
   "paths": {
+    "/api/access": {
+      "get": {
+        "operationId": "access",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AuthAccessResponse",
+          },
+        },
+        "security": [
+          {
+            "ApiKey": [],
+          },
+        ],
+        "summary": "Retrieve the permissions of the authenticated user",
+        "tags": [
+          "auth",
+        ],
+      },
+    },
     "/api/pages": {
       "get": {
         "operationId": "listPages",
@@ -6276,6 +7035,173 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         ],
       },
     },
+    "/api/users/first-register": {
+      "post": {
+        "description": "Only succeeds while no users exist.",
+        "operationId": "firstRegisterUsers",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersLoginResponse",
+          },
+        },
+        "security": [],
+        "summary": "Create the first users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/forgot-password": {
+      "post": {
+        "operationId": "forgotPasswordUsers",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersForgotPasswordRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AuthMessageResponse",
+          },
+        },
+        "security": [],
+        "summary": "Send a password reset token to a users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/init": {
+      "get": {
+        "operationId": "initUsers",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AuthInitResponse",
+          },
+        },
+        "security": [],
+        "summary": "Check whether any users exist",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/login": {
+      "post": {
+        "operationId": "loginUsers",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersLoginRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersLoginResponse",
+          },
+        },
+        "security": [],
+        "summary": "Log in as a users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/logout": {
+      "post": {
+        "operationId": "logoutUsers",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AuthMessageResponse",
+          },
+        },
+        "security": [
+          {
+            "ApiKey": [],
+          },
+        ],
+        "summary": "Log out the current users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/me": {
+      "get": {
+        "operationId": "meUsers",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersMeResponse",
+          },
+        },
+        "security": [
+          {
+            "ApiKey": [],
+          },
+        ],
+        "summary": "Retrieve the currently authenticated users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/refresh-token": {
+      "post": {
+        "operationId": "refreshTokenUsers",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersRefreshTokenResponse",
+          },
+        },
+        "security": [
+          {
+            "ApiKey": [],
+          },
+        ],
+        "summary": "Refresh the token of the current users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/reset-password": {
+      "post": {
+        "operationId": "resetPasswordUsers",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersResetPasswordRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersResetPasswordResponse",
+          },
+        },
+        "security": [],
+        "summary": "Reset the password of a users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/unlock": {
+      "post": {
+        "operationId": "unlockUsers",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersUnlockRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AuthMessageResponse",
+          },
+        },
+        "security": [
+          {
+            "ApiKey": [],
+          },
+        ],
+        "summary": "Unlock a locked out users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
     "/api/users/{id}": {
       "delete": {
         "operationId": "deleteUsers",
@@ -6627,6 +7553,52 @@ exports[`openapi generators > handles blocks referenced from the config 1`] = `
         },
         "description": "Payload Preference",
       },
+      "UsersForgotPasswordRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "email": {
+                  "format": "email",
+                  "type": "string",
+                },
+              },
+              "required": [
+                "email",
+              ],
+              "type": "object",
+            },
+          },
+        },
+        "description": "Identifier of the users to send a reset token to",
+        "required": true,
+      },
+      "UsersLoginRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "email": {
+                  "format": "email",
+                  "type": "string",
+                },
+                "password": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "email",
+                "password",
+              ],
+              "type": "object",
+            },
+          },
+        },
+        "description": "Credentials of the users to log in",
+        "required": true,
+      },
       "UsersPatchRequestBody": {
         "content": {
           "application/json": {
@@ -6721,8 +7693,83 @@ exports[`openapi generators > handles blocks referenced from the config 1`] = `
         },
         "description": "users",
       },
+      "UsersResetPasswordRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "password": {
+                  "type": "string",
+                },
+                "token": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "token",
+                "password",
+              ],
+              "type": "object",
+            },
+          },
+        },
+        "description": "Reset token and new password for the users",
+        "required": true,
+      },
+      "UsersUnlockRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "email": {
+                  "format": "email",
+                  "type": "string",
+                },
+              },
+              "required": [
+                "email",
+              ],
+              "type": "object",
+            },
+          },
+        },
+        "description": "Identifier of the users to unlock",
+        "required": true,
+      },
     },
     "responses": {
+      "AuthAccessResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AuthAccess",
+            },
+          },
+        },
+        "description": "Resolved permissions for the authenticated user",
+      },
+      "AuthInitResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AuthInit",
+            },
+          },
+        },
+        "description": "Whether the collection already has at least one document",
+      },
+      "AuthMessageResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AuthMessage",
+            },
+          },
+        },
+        "description": "Operation result message",
+      },
       "MutatePageResponse": {
         "content": {
           "application/json": {
@@ -7309,9 +8356,49 @@ exports[`openapi generators > handles blocks referenced from the config 1`] = `
         },
         "description": "List of users",
       },
+      "UsersLoginResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersLogin",
+            },
+          },
+        },
+        "description": "The logged in users and its token",
+      },
+      "UsersMeResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersMe",
+            },
+          },
+        },
+        "description": "The currently authenticated users, if any",
+      },
       "UsersNotFoundResponse": {
         "content": {},
         "description": "users not found",
+      },
+      "UsersRefreshTokenResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersRefreshToken",
+            },
+          },
+        },
+        "description": "The users and its refreshed token",
+      },
+      "UsersResetPasswordResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersResetPassword",
+            },
+          },
+        },
+        "description": "The users whose password was reset",
       },
       "UsersResponse": {
         "content": {
@@ -7325,6 +8412,34 @@ exports[`openapi generators > handles blocks referenced from the config 1`] = `
       },
     },
     "schemas": {
+      "AuthAccess": {
+        "description": "Resolved permissions for the authenticated user, keyed by collection and global",
+        "type": "object",
+      },
+      "AuthInit": {
+        "additionalProperties": false,
+        "properties": {
+          "initialized": {
+            "type": "boolean",
+          },
+        },
+        "required": [
+          "initialized",
+        ],
+        "type": "object",
+      },
+      "AuthMessage": {
+        "additionalProperties": false,
+        "properties": {
+          "message": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "message",
+        ],
+        "type": "object",
+      },
       "ContentBlock": {
         "additionalProperties": false,
         "properties": {
@@ -8254,6 +9369,52 @@ exports[`openapi generators > handles blocks referenced from the config 1`] = `
         "title": "users",
         "type": "object",
       },
+      "UsersLogin": {
+        "additionalProperties": false,
+        "properties": {
+          "exp": {
+            "type": "number",
+          },
+          "message": {
+            "type": "string",
+          },
+          "token": {
+            "type": "string",
+          },
+          "user": {
+            "$ref": "#/components/schemas/Users",
+          },
+        },
+        "required": [
+          "message",
+          "user",
+        ],
+        "type": "object",
+      },
+      "UsersMe": {
+        "additionalProperties": false,
+        "properties": {
+          "collection": {
+            "type": "string",
+          },
+          "exp": {
+            "type": "number",
+          },
+          "message": {
+            "type": "string",
+          },
+          "token": {
+            "type": "string",
+          },
+          "user": {
+            "$ref": "#/components/schemas/Users",
+          },
+        },
+        "required": [
+          "message",
+        ],
+        "type": "object",
+      },
       "UsersQueryOperations": {
         "properties": {
           "createdAt": {
@@ -8571,6 +9732,48 @@ exports[`openapi generators > handles blocks referenced from the config 1`] = `
         "title": "users query disjunction",
         "type": "object",
       },
+      "UsersRefreshToken": {
+        "additionalProperties": false,
+        "properties": {
+          "exp": {
+            "type": "number",
+          },
+          "message": {
+            "type": "string",
+          },
+          "refreshedToken": {
+            "type": "string",
+          },
+          "user": {
+            "$ref": "#/components/schemas/Users",
+          },
+        },
+        "required": [
+          "message",
+          "user",
+          "exp",
+        ],
+        "type": "object",
+      },
+      "UsersResetPassword": {
+        "additionalProperties": false,
+        "properties": {
+          "message": {
+            "type": "string",
+          },
+          "token": {
+            "type": "string",
+          },
+          "user": {
+            "$ref": "#/components/schemas/Users",
+          },
+        },
+        "required": [
+          "message",
+          "user",
+        ],
+        "type": "object",
+      },
       "supportedTimezones": {
         "example": "Europe/Prague",
         "type": "string",
@@ -8594,6 +9797,25 @@ exports[`openapi generators > handles blocks referenced from the config 1`] = `
   },
   "openapi": "3.0.3",
   "paths": {
+    "/api/access": {
+      "get": {
+        "operationId": "access",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AuthAccessResponse",
+          },
+        },
+        "security": [
+          {
+            "ApiKey": [],
+          },
+        ],
+        "summary": "Retrieve the permissions of the authenticated user",
+        "tags": [
+          "auth",
+        ],
+      },
+    },
     "/api/pages": {
       "get": {
         "operationId": "listPages",
@@ -9642,6 +10864,173 @@ exports[`openapi generators > handles blocks referenced from the config 1`] = `
         ],
       },
     },
+    "/api/users/first-register": {
+      "post": {
+        "description": "Only succeeds while no users exist.",
+        "operationId": "firstRegisterUsers",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersLoginResponse",
+          },
+        },
+        "security": [],
+        "summary": "Create the first users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/forgot-password": {
+      "post": {
+        "operationId": "forgotPasswordUsers",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersForgotPasswordRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AuthMessageResponse",
+          },
+        },
+        "security": [],
+        "summary": "Send a password reset token to a users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/init": {
+      "get": {
+        "operationId": "initUsers",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AuthInitResponse",
+          },
+        },
+        "security": [],
+        "summary": "Check whether any users exist",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/login": {
+      "post": {
+        "operationId": "loginUsers",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersLoginRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersLoginResponse",
+          },
+        },
+        "security": [],
+        "summary": "Log in as a users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/logout": {
+      "post": {
+        "operationId": "logoutUsers",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AuthMessageResponse",
+          },
+        },
+        "security": [
+          {
+            "ApiKey": [],
+          },
+        ],
+        "summary": "Log out the current users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/me": {
+      "get": {
+        "operationId": "meUsers",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersMeResponse",
+          },
+        },
+        "security": [
+          {
+            "ApiKey": [],
+          },
+        ],
+        "summary": "Retrieve the currently authenticated users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/refresh-token": {
+      "post": {
+        "operationId": "refreshTokenUsers",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersRefreshTokenResponse",
+          },
+        },
+        "security": [
+          {
+            "ApiKey": [],
+          },
+        ],
+        "summary": "Refresh the token of the current users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/reset-password": {
+      "post": {
+        "operationId": "resetPasswordUsers",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersResetPasswordRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersResetPasswordResponse",
+          },
+        },
+        "security": [],
+        "summary": "Reset the password of a users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/unlock": {
+      "post": {
+        "operationId": "unlockUsers",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersUnlockRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AuthMessageResponse",
+          },
+        },
+        "security": [
+          {
+            "ApiKey": [],
+          },
+        ],
+        "summary": "Unlock a locked out users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
     "/api/users/{id}": {
       "delete": {
         "operationId": "deleteUsers",
@@ -9985,6 +11374,52 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         },
         "description": "Payload Preference",
       },
+      "UsersForgotPasswordRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "email": {
+                  "format": "email",
+                  "type": "string",
+                },
+              },
+              "required": [
+                "email",
+              ],
+              "type": "object",
+            },
+          },
+        },
+        "description": "Identifier of the users to send a reset token to",
+        "required": true,
+      },
+      "UsersLoginRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "email": {
+                  "format": "email",
+                  "type": "string",
+                },
+                "password": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "email",
+                "password",
+              ],
+              "type": "object",
+            },
+          },
+        },
+        "description": "Credentials of the users to log in",
+        "required": true,
+      },
       "UsersPatchRequestBody": {
         "content": {
           "application/json": {
@@ -10079,8 +11514,83 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         },
         "description": "users",
       },
+      "UsersResetPasswordRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "password": {
+                  "type": "string",
+                },
+                "token": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "token",
+                "password",
+              ],
+              "type": "object",
+            },
+          },
+        },
+        "description": "Reset token and new password for the users",
+        "required": true,
+      },
+      "UsersUnlockRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "email": {
+                  "format": "email",
+                  "type": "string",
+                },
+              },
+              "required": [
+                "email",
+              ],
+              "type": "object",
+            },
+          },
+        },
+        "description": "Identifier of the users to unlock",
+        "required": true,
+      },
     },
     "responses": {
+      "AuthAccessResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AuthAccess",
+            },
+          },
+        },
+        "description": "Resolved permissions for the authenticated user",
+      },
+      "AuthInitResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AuthInit",
+            },
+          },
+        },
+        "description": "Whether the collection already has at least one document",
+      },
+      "AuthMessageResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AuthMessage",
+            },
+          },
+        },
+        "description": "Operation result message",
+      },
       "EventListResponse": {
         "content": {
           "application/json": {
@@ -10667,9 +12177,49 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         },
         "description": "List of users",
       },
+      "UsersLoginResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersLogin",
+            },
+          },
+        },
+        "description": "The logged in users and its token",
+      },
+      "UsersMeResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersMe",
+            },
+          },
+        },
+        "description": "The currently authenticated users, if any",
+      },
       "UsersNotFoundResponse": {
         "content": {},
         "description": "users not found",
+      },
+      "UsersRefreshTokenResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersRefreshToken",
+            },
+          },
+        },
+        "description": "The users and its refreshed token",
+      },
+      "UsersResetPasswordResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersResetPassword",
+            },
+          },
+        },
+        "description": "The users whose password was reset",
       },
       "UsersResponse": {
         "content": {
@@ -10683,6 +12233,34 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
       },
     },
     "schemas": {
+      "AuthAccess": {
+        "description": "Resolved permissions for the authenticated user, keyed by collection and global",
+        "type": "object",
+      },
+      "AuthInit": {
+        "additionalProperties": false,
+        "properties": {
+          "initialized": {
+            "type": "boolean",
+          },
+        },
+        "required": [
+          "initialized",
+        ],
+        "type": "object",
+      },
+      "AuthMessage": {
+        "additionalProperties": false,
+        "properties": {
+          "message": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "message",
+        ],
+        "type": "object",
+      },
       "Event": {
         "additionalProperties": false,
         "properties": {
@@ -11732,6 +13310,52 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         "title": "users",
         "type": "object",
       },
+      "UsersLogin": {
+        "additionalProperties": false,
+        "properties": {
+          "exp": {
+            "type": "number",
+          },
+          "message": {
+            "type": "string",
+          },
+          "token": {
+            "type": "string",
+          },
+          "user": {
+            "$ref": "#/components/schemas/Users",
+          },
+        },
+        "required": [
+          "message",
+          "user",
+        ],
+        "type": "object",
+      },
+      "UsersMe": {
+        "additionalProperties": false,
+        "properties": {
+          "collection": {
+            "type": "string",
+          },
+          "exp": {
+            "type": "number",
+          },
+          "message": {
+            "type": "string",
+          },
+          "token": {
+            "type": "string",
+          },
+          "user": {
+            "$ref": "#/components/schemas/Users",
+          },
+        },
+        "required": [
+          "message",
+        ],
+        "type": "object",
+      },
       "UsersQueryOperations": {
         "properties": {
           "createdAt": {
@@ -12049,6 +13673,48 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         "title": "users query disjunction",
         "type": "object",
       },
+      "UsersRefreshToken": {
+        "additionalProperties": false,
+        "properties": {
+          "exp": {
+            "type": "number",
+          },
+          "message": {
+            "type": "string",
+          },
+          "refreshedToken": {
+            "type": "string",
+          },
+          "user": {
+            "$ref": "#/components/schemas/Users",
+          },
+        },
+        "required": [
+          "message",
+          "user",
+          "exp",
+        ],
+        "type": "object",
+      },
+      "UsersResetPassword": {
+        "additionalProperties": false,
+        "properties": {
+          "message": {
+            "type": "string",
+          },
+          "token": {
+            "type": "string",
+          },
+          "user": {
+            "$ref": "#/components/schemas/Users",
+          },
+        },
+        "required": [
+          "message",
+          "user",
+        ],
+        "type": "object",
+      },
       "supportedTimezones": {
         "example": "Europe/Prague",
         "type": "string",
@@ -12072,6 +13738,25 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
   },
   "openapi": "3.0.3",
   "paths": {
+    "/api/access": {
+      "get": {
+        "operationId": "access",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AuthAccessResponse",
+          },
+        },
+        "security": [
+          {
+            "ApiKey": [],
+          },
+        ],
+        "summary": "Retrieve the permissions of the authenticated user",
+        "tags": [
+          "auth",
+        ],
+      },
+    },
     "/api/events": {
       "get": {
         "operationId": "listEvents",
@@ -13122,6 +14807,173 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         ],
       },
     },
+    "/api/users/first-register": {
+      "post": {
+        "description": "Only succeeds while no users exist.",
+        "operationId": "firstRegisterUsers",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersLoginResponse",
+          },
+        },
+        "security": [],
+        "summary": "Create the first users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/forgot-password": {
+      "post": {
+        "operationId": "forgotPasswordUsers",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersForgotPasswordRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AuthMessageResponse",
+          },
+        },
+        "security": [],
+        "summary": "Send a password reset token to a users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/init": {
+      "get": {
+        "operationId": "initUsers",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AuthInitResponse",
+          },
+        },
+        "security": [],
+        "summary": "Check whether any users exist",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/login": {
+      "post": {
+        "operationId": "loginUsers",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersLoginRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersLoginResponse",
+          },
+        },
+        "security": [],
+        "summary": "Log in as a users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/logout": {
+      "post": {
+        "operationId": "logoutUsers",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AuthMessageResponse",
+          },
+        },
+        "security": [
+          {
+            "ApiKey": [],
+          },
+        ],
+        "summary": "Log out the current users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/me": {
+      "get": {
+        "operationId": "meUsers",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersMeResponse",
+          },
+        },
+        "security": [
+          {
+            "ApiKey": [],
+          },
+        ],
+        "summary": "Retrieve the currently authenticated users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/refresh-token": {
+      "post": {
+        "operationId": "refreshTokenUsers",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersRefreshTokenResponse",
+          },
+        },
+        "security": [
+          {
+            "ApiKey": [],
+          },
+        ],
+        "summary": "Refresh the token of the current users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/reset-password": {
+      "post": {
+        "operationId": "resetPasswordUsers",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersResetPasswordRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersResetPasswordResponse",
+          },
+        },
+        "security": [],
+        "summary": "Reset the password of a users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/unlock": {
+      "post": {
+        "operationId": "unlockUsers",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersUnlockRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AuthMessageResponse",
+          },
+        },
+        "security": [
+          {
+            "ApiKey": [],
+          },
+        ],
+        "summary": "Unlock a locked out users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
     "/api/users/{id}": {
       "delete": {
         "operationId": "deleteUsers",
@@ -13421,6 +15273,52 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
         },
         "description": "Payload Preference",
       },
+      "UserForgotPasswordRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "email": {
+                  "format": "email",
+                  "type": "string",
+                },
+              },
+              "required": [
+                "email",
+              ],
+              "type": "object",
+            },
+          },
+        },
+        "description": "Identifier of the User to send a reset token to",
+        "required": true,
+      },
+      "UserLoginRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "email": {
+                  "format": "email",
+                  "type": "string",
+                },
+                "password": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "email",
+                "password",
+              ],
+              "type": "object",
+            },
+          },
+        },
+        "description": "Credentials of the User to log in",
+        "required": true,
+      },
       "UserPatchRequestBody": {
         "content": {
           "application/json": {
@@ -13553,8 +15451,83 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
         },
         "description": "User",
       },
+      "UserResetPasswordRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "password": {
+                  "type": "string",
+                },
+                "token": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "token",
+                "password",
+              ],
+              "type": "object",
+            },
+          },
+        },
+        "description": "Reset token and new password for the User",
+        "required": true,
+      },
+      "UserUnlockRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "email": {
+                  "format": "email",
+                  "type": "string",
+                },
+              },
+              "required": [
+                "email",
+              ],
+              "type": "object",
+            },
+          },
+        },
+        "description": "Identifier of the User to unlock",
+        "required": true,
+      },
     },
     "responses": {
+      "AuthAccessResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AuthAccess",
+            },
+          },
+        },
+        "description": "Resolved permissions for the authenticated user",
+      },
+      "AuthInitResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AuthInit",
+            },
+          },
+        },
+        "description": "Whether the collection already has at least one document",
+      },
+      "AuthMessageResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AuthMessage",
+            },
+          },
+        },
+        "description": "Operation result message",
+      },
       "MutatePayloadLockedDocumentResponse": {
         "content": {
           "application/json": {
@@ -14021,9 +15994,49 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
         },
         "description": "List of Users",
       },
+      "UserLoginResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UserLogin",
+            },
+          },
+        },
+        "description": "The logged in User and its token",
+      },
+      "UserMeResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UserMe",
+            },
+          },
+        },
+        "description": "The currently authenticated User, if any",
+      },
       "UserNotFoundResponse": {
         "content": {},
         "description": "User not found",
+      },
+      "UserRefreshTokenResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UserRefreshToken",
+            },
+          },
+        },
+        "description": "The User and its refreshed token",
+      },
+      "UserResetPasswordResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UserResetPassword",
+            },
+          },
+        },
+        "description": "The User whose password was reset",
       },
       "UserResponse": {
         "content": {
@@ -14037,6 +16050,34 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
       },
     },
     "schemas": {
+      "AuthAccess": {
+        "description": "Resolved permissions for the authenticated user, keyed by collection and global",
+        "type": "object",
+      },
+      "AuthInit": {
+        "additionalProperties": false,
+        "properties": {
+          "initialized": {
+            "type": "boolean",
+          },
+        },
+        "required": [
+          "initialized",
+        ],
+        "type": "object",
+      },
+      "AuthMessage": {
+        "additionalProperties": false,
+        "properties": {
+          "message": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "message",
+        ],
+        "type": "object",
+      },
       "PayloadLockedDocument": {
         "additionalProperties": false,
         "properties": {
@@ -14775,6 +16816,52 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
         "title": "User",
         "type": "object",
       },
+      "UserLogin": {
+        "additionalProperties": false,
+        "properties": {
+          "exp": {
+            "type": "number",
+          },
+          "message": {
+            "type": "string",
+          },
+          "token": {
+            "type": "string",
+          },
+          "user": {
+            "$ref": "#/components/schemas/User",
+          },
+        },
+        "required": [
+          "message",
+          "user",
+        ],
+        "type": "object",
+      },
+      "UserMe": {
+        "additionalProperties": false,
+        "properties": {
+          "collection": {
+            "type": "string",
+          },
+          "exp": {
+            "type": "number",
+          },
+          "message": {
+            "type": "string",
+          },
+          "token": {
+            "type": "string",
+          },
+          "user": {
+            "$ref": "#/components/schemas/User",
+          },
+        },
+        "required": [
+          "message",
+        ],
+        "type": "object",
+      },
       "UserQueryOperations": {
         "properties": {
           "createdAt": {
@@ -15092,6 +17179,48 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
         "title": "User query disjunction",
         "type": "object",
       },
+      "UserRefreshToken": {
+        "additionalProperties": false,
+        "properties": {
+          "exp": {
+            "type": "number",
+          },
+          "message": {
+            "type": "string",
+          },
+          "refreshedToken": {
+            "type": "string",
+          },
+          "user": {
+            "$ref": "#/components/schemas/User",
+          },
+        },
+        "required": [
+          "message",
+          "user",
+          "exp",
+        ],
+        "type": "object",
+      },
+      "UserResetPassword": {
+        "additionalProperties": false,
+        "properties": {
+          "message": {
+            "type": "string",
+          },
+          "token": {
+            "type": "string",
+          },
+          "user": {
+            "$ref": "#/components/schemas/User",
+          },
+        },
+        "required": [
+          "message",
+          "user",
+        ],
+        "type": "object",
+      },
       "supportedTimezones": {
         "example": "Europe/Prague",
         "type": "string",
@@ -15115,6 +17244,25 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
   },
   "openapi": "3.0.3",
   "paths": {
+    "/api/access": {
+      "get": {
+        "operationId": "access",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AuthAccessResponse",
+          },
+        },
+        "security": [
+          {
+            "ApiKey": [],
+          },
+        ],
+        "summary": "Retrieve the permissions of the authenticated user",
+        "tags": [
+          "auth",
+        ],
+      },
+    },
     "/api/payload-locked-documents": {
       "get": {
         "operationId": "listPayloadLockedDocuments",
@@ -15939,6 +18087,173 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
         ],
       },
     },
+    "/api/users/first-register": {
+      "post": {
+        "description": "Only succeeds while no Users exist.",
+        "operationId": "firstRegisterUser",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UserRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UserLoginResponse",
+          },
+        },
+        "security": [],
+        "summary": "Create the first User",
+        "tags": [
+          "Users",
+        ],
+      },
+    },
+    "/api/users/forgot-password": {
+      "post": {
+        "operationId": "forgotPasswordUser",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UserForgotPasswordRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AuthMessageResponse",
+          },
+        },
+        "security": [],
+        "summary": "Send a password reset token to a User",
+        "tags": [
+          "Users",
+        ],
+      },
+    },
+    "/api/users/init": {
+      "get": {
+        "operationId": "initUser",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AuthInitResponse",
+          },
+        },
+        "security": [],
+        "summary": "Check whether any Users exist",
+        "tags": [
+          "Users",
+        ],
+      },
+    },
+    "/api/users/login": {
+      "post": {
+        "operationId": "loginUser",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UserLoginRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UserLoginResponse",
+          },
+        },
+        "security": [],
+        "summary": "Log in as a User",
+        "tags": [
+          "Users",
+        ],
+      },
+    },
+    "/api/users/logout": {
+      "post": {
+        "operationId": "logoutUser",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AuthMessageResponse",
+          },
+        },
+        "security": [
+          {
+            "ApiKey": [],
+          },
+        ],
+        "summary": "Log out the current User",
+        "tags": [
+          "Users",
+        ],
+      },
+    },
+    "/api/users/me": {
+      "get": {
+        "operationId": "meUser",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UserMeResponse",
+          },
+        },
+        "security": [
+          {
+            "ApiKey": [],
+          },
+        ],
+        "summary": "Retrieve the currently authenticated User",
+        "tags": [
+          "Users",
+        ],
+      },
+    },
+    "/api/users/refresh-token": {
+      "post": {
+        "operationId": "refreshTokenUser",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UserRefreshTokenResponse",
+          },
+        },
+        "security": [
+          {
+            "ApiKey": [],
+          },
+        ],
+        "summary": "Refresh the token of the current User",
+        "tags": [
+          "Users",
+        ],
+      },
+    },
+    "/api/users/reset-password": {
+      "post": {
+        "operationId": "resetPasswordUser",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UserResetPasswordRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UserResetPasswordResponse",
+          },
+        },
+        "security": [],
+        "summary": "Reset the password of a User",
+        "tags": [
+          "Users",
+        ],
+      },
+    },
+    "/api/users/unlock": {
+      "post": {
+        "operationId": "unlockUser",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UserUnlockRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AuthMessageResponse",
+          },
+        },
+        "security": [
+          {
+            "ApiKey": [],
+          },
+        ],
+        "summary": "Unlock a locked out User",
+        "tags": [
+          "Users",
+        ],
+      },
+    },
     "/api/users/{id}": {
       "delete": {
         "operationId": "deleteUser",
@@ -16276,6 +18591,52 @@ exports[`openapi generators > handles non-default api route 1`] = `
         },
         "description": "Post",
       },
+      "UsersForgotPasswordRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "email": {
+                  "format": "email",
+                  "type": "string",
+                },
+              },
+              "required": [
+                "email",
+              ],
+              "type": "object",
+            },
+          },
+        },
+        "description": "Identifier of the users to send a reset token to",
+        "required": true,
+      },
+      "UsersLoginRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "email": {
+                  "format": "email",
+                  "type": "string",
+                },
+                "password": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "email",
+                "password",
+              ],
+              "type": "object",
+            },
+          },
+        },
+        "description": "Credentials of the users to log in",
+        "required": true,
+      },
       "UsersPatchRequestBody": {
         "content": {
           "application/json": {
@@ -16370,8 +18731,83 @@ exports[`openapi generators > handles non-default api route 1`] = `
         },
         "description": "users",
       },
+      "UsersResetPasswordRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "password": {
+                  "type": "string",
+                },
+                "token": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "token",
+                "password",
+              ],
+              "type": "object",
+            },
+          },
+        },
+        "description": "Reset token and new password for the users",
+        "required": true,
+      },
+      "UsersUnlockRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "email": {
+                  "format": "email",
+                  "type": "string",
+                },
+              },
+              "required": [
+                "email",
+              ],
+              "type": "object",
+            },
+          },
+        },
+        "description": "Identifier of the users to unlock",
+        "required": true,
+      },
     },
     "responses": {
+      "AuthAccessResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AuthAccess",
+            },
+          },
+        },
+        "description": "Resolved permissions for the authenticated user",
+      },
+      "AuthInitResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AuthInit",
+            },
+          },
+        },
+        "description": "Whether the collection already has at least one document",
+      },
+      "AuthMessageResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AuthMessage",
+            },
+          },
+        },
+        "description": "Operation result message",
+      },
       "MutatePayloadLockedDocumentResponse": {
         "content": {
           "application/json": {
@@ -16958,9 +19394,49 @@ exports[`openapi generators > handles non-default api route 1`] = `
         },
         "description": "List of users",
       },
+      "UsersLoginResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersLogin",
+            },
+          },
+        },
+        "description": "The logged in users and its token",
+      },
+      "UsersMeResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersMe",
+            },
+          },
+        },
+        "description": "The currently authenticated users, if any",
+      },
       "UsersNotFoundResponse": {
         "content": {},
         "description": "users not found",
+      },
+      "UsersRefreshTokenResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersRefreshToken",
+            },
+          },
+        },
+        "description": "The users and its refreshed token",
+      },
+      "UsersResetPasswordResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersResetPassword",
+            },
+          },
+        },
+        "description": "The users whose password was reset",
       },
       "UsersResponse": {
         "content": {
@@ -16974,6 +19450,34 @@ exports[`openapi generators > handles non-default api route 1`] = `
       },
     },
     "schemas": {
+      "AuthAccess": {
+        "description": "Resolved permissions for the authenticated user, keyed by collection and global",
+        "type": "object",
+      },
+      "AuthInit": {
+        "additionalProperties": false,
+        "properties": {
+          "initialized": {
+            "type": "boolean",
+          },
+        },
+        "required": [
+          "initialized",
+        ],
+        "type": "object",
+      },
+      "AuthMessage": {
+        "additionalProperties": false,
+        "properties": {
+          "message": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "message",
+        ],
+        "type": "object",
+      },
       "PayloadLockedDocument": {
         "additionalProperties": false,
         "properties": {
@@ -17893,6 +20397,52 @@ exports[`openapi generators > handles non-default api route 1`] = `
         "title": "users",
         "type": "object",
       },
+      "UsersLogin": {
+        "additionalProperties": false,
+        "properties": {
+          "exp": {
+            "type": "number",
+          },
+          "message": {
+            "type": "string",
+          },
+          "token": {
+            "type": "string",
+          },
+          "user": {
+            "$ref": "#/components/schemas/Users",
+          },
+        },
+        "required": [
+          "message",
+          "user",
+        ],
+        "type": "object",
+      },
+      "UsersMe": {
+        "additionalProperties": false,
+        "properties": {
+          "collection": {
+            "type": "string",
+          },
+          "exp": {
+            "type": "number",
+          },
+          "message": {
+            "type": "string",
+          },
+          "token": {
+            "type": "string",
+          },
+          "user": {
+            "$ref": "#/components/schemas/Users",
+          },
+        },
+        "required": [
+          "message",
+        ],
+        "type": "object",
+      },
       "UsersQueryOperations": {
         "properties": {
           "createdAt": {
@@ -18210,6 +20760,48 @@ exports[`openapi generators > handles non-default api route 1`] = `
         "title": "users query disjunction",
         "type": "object",
       },
+      "UsersRefreshToken": {
+        "additionalProperties": false,
+        "properties": {
+          "exp": {
+            "type": "number",
+          },
+          "message": {
+            "type": "string",
+          },
+          "refreshedToken": {
+            "type": "string",
+          },
+          "user": {
+            "$ref": "#/components/schemas/Users",
+          },
+        },
+        "required": [
+          "message",
+          "user",
+          "exp",
+        ],
+        "type": "object",
+      },
+      "UsersResetPassword": {
+        "additionalProperties": false,
+        "properties": {
+          "message": {
+            "type": "string",
+          },
+          "token": {
+            "type": "string",
+          },
+          "user": {
+            "$ref": "#/components/schemas/Users",
+          },
+        },
+        "required": [
+          "message",
+          "user",
+        ],
+        "type": "object",
+      },
       "supportedTimezones": {
         "example": "Europe/Prague",
         "type": "string",
@@ -18233,6 +20825,25 @@ exports[`openapi generators > handles non-default api route 1`] = `
   },
   "openapi": "3.0.3",
   "paths": {
+    "/payload-api/access": {
+      "get": {
+        "operationId": "access",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AuthAccessResponse",
+          },
+        },
+        "security": [
+          {
+            "ApiKey": [],
+          },
+        ],
+        "summary": "Retrieve the permissions of the authenticated user",
+        "tags": [
+          "auth",
+        ],
+      },
+    },
     "/payload-api/payload-locked-documents": {
       "get": {
         "operationId": "listPayloadLockedDocuments",
@@ -19283,6 +21894,173 @@ exports[`openapi generators > handles non-default api route 1`] = `
         ],
       },
     },
+    "/payload-api/users/first-register": {
+      "post": {
+        "description": "Only succeeds while no users exist.",
+        "operationId": "firstRegisterUsers",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersLoginResponse",
+          },
+        },
+        "security": [],
+        "summary": "Create the first users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/payload-api/users/forgot-password": {
+      "post": {
+        "operationId": "forgotPasswordUsers",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersForgotPasswordRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AuthMessageResponse",
+          },
+        },
+        "security": [],
+        "summary": "Send a password reset token to a users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/payload-api/users/init": {
+      "get": {
+        "operationId": "initUsers",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AuthInitResponse",
+          },
+        },
+        "security": [],
+        "summary": "Check whether any users exist",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/payload-api/users/login": {
+      "post": {
+        "operationId": "loginUsers",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersLoginRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersLoginResponse",
+          },
+        },
+        "security": [],
+        "summary": "Log in as a users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/payload-api/users/logout": {
+      "post": {
+        "operationId": "logoutUsers",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AuthMessageResponse",
+          },
+        },
+        "security": [
+          {
+            "ApiKey": [],
+          },
+        ],
+        "summary": "Log out the current users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/payload-api/users/me": {
+      "get": {
+        "operationId": "meUsers",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersMeResponse",
+          },
+        },
+        "security": [
+          {
+            "ApiKey": [],
+          },
+        ],
+        "summary": "Retrieve the currently authenticated users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/payload-api/users/refresh-token": {
+      "post": {
+        "operationId": "refreshTokenUsers",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersRefreshTokenResponse",
+          },
+        },
+        "security": [
+          {
+            "ApiKey": [],
+          },
+        ],
+        "summary": "Refresh the token of the current users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/payload-api/users/reset-password": {
+      "post": {
+        "operationId": "resetPasswordUsers",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersResetPasswordRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersResetPasswordResponse",
+          },
+        },
+        "security": [],
+        "summary": "Reset the password of a users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/payload-api/users/unlock": {
+      "post": {
+        "operationId": "unlockUsers",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersUnlockRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AuthMessageResponse",
+          },
+        },
+        "security": [
+          {
+            "ApiKey": [],
+          },
+        ],
+        "summary": "Unlock a locked out users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
     "/payload-api/users/{id}": {
       "delete": {
         "operationId": "deleteUsers",
@@ -19620,6 +22398,52 @@ exports[`openapi generators > handles non-default collection 1`] = `
         },
         "description": "Post",
       },
+      "UsersForgotPasswordRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "email": {
+                  "format": "email",
+                  "type": "string",
+                },
+              },
+              "required": [
+                "email",
+              ],
+              "type": "object",
+            },
+          },
+        },
+        "description": "Identifier of the users to send a reset token to",
+        "required": true,
+      },
+      "UsersLoginRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "email": {
+                  "format": "email",
+                  "type": "string",
+                },
+                "password": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "email",
+                "password",
+              ],
+              "type": "object",
+            },
+          },
+        },
+        "description": "Credentials of the users to log in",
+        "required": true,
+      },
       "UsersPatchRequestBody": {
         "content": {
           "application/json": {
@@ -19714,8 +22538,83 @@ exports[`openapi generators > handles non-default collection 1`] = `
         },
         "description": "users",
       },
+      "UsersResetPasswordRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "password": {
+                  "type": "string",
+                },
+                "token": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "token",
+                "password",
+              ],
+              "type": "object",
+            },
+          },
+        },
+        "description": "Reset token and new password for the users",
+        "required": true,
+      },
+      "UsersUnlockRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "email": {
+                  "format": "email",
+                  "type": "string",
+                },
+              },
+              "required": [
+                "email",
+              ],
+              "type": "object",
+            },
+          },
+        },
+        "description": "Identifier of the users to unlock",
+        "required": true,
+      },
     },
     "responses": {
+      "AuthAccessResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AuthAccess",
+            },
+          },
+        },
+        "description": "Resolved permissions for the authenticated user",
+      },
+      "AuthInitResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AuthInit",
+            },
+          },
+        },
+        "description": "Whether the collection already has at least one document",
+      },
+      "AuthMessageResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AuthMessage",
+            },
+          },
+        },
+        "description": "Operation result message",
+      },
       "MutatePayloadLockedDocumentResponse": {
         "content": {
           "application/json": {
@@ -20302,9 +23201,49 @@ exports[`openapi generators > handles non-default collection 1`] = `
         },
         "description": "List of users",
       },
+      "UsersLoginResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersLogin",
+            },
+          },
+        },
+        "description": "The logged in users and its token",
+      },
+      "UsersMeResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersMe",
+            },
+          },
+        },
+        "description": "The currently authenticated users, if any",
+      },
       "UsersNotFoundResponse": {
         "content": {},
         "description": "users not found",
+      },
+      "UsersRefreshTokenResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersRefreshToken",
+            },
+          },
+        },
+        "description": "The users and its refreshed token",
+      },
+      "UsersResetPasswordResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersResetPassword",
+            },
+          },
+        },
+        "description": "The users whose password was reset",
       },
       "UsersResponse": {
         "content": {
@@ -20318,6 +23257,34 @@ exports[`openapi generators > handles non-default collection 1`] = `
       },
     },
     "schemas": {
+      "AuthAccess": {
+        "description": "Resolved permissions for the authenticated user, keyed by collection and global",
+        "type": "object",
+      },
+      "AuthInit": {
+        "additionalProperties": false,
+        "properties": {
+          "initialized": {
+            "type": "boolean",
+          },
+        },
+        "required": [
+          "initialized",
+        ],
+        "type": "object",
+      },
+      "AuthMessage": {
+        "additionalProperties": false,
+        "properties": {
+          "message": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "message",
+        ],
+        "type": "object",
+      },
       "PayloadLockedDocument": {
         "additionalProperties": false,
         "properties": {
@@ -21237,6 +24204,52 @@ exports[`openapi generators > handles non-default collection 1`] = `
         "title": "users",
         "type": "object",
       },
+      "UsersLogin": {
+        "additionalProperties": false,
+        "properties": {
+          "exp": {
+            "type": "number",
+          },
+          "message": {
+            "type": "string",
+          },
+          "token": {
+            "type": "string",
+          },
+          "user": {
+            "$ref": "#/components/schemas/Users",
+          },
+        },
+        "required": [
+          "message",
+          "user",
+        ],
+        "type": "object",
+      },
+      "UsersMe": {
+        "additionalProperties": false,
+        "properties": {
+          "collection": {
+            "type": "string",
+          },
+          "exp": {
+            "type": "number",
+          },
+          "message": {
+            "type": "string",
+          },
+          "token": {
+            "type": "string",
+          },
+          "user": {
+            "$ref": "#/components/schemas/Users",
+          },
+        },
+        "required": [
+          "message",
+        ],
+        "type": "object",
+      },
       "UsersQueryOperations": {
         "properties": {
           "createdAt": {
@@ -21554,6 +24567,48 @@ exports[`openapi generators > handles non-default collection 1`] = `
         "title": "users query disjunction",
         "type": "object",
       },
+      "UsersRefreshToken": {
+        "additionalProperties": false,
+        "properties": {
+          "exp": {
+            "type": "number",
+          },
+          "message": {
+            "type": "string",
+          },
+          "refreshedToken": {
+            "type": "string",
+          },
+          "user": {
+            "$ref": "#/components/schemas/Users",
+          },
+        },
+        "required": [
+          "message",
+          "user",
+          "exp",
+        ],
+        "type": "object",
+      },
+      "UsersResetPassword": {
+        "additionalProperties": false,
+        "properties": {
+          "message": {
+            "type": "string",
+          },
+          "token": {
+            "type": "string",
+          },
+          "user": {
+            "$ref": "#/components/schemas/Users",
+          },
+        },
+        "required": [
+          "message",
+          "user",
+        ],
+        "type": "object",
+      },
       "supportedTimezones": {
         "example": "Europe/Prague",
         "type": "string",
@@ -21577,6 +24632,25 @@ exports[`openapi generators > handles non-default collection 1`] = `
   },
   "openapi": "3.0.3",
   "paths": {
+    "/api/access": {
+      "get": {
+        "operationId": "access",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AuthAccessResponse",
+          },
+        },
+        "security": [
+          {
+            "ApiKey": [],
+          },
+        ],
+        "summary": "Retrieve the permissions of the authenticated user",
+        "tags": [
+          "auth",
+        ],
+      },
+    },
     "/api/payload-locked-documents": {
       "get": {
         "operationId": "listPayloadLockedDocuments",
@@ -22622,6 +25696,173 @@ exports[`openapi generators > handles non-default collection 1`] = `
           },
         ],
         "summary": "Create a new users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/first-register": {
+      "post": {
+        "description": "Only succeeds while no users exist.",
+        "operationId": "firstRegisterUsers",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersLoginResponse",
+          },
+        },
+        "security": [],
+        "summary": "Create the first users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/forgot-password": {
+      "post": {
+        "operationId": "forgotPasswordUsers",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersForgotPasswordRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AuthMessageResponse",
+          },
+        },
+        "security": [],
+        "summary": "Send a password reset token to a users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/init": {
+      "get": {
+        "operationId": "initUsers",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AuthInitResponse",
+          },
+        },
+        "security": [],
+        "summary": "Check whether any users exist",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/login": {
+      "post": {
+        "operationId": "loginUsers",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersLoginRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersLoginResponse",
+          },
+        },
+        "security": [],
+        "summary": "Log in as a users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/logout": {
+      "post": {
+        "operationId": "logoutUsers",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AuthMessageResponse",
+          },
+        },
+        "security": [
+          {
+            "ApiKey": [],
+          },
+        ],
+        "summary": "Log out the current users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/me": {
+      "get": {
+        "operationId": "meUsers",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersMeResponse",
+          },
+        },
+        "security": [
+          {
+            "ApiKey": [],
+          },
+        ],
+        "summary": "Retrieve the currently authenticated users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/refresh-token": {
+      "post": {
+        "operationId": "refreshTokenUsers",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersRefreshTokenResponse",
+          },
+        },
+        "security": [
+          {
+            "ApiKey": [],
+          },
+        ],
+        "summary": "Refresh the token of the current users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/reset-password": {
+      "post": {
+        "operationId": "resetPasswordUsers",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersResetPasswordRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersResetPasswordResponse",
+          },
+        },
+        "security": [],
+        "summary": "Reset the password of a users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/unlock": {
+      "post": {
+        "operationId": "unlockUsers",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersUnlockRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AuthMessageResponse",
+          },
+        },
+        "security": [
+          {
+            "ApiKey": [],
+          },
+        ],
+        "summary": "Unlock a locked out users",
         "tags": [
           "users",
         ],
@@ -22964,6 +26205,52 @@ exports[`openapi generators > respects default ID type from db adapter 1`] = `
         },
         "description": "Post",
       },
+      "UsersForgotPasswordRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "email": {
+                  "format": "email",
+                  "type": "string",
+                },
+              },
+              "required": [
+                "email",
+              ],
+              "type": "object",
+            },
+          },
+        },
+        "description": "Identifier of the users to send a reset token to",
+        "required": true,
+      },
+      "UsersLoginRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "email": {
+                  "format": "email",
+                  "type": "string",
+                },
+                "password": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "email",
+                "password",
+              ],
+              "type": "object",
+            },
+          },
+        },
+        "description": "Credentials of the users to log in",
+        "required": true,
+      },
       "UsersPatchRequestBody": {
         "content": {
           "application/json": {
@@ -23058,8 +26345,83 @@ exports[`openapi generators > respects default ID type from db adapter 1`] = `
         },
         "description": "users",
       },
+      "UsersResetPasswordRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "password": {
+                  "type": "string",
+                },
+                "token": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "token",
+                "password",
+              ],
+              "type": "object",
+            },
+          },
+        },
+        "description": "Reset token and new password for the users",
+        "required": true,
+      },
+      "UsersUnlockRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {
+                "email": {
+                  "format": "email",
+                  "type": "string",
+                },
+              },
+              "required": [
+                "email",
+              ],
+              "type": "object",
+            },
+          },
+        },
+        "description": "Identifier of the users to unlock",
+        "required": true,
+      },
     },
     "responses": {
+      "AuthAccessResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AuthAccess",
+            },
+          },
+        },
+        "description": "Resolved permissions for the authenticated user",
+      },
+      "AuthInitResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AuthInit",
+            },
+          },
+        },
+        "description": "Whether the collection already has at least one document",
+      },
+      "AuthMessageResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AuthMessage",
+            },
+          },
+        },
+        "description": "Operation result message",
+      },
       "MutatePayloadLockedDocumentResponse": {
         "content": {
           "application/json": {
@@ -23646,9 +27008,49 @@ exports[`openapi generators > respects default ID type from db adapter 1`] = `
         },
         "description": "List of users",
       },
+      "UsersLoginResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersLogin",
+            },
+          },
+        },
+        "description": "The logged in users and its token",
+      },
+      "UsersMeResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersMe",
+            },
+          },
+        },
+        "description": "The currently authenticated users, if any",
+      },
       "UsersNotFoundResponse": {
         "content": {},
         "description": "users not found",
+      },
+      "UsersRefreshTokenResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersRefreshToken",
+            },
+          },
+        },
+        "description": "The users and its refreshed token",
+      },
+      "UsersResetPasswordResponse": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UsersResetPassword",
+            },
+          },
+        },
+        "description": "The users whose password was reset",
       },
       "UsersResponse": {
         "content": {
@@ -23662,6 +27064,34 @@ exports[`openapi generators > respects default ID type from db adapter 1`] = `
       },
     },
     "schemas": {
+      "AuthAccess": {
+        "description": "Resolved permissions for the authenticated user, keyed by collection and global",
+        "type": "object",
+      },
+      "AuthInit": {
+        "additionalProperties": false,
+        "properties": {
+          "initialized": {
+            "type": "boolean",
+          },
+        },
+        "required": [
+          "initialized",
+        ],
+        "type": "object",
+      },
+      "AuthMessage": {
+        "additionalProperties": false,
+        "properties": {
+          "message": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "message",
+        ],
+        "type": "object",
+      },
       "PayloadLockedDocument": {
         "additionalProperties": false,
         "properties": {
@@ -24581,6 +28011,52 @@ exports[`openapi generators > respects default ID type from db adapter 1`] = `
         "title": "users",
         "type": "object",
       },
+      "UsersLogin": {
+        "additionalProperties": false,
+        "properties": {
+          "exp": {
+            "type": "number",
+          },
+          "message": {
+            "type": "string",
+          },
+          "token": {
+            "type": "string",
+          },
+          "user": {
+            "$ref": "#/components/schemas/Users",
+          },
+        },
+        "required": [
+          "message",
+          "user",
+        ],
+        "type": "object",
+      },
+      "UsersMe": {
+        "additionalProperties": false,
+        "properties": {
+          "collection": {
+            "type": "string",
+          },
+          "exp": {
+            "type": "number",
+          },
+          "message": {
+            "type": "string",
+          },
+          "token": {
+            "type": "string",
+          },
+          "user": {
+            "$ref": "#/components/schemas/Users",
+          },
+        },
+        "required": [
+          "message",
+        ],
+        "type": "object",
+      },
       "UsersQueryOperations": {
         "properties": {
           "createdAt": {
@@ -24898,6 +28374,48 @@ exports[`openapi generators > respects default ID type from db adapter 1`] = `
         "title": "users query disjunction",
         "type": "object",
       },
+      "UsersRefreshToken": {
+        "additionalProperties": false,
+        "properties": {
+          "exp": {
+            "type": "number",
+          },
+          "message": {
+            "type": "string",
+          },
+          "refreshedToken": {
+            "type": "string",
+          },
+          "user": {
+            "$ref": "#/components/schemas/Users",
+          },
+        },
+        "required": [
+          "message",
+          "user",
+          "exp",
+        ],
+        "type": "object",
+      },
+      "UsersResetPassword": {
+        "additionalProperties": false,
+        "properties": {
+          "message": {
+            "type": "string",
+          },
+          "token": {
+            "type": "string",
+          },
+          "user": {
+            "$ref": "#/components/schemas/Users",
+          },
+        },
+        "required": [
+          "message",
+          "user",
+        ],
+        "type": "object",
+      },
       "supportedTimezones": {
         "example": "Europe/Prague",
         "type": "string",
@@ -24921,6 +28439,25 @@ exports[`openapi generators > respects default ID type from db adapter 1`] = `
   },
   "openapi": "3.0.3",
   "paths": {
+    "/api/access": {
+      "get": {
+        "operationId": "access",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AuthAccessResponse",
+          },
+        },
+        "security": [
+          {
+            "ApiKey": [],
+          },
+        ],
+        "summary": "Retrieve the permissions of the authenticated user",
+        "tags": [
+          "auth",
+        ],
+      },
+    },
     "/api/payload-locked-documents": {
       "get": {
         "operationId": "listPayloadLockedDocuments",
@@ -25966,6 +29503,173 @@ exports[`openapi generators > respects default ID type from db adapter 1`] = `
           },
         ],
         "summary": "Create a new users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/first-register": {
+      "post": {
+        "description": "Only succeeds while no users exist.",
+        "operationId": "firstRegisterUsers",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersLoginResponse",
+          },
+        },
+        "security": [],
+        "summary": "Create the first users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/forgot-password": {
+      "post": {
+        "operationId": "forgotPasswordUsers",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersForgotPasswordRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AuthMessageResponse",
+          },
+        },
+        "security": [],
+        "summary": "Send a password reset token to a users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/init": {
+      "get": {
+        "operationId": "initUsers",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AuthInitResponse",
+          },
+        },
+        "security": [],
+        "summary": "Check whether any users exist",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/login": {
+      "post": {
+        "operationId": "loginUsers",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersLoginRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersLoginResponse",
+          },
+        },
+        "security": [],
+        "summary": "Log in as a users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/logout": {
+      "post": {
+        "operationId": "logoutUsers",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AuthMessageResponse",
+          },
+        },
+        "security": [
+          {
+            "ApiKey": [],
+          },
+        ],
+        "summary": "Log out the current users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/me": {
+      "get": {
+        "operationId": "meUsers",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersMeResponse",
+          },
+        },
+        "security": [
+          {
+            "ApiKey": [],
+          },
+        ],
+        "summary": "Retrieve the currently authenticated users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/refresh-token": {
+      "post": {
+        "operationId": "refreshTokenUsers",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersRefreshTokenResponse",
+          },
+        },
+        "security": [
+          {
+            "ApiKey": [],
+          },
+        ],
+        "summary": "Refresh the token of the current users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/reset-password": {
+      "post": {
+        "operationId": "resetPasswordUsers",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersResetPasswordRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UsersResetPasswordResponse",
+          },
+        },
+        "security": [],
+        "summary": "Reset the password of a users",
+        "tags": [
+          "users",
+        ],
+      },
+    },
+    "/api/users/unlock": {
+      "post": {
+        "operationId": "unlockUsers",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UsersUnlockRequestBody",
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AuthMessageResponse",
+          },
+        },
+        "security": [
+          {
+            "ApiKey": [],
+          },
+        ],
+        "summary": "Unlock a locked out users",
         "tags": [
           "users",
         ],

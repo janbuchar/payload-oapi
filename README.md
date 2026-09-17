@@ -104,6 +104,13 @@ openapi({
 })
 ```
 
+# Auth endpoints
+
+Collections with `auth` get their login, logout, refresh, verification and password-reset operations documented
+automatically, following that collection's auth config — `disableLocalStrategy` drops the password operations,
+`loginWithUsername` decides whether the login body takes an email or a username, `maxLoginAttempts: 0` drops
+`/unlock`, and `verify` adds `/verify/{id}`.
+
 # Usage
 
 Unless you configured it otherwise, your spec will be accessible via <https://your-payload.com/api/openapi.json>. If you
