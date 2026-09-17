@@ -384,6 +384,53 @@ describe('openapi generators', () => {
     )
   })
 
+  // `payload-phone-number-plugin` injects a `#/definitions/PhoneNumber` ref it never defines.
+  const Contacts: CollectionConfig = {
+    slug: 'contacts',
+    fields: [
+      {
+        type: 'text',
+        name: 'phone',
+        typescriptSchema: [() => ({ $ref: '#/definitions/PhoneNumber' })],
+      },
+    ],
+  }
+
+  test('defines the PhoneNumber schema when a field references it', async () => {
+    const payload = await buildPayload({ collections: [Contacts] })
+
+    const spec = await generateV30Spec(
+      { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
+      {
+        openapiVersion: '3.0',
+        authEndpoint: '/auth',
+        metadata: { title: 'Test API', version: '1.0' },
+        filters: {},
+        apiBasePath: null,
+      },
+    )
+
+    expect(spec.components?.schemas?.PhoneNumber).toBeDefined()
+    expect(JSON.stringify(spec)).toContain('#/components/schemas/PhoneNumber')
+  })
+
+  test('omits the PhoneNumber schema when its only referent is filtered out', async () => {
+    const payload = await buildPayload({ collections: [Contacts] })
+
+    const spec = await generateV30Spec(
+      { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
+      {
+        openapiVersion: '3.0',
+        authEndpoint: '/auth',
+        metadata: { title: 'Test API', version: '1.0' },
+        filters: { excludeCollections: ['contacts'] },
+        apiBasePath: null,
+      },
+    )
+
+    expect(JSON.stringify(spec)).not.toContain('PhoneNumber')
+  })
+
   describe('collection filtering', () => {
     test('includeCollections filters to specified collections only', async () => {
       const Categories: CollectionConfig = {
