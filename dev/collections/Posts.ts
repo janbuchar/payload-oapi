@@ -19,5 +19,12 @@ export const Posts: CollectionConfig = {
       type: 'blocks',
       blocks: [MediaBlock],
     },
+    {
+      name: 'contentRef',
+      type: 'blocks',
+      // `blockReferences` requires `blocks` to be present and empty until payload 4.0 merges them
+      blocks: [],
+      blockReferences: ['referenceBlock'],
+    },
   ],
 }

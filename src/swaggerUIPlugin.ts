@@ -1,8 +1,9 @@
 import type { Config, Plugin } from 'payload'
+import { apiRoute } from './utils/routes.js'
 
 const swaggerUI =
   ({
-    specEndpoint = '/openapi.json',
+    specEndpoint,
     docsUrl = '/docs',
     enabled = true,
   }: {
@@ -14,6 +15,9 @@ const swaggerUI =
     if (!enabled) {
       return { ...config, endpoints }
     }
+
+    const specUrl = specEndpoint ?? `${apiRoute(config)}/openapi.json`
+
     return {
       ...config,
       endpoints: [
@@ -42,7 +46,7 @@ const swaggerUI =
               <script>
                 window.onload = () => {
                   window.ui = SwaggerUIBundle({
-                    url: '${req.protocol}//${req.headers.get('host')}/api${specEndpoint}',
+                    url: '${req.protocol}//${req.headers.get('host')}${specUrl}',
                     dom_id: '#swagger-ui',
                   });
                 };
