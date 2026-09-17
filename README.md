@@ -14,7 +14,7 @@ Autogenerate an OpenAPI specification from your Payload CMS instance and use it 
 - [x] Support Payload CMS 3.x
 - [x] Support generating both OpenAPI 3.0 and 3.1
 - [x] Collection and global filtering
-- [ ] Custom endpoints
+- [x] Custom endpoints
 
 # Installation
 
@@ -103,6 +103,49 @@ openapi({
   apiBasePath: '/public-api',
 })
 ```
+
+## 5. Document your own endpoints (optional)
+
+Payload `endpoints` — on a collection, a global or the config root — are documented when they carry an OpenAPI
+operation under `custom.openapi`. Anything you do not set is filled in for you (`tags`, `operationId`, `summary`, and a
+`security` requirement, since the generator cannot inspect a custom handler's access control):
+
+```typescript
+import type { CustomEndpointDocumentation } from 'payload-oapi'
+
+const Pets: CollectionConfig = {
+  slug: 'pets',
+  endpoints: [
+    {
+      path: '/by-status/:status',
+      method: 'get',
+      handler: myHandler,
+      custom: {
+        openapi: {
+          summary: 'List pets by status',
+          security: [],
+          parameters: [{ in: 'path', name: 'status', required: true, schema: { type: 'string' } }],
+          responses: {
+            200: {
+              description: 'Pets with the requested status',
+              content: {
+                'application/json': {
+                  schema: { type: 'array', items: { $ref: '#/components/schemas/Pet' } },
+                },
+              },
+            },
+          },
+        } satisfies CustomEndpointDocumentation,
+      },
+    },
+  ],
+  // ...
+}
+```
+
+Write these in OpenAPI 3.1 syntax whatever `openapiVersion` you configured — a 3.0 spec is down-converted on the way
+out. `$ref` pointers to generated components work as shown; to add schemas of your own, declare them through Payload's
+`typescript.schema` and reference them the same way.
 
 # Auth endpoints
 

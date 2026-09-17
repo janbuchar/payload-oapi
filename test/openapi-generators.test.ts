@@ -13,7 +13,8 @@ import {
   type Payload,
 } from 'payload'
 import { afterEach, beforeAll, beforeEach, describe, expect, test } from 'vitest'
-import { generateV30Spec } from '../src/openapi/generators'
+import { generateV30Spec, generateV31Spec } from '../src/openapi/generators'
+import type { CustomEndpointDocumentation } from '../src/types'
 
 const Posts: CollectionConfig = {
   slug: 'posts',
@@ -684,6 +685,252 @@ describe('openapi generators', () => {
 
       expect(spec.paths['/api/access']?.get).toBeDefined()
       expect(spec.paths['/api/admins/access']).toBeUndefined()
+    })
+  })
+
+  describe('custom endpoints', () => {
+    const noop = () => new Response(null)
+
+    const documented = (
+      method: 'get' | 'post' | 'delete',
+      path: string,
+      openapi: CustomEndpointDocumentation,
+    ) => ({ path, method, handler: noop, custom: { openapi } })
+
+    const specFor = async (
+      inputConfig: Parameters<typeof buildPayload>[0],
+      version: '3.0' | '3.1' = '3.0',
+    ) => {
+      const payload = await buildPayload(inputConfig)
+      const req = { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload }
+      const options = {
+        authEndpoint: '/auth',
+        metadata: { title: 'Test API', version: '1.0' },
+        filters: { hideInternalCollections: true },
+        apiBasePath: null,
+      }
+
+      return version === '3.0'
+        ? await generateV30Spec(req, { ...options, openapiVersion: '3.0' })
+        : ((await generateV31Spec(req, {
+            ...options,
+            openapiVersion: '3.1',
+          })) as OpenAPIV3.Document)
+    }
+
+    test('endpoints without custom.openapi are not documented', async () => {
+      const spec = await specFor({
+        collections: [
+          { ...Posts, endpoints: [{ path: '/undocumented', method: 'get', handler: noop }] },
+        ],
+      })
+
+      expect(spec.paths['/api/posts/undocumented']).toBeUndefined()
+    })
+
+    test('express params become openapi path templates under the configured api route', async () => {
+      const spec = await specFor({
+        collections: [
+          {
+            ...Posts,
+            endpoints: [documented('get', '/status/:status', { summary: 'By status' })],
+          },
+        ],
+        routes: { api: '/payload-api' },
+      })
+
+      expect(spec.paths['/payload-api/posts/status/{status}']?.get?.summary).toBe('By status')
+    })
+
+    test('two endpoints on one path keep both methods', async () => {
+      const spec = await specFor({
+        collections: [
+          {
+            ...Posts,
+            endpoints: [
+              documented('post', '/status/:status', { summary: 'Set status' }),
+              documented('delete', '/status/:status', { summary: 'Clear status' }),
+            ],
+          },
+        ],
+      })
+
+      const item = spec.paths['/api/posts/status/{status}']
+
+      expect(item?.post?.summary).toBe('Set status')
+      expect(item?.delete?.summary).toBe('Clear status')
+    })
+
+    test('two get endpoints on one collection do not overwrite each other', async () => {
+      const spec = await specFor({
+        collections: [
+          {
+            ...Posts,
+            endpoints: [
+              documented('get', '/foo', { summary: 'Foo' }),
+              documented('get', '/bar', { summary: 'Bar' }),
+            ],
+          },
+        ],
+      })
+
+      expect(spec.paths['/api/posts/foo']?.get?.summary).toBe('Foo')
+      expect(spec.paths['/api/posts/bar']?.get?.summary).toBe('Bar')
+      expect(spec.paths['/api/posts/foo']?.get?.operationId).not.toBe(
+        spec.paths['/api/posts/bar']?.get?.operationId,
+      )
+    })
+
+    test('a custom endpoint sharing a generated path adds to it', async () => {
+      const spec = await specFor({
+        collections: [
+          { ...Posts, endpoints: [documented('post', '/:id', { summary: 'Replace' })] },
+        ],
+      })
+
+      const item = spec.paths['/api/posts/{id}']
+
+      expect(item?.post?.summary).toBe('Replace')
+      expect(item?.get).toBeDefined()
+      expect(item?.patch).toBeDefined()
+      expect(item?.delete).toBeDefined()
+    })
+
+    test('an endpoint without a request body gets no requestBody reference', async () => {
+      const spec = await specFor({
+        collections: [{ ...Posts, endpoints: [documented('delete', '/purge', {})] }],
+      })
+
+      expect(spec.paths['/api/posts/purge']?.delete?.requestBody).toBeUndefined()
+      expect(spec.paths['/api/posts/purge']?.delete?.responses['200']).toEqual({
+        description: 'Successful response',
+      })
+    })
+
+    test('parameters land on the operation, not the shared path item', async () => {
+      const spec = await specFor({
+        collections: [
+          {
+            ...Posts,
+            endpoints: [
+              documented('post', '/shared', {
+                parameters: [{ in: 'query', name: 'onlyOnPost', schema: { type: 'string' } }],
+              }),
+              documented('get', '/shared', {}),
+            ],
+          },
+        ],
+      })
+
+      const item = spec.paths['/api/posts/shared']
+
+      expect(item?.post?.parameters).toHaveLength(1)
+      expect(item?.get?.parameters).toBeUndefined()
+      expect(item?.parameters).toBeUndefined()
+    })
+
+    test('a user can reference a generated component schema', async () => {
+      const spec = await specFor({
+        collections: [
+          {
+            ...Posts,
+            endpoints: [
+              documented('get', '/latest', {
+                responses: {
+                  200: {
+                    description: 'The latest post',
+                    content: {
+                      'application/json': { schema: { $ref: '#/components/schemas/Post' } },
+                    },
+                  },
+                },
+              }),
+            ],
+          },
+        ],
+      })
+
+      const response = spec.paths['/api/posts/latest']?.get?.responses[
+        '200'
+      ] as OpenAPIV3.ResponseObject
+
+      expect(response.content?.['application/json']?.schema).toEqual({
+        $ref: '#/components/schemas/Post',
+      })
+      expect(spec.components?.schemas?.Post).toBeDefined()
+    })
+
+    test('defaults are overridable and security defaults to the api key', async () => {
+      const spec = await specFor({
+        collections: [
+          {
+            ...Posts,
+            endpoints: [
+              documented('get', '/public', { security: [], tags: ['reports'] }),
+              documented('get', '/private', {}),
+            ],
+          },
+        ],
+      })
+
+      expect(spec.paths['/api/posts/public']?.get?.security).toEqual([])
+      expect(spec.paths['/api/posts/public']?.get?.tags).toEqual(['reports'])
+      expect(spec.paths['/api/posts/private']?.get?.security).toEqual([{ ApiKey: [] }])
+    })
+
+    test('globals and root endpoints are documented too', async () => {
+      const spec = await specFor({
+        collections: [Posts],
+        globals: [
+          {
+            slug: 'settings',
+            fields: [{ type: 'text', name: 'title' }],
+            endpoints: [documented('get', '/export', { summary: 'Export settings' })],
+          },
+        ],
+        endpoints: [documented('get', '/health', { summary: 'Health check' })],
+      })
+
+      expect(spec.paths['/api/globals/settings/export']?.get?.summary).toBe('Export settings')
+      expect(spec.paths['/api/health']?.get?.summary).toBe('Health check')
+    })
+
+    test('inline 3.1 schemas are down-converted for a 3.0 document', async () => {
+      const nullableBody: CustomEndpointDocumentation = {
+        requestBody: {
+          content: {
+            'application/json': {
+              schema: { type: 'object', properties: { note: { type: ['string', 'null'] } } },
+            },
+          },
+        },
+      }
+
+      const payload = await buildPayload({
+        collections: [{ ...Posts, endpoints: [documented('post', '/note', nullableBody)] }],
+      })
+      const req = { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload }
+      const options = {
+        authEndpoint: '/auth',
+        metadata: { title: 'Test API', version: '1.0' },
+        filters: { hideInternalCollections: true },
+        apiBasePath: null,
+      }
+
+      const v30 = await generateV30Spec(req, { ...options, openapiVersion: '3.0' })
+      const v31 = (await generateV31Spec(req, {
+        ...options,
+        openapiVersion: '3.1',
+      })) as OpenAPIV3.Document
+
+      const schemaOf = (spec: OpenAPIV3.Document) =>
+        (spec.paths['/api/posts/note']?.post?.requestBody as OpenAPIV3.RequestBodyObject).content[
+          'application/json'
+        ].schema as OpenAPIV3.NonArraySchemaObject
+
+      // 3.0 has no type arrays: `['string', 'null']` becomes a nullable string.
+      expect(schemaOf(v30).properties?.note).toEqual({ type: 'string', nullable: true })
+      expect(schemaOf(v31).properties?.note).toEqual({ type: ['string', 'null'] })
     })
   })
 
