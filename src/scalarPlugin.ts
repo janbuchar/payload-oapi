@@ -2,7 +2,7 @@ import type { Plugin } from 'payload'
 
 const scalar =
   ({
-    specEndpoint = '/openapi.json',
+    specEndpoint = '/api/openapi.json',
     docsUrl = '/docs',
     enabled = true,
   }: {
@@ -23,7 +23,7 @@ const scalar =
           method: 'get',
           path: docsUrl,
           handler: async req => {
-            const fullSpecUrl = `${req.protocol}//${req.headers.get('host')}/api${specEndpoint}`
+            const fullSpecUrl = `${req.protocol}//${req.headers.get('host')}${specEndpoint}`
 
             const html = `
               <!DOCTYPE html>

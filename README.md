@@ -13,6 +13,7 @@ Autogenerate an OpenAPI specification from your Payload CMS instance and use it 
 - [x] Preferences endpoints
 - [x] Support Payload CMS 3.x
 - [x] Support generating both OpenAPI 3.0 and 3.1
+- [x] Collection and global filtering
 - [ ] Custom endpoints
 
 # Installation
@@ -65,6 +66,28 @@ buildConfig({
     // redoc({ /* ...options */ }),
   ],
   // ...
+})
+```
+
+## 3. Filter collections and globals (optional)
+
+Control which collections and globals appear in the OpenAPI spec using the `filters` option:
+
+- `includeCollections` / `excludeCollections` — filter collections by slug
+- `includeGlobals` / `excludeGlobals` — filter globals by slug
+- `hideInternalCollections` — exclude `payload-*` collections
+
+Example:
+
+```typescript
+openapi({
+  openapiVersion: '3.0',
+  metadata: { title: 'Dev API', version: '0.0.1' },
+  filters: {
+    includeCollections: ['posts', 'categories'],
+    excludeGlobals: ['footer'],
+    hideInternalCollections: true,
+  },
 })
 ```
 

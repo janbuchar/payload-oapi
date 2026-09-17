@@ -2,7 +2,7 @@ import type { Plugin } from 'payload'
 
 const rapidoc =
   ({
-    specEndpoint = '/openapi.json',
+    specEndpoint = '/api/openapi.json',
     docsUrl = '/docs',
     enabled = true,
   }: {
@@ -38,7 +38,7 @@ const rapidoc =
               </head>
               <body>
               <script src="https://cdn.jsdelivr.net/npm/rapidoc@9.3.8/dist/rapidoc-min.js" type="module"></script>
-              <rapi-doc spec-url="${req.protocol}//${req.headers.get('host')}/api${specEndpoint}"></rapi-doc>
+              <rapi-doc spec-url="${req.protocol}//${req.headers.get('host')}${specEndpoint}"></rapi-doc>
               </body>
               </html>`,
               { headers: { 'content-type': 'text/html' } },

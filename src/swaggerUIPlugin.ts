@@ -2,7 +2,7 @@ import type { Config, Plugin } from 'payload'
 
 const swaggerUI =
   ({
-    specEndpoint = '/openapi.json',
+    specEndpoint = '/api/openapi.json',
     docsUrl = '/docs',
     enabled = true,
   }: {
@@ -42,7 +42,7 @@ const swaggerUI =
               <script>
                 window.onload = () => {
                   window.ui = SwaggerUIBundle({
-                    url: '${req.protocol}//${req.headers.get('host')}/api${specEndpoint}',
+                    url: '${req.protocol}//${req.headers.get('host')}${specEndpoint}',
                     dom_id: '#swagger-ui',
                   });
                 };

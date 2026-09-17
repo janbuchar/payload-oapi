@@ -9,6 +9,7 @@ const openapi =
     openapiVersion = '3.0',
     metadata,
     enabled = true,
+    filters = {},
   }: PluginOptions): Plugin =>
   ({ endpoints = [], ...config }) => {
     if (!enabled) {
@@ -26,6 +27,7 @@ const openapi =
             openapiVersion,
             metadata,
             authEndpoint,
+            filters,
           }),
         },
         {
