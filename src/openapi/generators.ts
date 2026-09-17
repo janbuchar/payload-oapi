@@ -31,6 +31,7 @@ import {
   sharedAuthResponses,
   sharedAuthSchemas,
 } from './authEndpoints.js'
+import { generateCustomEndpoints } from './customEndpoints.js'
 import { collectionName, componentName, composeRef, globalName } from './naming.js'
 import { apiKeySecurity, generateSecuritySchemes } from './securitySchemes.js'
 
@@ -47,6 +48,32 @@ const createQueryParams: Array<OpenAPIV3.ParameterObject & OpenAPIV3_1.Parameter
 
 async function jsonSchemaToOpenapiSchema(schema: JSONSchema4): Promise<OpenAPIV3.Document> {
   return await (_jsonSchemaToOpenapiSchema as any)(schema)
+}
+
+/**
+ * Converts every `schema` nested in a path item - parameters, request bodies, responses, headers.
+ * Component schemas are converted wholesale elsewhere, but operations contributed through
+ * `custom.openapi` carry inline 3.1 schemas that a 3.0 document has to down-convert.
+ */
+const convertInlineSchemas = async (node: unknown): Promise<unknown> => {
+  if (Array.isArray(node)) {
+    return await Promise.all(node.map(convertInlineSchemas))
+  }
+
+  if (node === null || typeof node !== 'object') {
+    return node
+  }
+
+  return Object.fromEntries(
+    await Promise.all(
+      Object.entries(node).map(async ([key, value]) => [
+        key,
+        key === 'schema' && value !== null && typeof value === 'object'
+          ? await jsonSchemaToOpenapiSchema(value as JSONSchema4)
+          : await convertInlineSchemas(value),
+      ]),
+    ),
+  )
 }
 
 const definitionRef = /^#\/definitions\/(.*)/
@@ -833,8 +860,7 @@ const generatePaths = async (
   const apiRoute = options.apiBasePath ?? req.payload.config.routes.api
   const authCollections = collections.filter(hasAuthEndpoints)
 
-  return Object.assign(
-    {},
+  const generated: Array<Record<string, OpenAPIV3.PathItemObject & OpenAPIV3_1.PathItemObject>> = [
     ...(await Promise.all(
       collections.map(collection =>
         generateCollectionOperations(req.payload.config, collection, apiRoute),
@@ -843,7 +869,30 @@ const generatePaths = async (
     ...(await Promise.all(globals.map(global => generateGlobalOperations(global, apiRoute)))),
     ...authCollections.map(collection => generateAuthOperations(collection, apiRoute)),
     authCollections.length > 0 ? generateAuthRootOperations(apiRoute) : {},
-  )
+    ...collections.map(collection =>
+      generateCustomEndpoints(
+        `${apiRoute}/${collection.config.slug}`,
+        collection.config.slug,
+        collection.config.endpoints,
+      ),
+    ),
+    ...globals.map(global =>
+      generateCustomEndpoints(`${apiRoute}/globals/${global.slug}`, global.slug, global.endpoints),
+    ),
+    generateCustomEndpoints(apiRoute, 'custom', req.payload.config.endpoints),
+  ]
+
+  const paths: Record<string, OpenAPIV3.PathItemObject & OpenAPIV3_1.PathItemObject> = {}
+
+  // Merged per path item, so a custom endpoint sharing a path with a generated one adds its method
+  // instead of replacing the whole item.
+  for (const operations of generated) {
+    for (const [path, item] of Object.entries(operations)) {
+      paths[path] = { ...paths[path], ...item }
+    }
+  }
+
+  return paths
 }
 
 export const generateV30Spec = async (
@@ -858,7 +907,7 @@ export const generateV30Spec = async (
     openapi: '3.0.3',
     info: options.metadata,
     servers: [{ url: `${req.protocol}//${req.headers.get('host')}` }],
-    paths: await generatePaths(req, options),
+    paths: (await convertInlineSchemas(await generatePaths(req, options))) as OpenAPIV3.PathsObject,
     components: {
       securitySchemes: generateSecuritySchemes(options.authEndpoint, apiRoute),
       schemas: await mapValuesAsync(jsonSchemaToOpenapiSchema, schemas),
