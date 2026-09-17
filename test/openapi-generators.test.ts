@@ -1,9 +1,19 @@
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
+import { sqliteAdapter } from '@payloadcms/db-sqlite'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { MongoMemoryServer } from 'mongodb-memory-server'
 import mongoose from 'mongoose'
-import { BasePayload, buildConfig, type CollectionConfig, type Config, type Payload } from 'payload'
+import type { OpenAPIV3 } from 'openapi-types'
+import {
+  BasePayload,
+  buildConfig,
+  type CollectionConfig,
+  type Config,
+  type GlobalConfig,
+  type Payload,
+} from 'payload'
 import { afterEach, beforeAll, beforeEach, describe, expect, test } from 'vitest'
+
 import { generateV30Spec } from '../src/openapi/generators'
 
 const Posts: CollectionConfig = {
@@ -23,10 +33,9 @@ describe('openapi generators', () => {
   })
 
   const buildPayload = async (
-    inputConfig: Omit<Config, 'db' | 'secret' | 'typescript'>,
+    inputConfig: Omit<Config, 'db' | 'secret' | 'typescript'> & Partial<Config>,
   ): Promise<Payload> => {
     const config = await buildConfig({
-      ...inputConfig,
       db: mongooseAdapter({
         url: mongo.getUri(),
       }),
@@ -34,6 +43,7 @@ describe('openapi generators', () => {
       typescript: {
         autoGenerate: false,
       },
+      ...inputConfig,
     })
 
     return await new BasePayload().init({ config })
@@ -53,8 +63,10 @@ describe('openapi generators', () => {
       { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
       {
         openapiVersion: '3.0',
-        authEndpoint: '/api/auth',
+        authEndpoint: '/auth',
         metadata: { title: 'Test API', version: '1.0' },
+        filters: {},
+        apiBasePath: null,
       },
     )
 
@@ -74,6 +86,70 @@ describe('openapi generators', () => {
     )
   })
 
+  test('handles non-default api route', async () => {
+    const payload = await buildPayload({
+      collections: [Posts],
+      routes: {
+        api: '/payload-api',
+      },
+    })
+
+    const spec = await generateV30Spec(
+      { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
+      {
+        openapiVersion: '3.0',
+        authEndpoint: '/auth',
+        metadata: { title: 'Test API', version: '1.0' },
+        filters: {},
+        apiBasePath: null,
+      },
+    )
+
+    expect(spec).toMatchSnapshot()
+
+    expect(new Set(Object.keys(spec.paths))).toEqual(
+      new Set([
+        '/payload-api/posts',
+        '/payload-api/posts/{id}',
+        '/payload-api/users',
+        '/payload-api/users/{id}',
+        '/payload-api/payload-locked-documents',
+        '/payload-api/payload-locked-documents/{id}',
+        '/payload-api/payload-preferences',
+        '/payload-api/payload-preferences/{id}',
+        '/payload-api/payload-migrations',
+        '/payload-api/payload-migrations/{id}',
+      ]),
+    )
+
+    const apiKey = spec.components?.securitySchemes?.ApiKey as OpenAPIV3.OAuth2SecurityScheme
+    expect(apiKey.flows.password?.tokenUrl).toBe('/payload-api/auth')
+  })
+
+  test('apiBasePath overrides the api route', async () => {
+    const payload = await buildPayload({
+      collections: [Posts],
+      routes: {
+        api: '/payload-api',
+      },
+    })
+
+    const spec = await generateV30Spec(
+      { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
+      {
+        openapiVersion: '3.0',
+        authEndpoint: '/auth',
+        metadata: { title: 'Test API', version: '1.0' },
+        filters: { hideInternalCollections: true },
+        apiBasePath: '/proxied',
+      },
+    )
+
+    expect(new Set(Object.keys(spec.paths))).toEqual(
+      new Set(['/proxied/posts', '/proxied/posts/{id}', '/proxied/users', '/proxied/users/{id}']),
+    )
+  })
+
   test('handles non-default collection', async () => {
     const payload = await buildPayload({
       collections: [Posts],
@@ -83,8 +159,10 @@ describe('openapi generators', () => {
       { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
       {
         openapiVersion: '3.0',
-        authEndpoint: '/api/auth',
+        authEndpoint: '/auth',
         metadata: { title: 'Test API', version: '1.0' },
+        filters: {},
+        apiBasePath: null,
       },
     )
 
@@ -132,8 +210,10 @@ describe('openapi generators', () => {
       { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
       {
         openapiVersion: '3.0',
-        authEndpoint: '/api/auth',
+        authEndpoint: '/auth',
         metadata: { title: 'Test API', version: '1.0' },
+        filters: {},
+        apiBasePath: null,
       },
     )
 
@@ -165,12 +245,87 @@ describe('openapi generators', () => {
       { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
       {
         openapiVersion: '3.0',
-        authEndpoint: '/api/auth',
+        authEndpoint: '/auth',
         metadata: { title: 'Test API', version: '1.0' },
+        filters: {},
+        apiBasePath: null,
       },
     )
 
     expect(spec).toMatchSnapshot()
+  })
+
+  test('handles blocks referenced from the config', async () => {
+    const Page: CollectionConfig = {
+      slug: 'pages',
+      fields: [
+        {
+          name: 'content',
+          type: 'blocks',
+          blocks: [],
+          blockReferences: ['contentBlock'],
+        },
+      ],
+    }
+    const payload = await buildPayload({
+      blocks: [
+        {
+          slug: 'contentBlock',
+          fields: [
+            { name: 'heading', type: 'text', required: true },
+            { name: 'internalNote', type: 'text', hidden: true },
+          ],
+        },
+      ],
+      collections: [Page],
+    })
+
+    const spec = await generateV30Spec(
+      { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
+      {
+        openapiVersion: '3.0',
+        authEndpoint: '/auth',
+        metadata: { title: 'Test API', version: '1.0' },
+        filters: {},
+        apiBasePath: null,
+      },
+    )
+
+    expect(spec).toMatchSnapshot()
+
+    const block = spec.components?.schemas?.ContentBlock as OpenAPIV3.SchemaObject
+    expect(block.properties?.internalNote).toBeUndefined()
+    // payload assigns block ids itself, so a write payload must not be required to carry one
+    expect(block.required).toEqual(['blockType', 'heading'])
+
+    const page = spec.components?.schemas?.Page as OpenAPIV3.SchemaObject
+    const content = page.properties?.content as OpenAPIV3.ArraySchemaObject
+    expect(content.items).toEqual({ oneOf: [{ $ref: '#/components/schemas/ContentBlock' }] })
+  })
+
+  test('rejects a block whose schema name collides with a collection', async () => {
+    const payload = await buildPayload({
+      blocks: [{ slug: 'page', fields: [{ name: 'heading', type: 'text' }] }],
+      collections: [
+        {
+          slug: 'pages',
+          fields: [{ name: 'content', type: 'blocks', blocks: [], blockReferences: ['page'] }],
+        },
+      ],
+    })
+
+    await expect(
+      generateV30Spec(
+        { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
+        {
+          openapiVersion: '3.0',
+          authEndpoint: '/auth',
+          metadata: { title: 'Test API', version: '1.0' },
+          filters: {},
+          apiBasePath: null,
+        },
+      ),
+    ).rejects.toThrow('Duplicate OpenAPI schema name "Page"')
   })
 
   test('handles datetime field with timezones correctly', async () => {
@@ -192,11 +347,185 @@ describe('openapi generators', () => {
       { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
       {
         openapiVersion: '3.0',
-        authEndpoint: '/api/auth',
+        authEndpoint: '/auth',
+        metadata: { title: 'Test API', version: '1.0' },
+        filters: {},
+        apiBasePath: null,
+      },
+    )
+
+    expect(spec).toMatchSnapshot()
+  })
+
+  test('respects default ID type from db adapter', async () => {
+    const payload = await buildPayload({
+      // SQLite defaults to numeric IDs, mongo to text
+      db: sqliteAdapter({
+        client: { url: ':memory:' },
+      }),
+      collections: [Posts],
+    })
+
+    const spec = await generateV30Spec(
+      { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
+      {
+        openapiVersion: '3.0',
+        authEndpoint: '/auth',
         metadata: { title: 'Test API', version: '1.0' },
       },
     )
 
     expect(spec).toMatchSnapshot()
+
+    const post = spec.components?.schemas?.Post as OpenAPIV3.SchemaObject
+    expect(post.properties?.id).toEqual({ type: 'number' })
+    expect(spec.paths['/api/posts/{id}']?.parameters).toContainEqual(
+      expect.objectContaining({ name: 'id', schema: { type: 'number' } }),
+    )
+  })
+
+  describe('collection filtering', () => {
+    test('includeCollections filters to specified collections only', async () => {
+      const Categories: CollectionConfig = {
+        slug: 'categories',
+        fields: [{ type: 'text', name: 'name' }],
+      }
+      const payload = await buildPayload({
+        collections: [Posts, Categories],
+      })
+
+      const spec = await generateV30Spec(
+        { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
+        {
+          openapiVersion: '3.0',
+          authEndpoint: '/auth',
+          metadata: { title: 'Test API', version: '1.0' },
+          filters: { includeCollections: ['posts'] },
+          apiBasePath: null,
+        },
+      )
+
+      expect(new Set(Object.keys(spec.paths))).toEqual(new Set(['/api/posts', '/api/posts/{id}']))
+      expect(spec.paths['/api/categories']).toBeUndefined()
+    })
+
+    test('excludeCollections excludes specified collections', async () => {
+      const payload = await buildPayload({
+        collections: [Posts],
+      })
+
+      const spec = await generateV30Spec(
+        { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
+        {
+          openapiVersion: '3.0',
+          authEndpoint: '/auth',
+          metadata: { title: 'Test API', version: '1.0' },
+          filters: { excludeCollections: ['users'] },
+          apiBasePath: null,
+        },
+      )
+
+      expect(spec.paths['/api/posts']).toBeDefined()
+      expect(spec.paths['/api/users']).toBeUndefined()
+    })
+
+    test('hideInternalCollections removes payload-* collections from spec', async () => {
+      const payload = await buildPayload({
+        collections: [Posts],
+      })
+
+      const spec = await generateV30Spec(
+        { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
+        {
+          openapiVersion: '3.0',
+          authEndpoint: '/auth',
+          metadata: { title: 'Test API', version: '1.0' },
+          filters: { hideInternalCollections: true },
+          apiBasePath: null,
+        },
+      )
+
+      expect(spec.paths['/api/posts']).toBeDefined()
+      expect(spec.paths['/api/payload-preferences']).toBeUndefined()
+      expect(spec.paths['/api/payload-migrations']).toBeUndefined()
+      expect(spec.paths['/api/payload-locked-documents']).toBeUndefined()
+    })
+
+    test('empty includeCollections array results in no collections', async () => {
+      const payload = await buildPayload({
+        collections: [Posts],
+      })
+
+      const spec = await generateV30Spec(
+        { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
+        {
+          openapiVersion: '3.0',
+          authEndpoint: '/auth',
+          metadata: { title: 'Test API', version: '1.0' },
+          filters: { includeCollections: [] },
+          apiBasePath: null,
+        },
+      )
+
+      expect(Object.keys(spec.paths).filter(path => path.startsWith('/api/'))).toEqual([])
+    })
+  })
+
+  describe('global filtering', () => {
+    test('includeGlobals filters to specified globals only', async () => {
+      const Settings: GlobalConfig = {
+        slug: 'settings',
+        fields: [{ type: 'text', name: 'siteName' }],
+      }
+      const Footer: GlobalConfig = {
+        slug: 'footer',
+        fields: [{ type: 'text', name: 'copyright' }],
+      }
+      const payload = await buildPayload({
+        globals: [Settings, Footer],
+      })
+
+      const spec = await generateV30Spec(
+        { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
+        {
+          openapiVersion: '3.0',
+          authEndpoint: '/auth',
+          metadata: { title: 'Test API', version: '1.0' },
+          filters: { includeGlobals: ['settings'] },
+          apiBasePath: null,
+        },
+      )
+
+      expect(spec.paths['/api/globals/settings']).toBeDefined()
+      expect(spec.paths['/api/globals/footer']).toBeUndefined()
+    })
+
+    test('excludeGlobals excludes specified globals', async () => {
+      const Settings: GlobalConfig = {
+        slug: 'settings',
+        fields: [{ type: 'text', name: 'siteName' }],
+      }
+      const Footer: GlobalConfig = {
+        slug: 'footer',
+        fields: [{ type: 'text', name: 'copyright' }],
+      }
+      const payload = await buildPayload({
+        globals: [Settings, Footer],
+      })
+
+      const spec = await generateV30Spec(
+        { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
+        {
+          openapiVersion: '3.0',
+          authEndpoint: '/auth',
+          metadata: { title: 'Test API', version: '1.0' },
+          filters: { excludeGlobals: ['footer'] },
+          apiBasePath: null,
+        },
+      )
+
+      expect(spec.paths['/api/globals/settings']).toBeDefined()
+      expect(spec.paths['/api/globals/footer']).toBeUndefined()
+    })
   })
 })

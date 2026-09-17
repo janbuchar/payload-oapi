@@ -8,6 +8,7 @@ import type {
   Collection,
   Field,
   FieldBase,
+  FlattenedBlock,
   PayloadRequest,
   RadioField,
   SanitizedCollectionConfig,
@@ -18,6 +19,7 @@ import type {
 import { entityToJSONSchema } from 'payload'
 import type { SanitizedPluginOptions } from '../types.js'
 import { isHiddenField } from '../utils/fields.js'
+import { shouldIncludeCollection, shouldIncludeGlobal } from '../utils/filters.js'
 import { mapValuesAsync, visitObjectNodes } from '../utils/objects.js'
 import { type ComponentType, collectionName, componentName, globalName } from './naming.js'
 import { apiKeySecurity, generateSecuritySchemes } from './securitySchemes.js'
@@ -116,12 +118,20 @@ const adjustRefTargets = (
         return `#/components/schemas/${componentName('schemas', globalName(global))}`
       }
 
+      if (payload.blocks?.[name] !== undefined) {
+        return `#/components/schemas/${componentName('schemas', name)}`
+      }
+
       throw new Error(`Unknown reference: ${name}`)
     })
   })
 }
 
-const removeInterfaceNames = (target: SanitizedCollectionConfig | SanitizedGlobalConfig) =>
+const removeInterfaceNames = <
+  T extends SanitizedCollectionConfig | SanitizedGlobalConfig | FlattenedBlock,
+>(
+  target: T,
+): T =>
   create(target, draft =>
     visitObjectNodes(draft, (subject, key) => {
       if (key === 'interfaceName') {
@@ -138,12 +148,15 @@ const composeRef = (
   $ref: `#/components/${type}/${componentName(type, name, options)}`,
 })
 
+const idSchema = (config: SanitizedConfig): { type: 'number' } | { type: 'string' } =>
+  config.db.defaultIDType === 'number' ? { type: 'number' } : { type: 'string' }
+
 const generateSchemaObject = (config: SanitizedConfig, collection: Collection): JSONSchema4 => {
   const schema = entityToJSONSchema(
     config,
     removeInterfaceNames(collection.config), // the `interfaceName` option causes `entityToJSONSchema` to add a reference to a non-existing schema
     new Map(),
-    'text',
+    config.db.defaultIDType,
     undefined,
   )
 
@@ -163,14 +176,18 @@ const generateSchemaObject = (config: SanitizedConfig, collection: Collection): 
 
 type RequestBodyType = 'post' | 'patch'
 
-const requestBodySchema = (fields: Array<Field>, schema: JSONSchema4): JSONSchema4 => ({
+const requestBodySchema = (
+  config: SanitizedConfig,
+  fields: Array<Field>,
+  schema: JSONSchema4,
+): JSONSchema4 => ({
   ...schema,
   properties: Object.fromEntries(
     Object.entries(schema.properties ?? {}).map(([fieldName, schema]) => {
       const field = fields.find(field => (field as FieldBase).name === fieldName)
       if (field?.type === 'relationship') {
         const target = Array.isArray(field.relationTo) ? field.relationTo : [field.relationTo]
-        return [fieldName, { type: 'string', description: `ID of the ${target.join('/')}` }]
+        return [fieldName, { ...idSchema(config), description: `ID of the ${target.join('/')}` }]
       }
 
       return [fieldName, schema]
@@ -187,7 +204,7 @@ const generateRequestBodySchema = (
     config,
     removeInterfaceNames(collection.config), // the `interfaceName` option causes `entityToJSONSchema` to add a reference to a non-existing schema
     new Map(),
-    'text',
+    config.db.defaultIDType,
     undefined,
   )
 
@@ -211,7 +228,11 @@ const generateRequestBodySchema = (
     description: collectionName(collection).singular,
     content: {
       'application/json': {
-        schema: requestBodySchema(collection.config.fields, schema) as OpenAPIV3_1.SchemaObject,
+        schema: requestBodySchema(
+          config,
+          collection.config.fields,
+          schema,
+        ) as OpenAPIV3_1.SchemaObject,
       },
     },
   }
@@ -328,6 +349,7 @@ const generateQueryOperationSchemas = (collection: Collection): Record<string, J
 }
 
 const generateCollectionResponses = (
+  config: SanitizedConfig,
   collection: Collection,
 ): Record<string, OpenAPIV3_1.ResponseObject & OpenAPIV3.ResponseObject> => {
   const { singular, plural } = collectionName(collection)
@@ -341,7 +363,7 @@ const generateCollectionResponses = (
         },
       },
     },
-    [componentName('responses', singular, { prefix: 'New' })]: {
+    [componentName('responses', singular, { prefix: 'Mutate' })]: {
       description: `${singular} object`,
       content: {
         'application/json': {
@@ -355,7 +377,7 @@ const generateCollectionResponses = (
                   {
                     type: 'object',
                     properties: {
-                      id: { type: 'string' },
+                      id: idSchema(config),
                       createdAt: {
                         type: 'string',
                         format: 'date-time',
@@ -437,7 +459,9 @@ const isOpenToPublic = async (checker: Access): Promise<boolean> => {
 }
 
 const generateCollectionOperations = async (
+  config: SanitizedConfig,
   collection: Collection,
+  apiRoute: string,
 ): Promise<Record<string, OpenAPIV3.PathItemObject & OpenAPIV3_1.PathItemObject>> => {
   const { slug } = collection.config
   const { singular, plural } = collectionName(collection)
@@ -449,7 +473,7 @@ const generateCollectionOperations = async (
   } satisfies OpenAPIV3_1.ResponsesObject & OpenAPIV3.ResponsesObject
 
   return {
-    [`/api/${slug}`]: {
+    [`${apiRoute}/${slug}`]: {
       get: {
         operationId: componentName('schemas', plural, { prefix: 'list' }),
         summary: `Retrieve a list of ${plural}`,
@@ -506,12 +530,12 @@ const generateCollectionOperations = async (
         parameters: createQueryParams,
         requestBody: composeRef('requestBodies', singular),
         responses: {
-          201: composeRef('responses', singular, { prefix: 'New' }),
+          201: composeRef('responses', singular, { prefix: 'Mutate' }),
         },
         security: (await isOpenToPublic(collection.config.access.create)) ? [] : [apiKeySecurity],
       },
     },
-    [`/api/${slug}/{id}`]: {
+    [`${apiRoute}/${slug}/{id}`]: {
       parameters: [
         ...baseQueryParams,
         {
@@ -519,9 +543,7 @@ const generateCollectionOperations = async (
           name: 'id',
           description: `ID of the ${singular}`,
           required: true,
-          schema: {
-            type: 'string',
-          },
+          schema: idSchema(config),
         },
       ],
       get: {
@@ -531,7 +553,9 @@ const generateCollectionOperations = async (
         }),
         summary: `Find a ${singular} by ID`,
         tags,
-        responses: singleObjectResponses,
+        responses: {
+          200: composeRef('responses', singular, { prefix: 'Mutate' }),
+        },
         security: (await isOpenToPublic(collection.config.access.read)) ? [] : [apiKeySecurity],
       },
       patch: {
@@ -591,7 +615,7 @@ const generateGlobalSchemas = (
     config,
     removeInterfaceNames(global),
     new Map(),
-    'text',
+    config.db.defaultIDType,
     undefined,
   )
 
@@ -602,7 +626,7 @@ const generateGlobalSchemas = (
       oneOf: [schema, { type: 'object', properties: {} }],
     },
     [componentName('schemas', globalName(global), { suffix: 'Write' })]: {
-      ...requestBodySchema(global.fields, schema),
+      ...requestBodySchema(config, global.fields, schema),
       title: `${globalName(global)} (writable fields)`,
     },
   }
@@ -610,13 +634,14 @@ const generateGlobalSchemas = (
 
 const generateGlobalOperations = async (
   global: SanitizedGlobalConfig,
+  apiRoute: string,
 ): Promise<Record<string, OpenAPIV3.PathItemObject & OpenAPIV3_1.PathItemObject>> => {
   const slug = global.slug
   const singular = globalName(global)
   const tags = [singular]
 
   return {
-    [`/api/globals/${slug}`]: {
+    [`${apiRoute}/globals/${slug}`]: {
       get: {
         summary: `Get the ${singular}`,
         tags,
@@ -635,13 +660,76 @@ const generateGlobalOperations = async (
   }
 }
 
-const generateComponents = (req: Pick<PayloadRequest, 'payload'>) => {
+const generateBlockSchema = (config: SanitizedConfig, block: FlattenedBlock): JSONSchema4 => {
+  const schema = entityToJSONSchema(
+    config,
+    // `entityToJSONSchema` only reads `slug`, `flattenedFields` and `typescript` off the entity,
+    // all of which a flattened block has; its signature is just narrower than its needs.
+    removeInterfaceNames(block) as unknown as SanitizedCollectionConfig,
+    new Map(),
+    config.db.defaultIDType,
+    undefined,
+  )
+
+  const properties = Object.fromEntries(
+    Object.entries(schema.properties ?? {}).filter(([property]) => {
+      const field = block.flattenedFields.find(field => field.name === property)
+
+      return !isHiddenField(field)
+    }),
+  )
+
+  // `entityToJSONSchema` describes a document, so it promotes the block's payload-managed `id` to
+  // required. Inline blocks keep it optional, and clients must not have to invent one on write.
+  const required = ((schema.required ?? []) as string[]).filter(
+    property => property !== 'id' && properties[property] !== undefined,
+  )
+
+  return {
+    ...schema,
+    title: block.slug,
+    // Only the inline-block path in `fieldsToJSONSchema` adds the discriminator.
+    properties: { ...properties, blockType: { const: block.slug } },
+    required: ['blockType', ...required],
+  }
+}
+
+/**
+ * Collections, globals and blocks share one component namespace, so a name clash would otherwise
+ * silently replace an already generated schema and corrupt every `$ref` pointing at it.
+ */
+const defineSchemas = (
+  schemas: Record<string, JSONSchema4>,
+  additions: Record<string, JSONSchema4>,
+): void => {
+  for (const [name, schema] of Object.entries(additions)) {
+    if (name in schemas) {
+      throw new Error(
+        `Duplicate OpenAPI schema name "${name}" - rename the colliding collection, global or block`,
+      )
+    }
+
+    schemas[name] = schema
+  }
+}
+
+const generateComponents = (
+  req: Pick<PayloadRequest, 'payload'>,
+  options: SanitizedPluginOptions,
+) => {
   const schemas: Record<string, JSONSchema4> = {
     supportedTimezones: {
       type: 'string',
       example: 'Europe/Prague',
     },
   }
+
+  const filters = options.filters ?? {}
+  const collections = Object.values(req.payload.collections).filter(collection =>
+    shouldIncludeCollection(collection, filters),
+  )
+
+  const globals = req.payload.globals.config.filter(global => shouldIncludeGlobal(global, filters))
 
   // Only add PhoneNumber schema if it's actually used (has PhoneNumber reference in any schema)
   if (hasPhoneNumberReference(req.payload)) {
@@ -653,25 +741,30 @@ const generateComponents = (req: Pick<PayloadRequest, 'payload'>) => {
     }
   }
 
-  for (const collection of Object.values(req.payload.collections)) {
+  for (const collection of collections) {
     const { singular } = collectionName(collection)
-    schemas[componentName('schemas', singular)] = generateSchemaObject(
-      req.payload.config,
-      collection,
-    )
+    defineSchemas(schemas, {
+      [componentName('schemas', singular)]: generateSchemaObject(req.payload.config, collection),
+    })
   }
 
-  for (const collection of Object.values(req.payload.collections)) {
-    Object.assign(schemas, generateQueryOperationSchemas(collection))
+  for (const collection of collections) {
+    defineSchemas(schemas, generateQueryOperationSchemas(collection))
   }
 
-  for (const global of req.payload.globals.config) {
-    Object.assign(schemas, generateGlobalSchemas(req.payload.config, global))
+  for (const global of globals) {
+    defineSchemas(schemas, generateGlobalSchemas(req.payload.config, global))
+  }
+
+  for (const block of Object.values(req.payload.blocks ?? {})) {
+    defineSchemas(schemas, {
+      [componentName('schemas', block.slug)]: generateBlockSchema(req.payload.config, block),
+    })
   }
 
   const requestBodies: Record<string, OpenAPIV3_1.RequestBodyObject> = {}
 
-  for (const collection of Object.values(req.payload.collections)) {
+  for (const collection of collections) {
     const { singular } = collectionName(collection)
     requestBodies[componentName('requestBodies', singular)] = generateRequestBodySchema(
       req.payload.config,
@@ -682,15 +775,15 @@ const generateComponents = (req: Pick<PayloadRequest, 'payload'>) => {
       generateRequestBodySchema(req.payload.config, collection, 'patch')
   }
 
-  for (const global of req.payload.globals.config) {
+  for (const global of globals) {
     requestBodies[componentName('requestBodies', globalName(global))] =
       generateGlobalRequestBody(global)
   }
 
   const responses: Record<string, OpenAPIV3_1.ResponseObject> = Object.assign(
     {},
-    ...Object.values(req.payload.collections).map(generateCollectionResponses),
-    ...req.payload.globals.config.map(global => ({
+    ...collections.map(collection => generateCollectionResponses(req.payload.config, collection)),
+    ...globals.map(global => ({
       [componentName('responses', globalName(global))]: generateGlobalResponse(global),
     })),
   )
@@ -702,7 +795,14 @@ export const generateV30Spec = async (
   req: Pick<PayloadRequest, 'payload' | 'protocol' | 'headers'>,
   options: SanitizedPluginOptions,
 ): Promise<OpenAPIV3.Document> => {
-  const { schemas, requestBodies, responses } = generateComponents(req)
+  const { schemas, requestBodies, responses } = generateComponents(req, options)
+
+  const filters = options.filters ?? {}
+  const collections = Object.values(req.payload.collections).filter(collection =>
+    shouldIncludeCollection(collection, filters),
+  )
+  const globals = req.payload.globals.config.filter(global => shouldIncludeGlobal(global, filters))
+  const apiRoute = options.apiBasePath ?? req.payload.config.routes.api
 
   const spec = {
     openapi: '3.0.3',
@@ -711,12 +811,14 @@ export const generateV30Spec = async (
     paths: Object.assign(
       {},
       ...(await Promise.all(
-        Object.values(req.payload.collections).map(generateCollectionOperations),
+        collections.map(collection =>
+          generateCollectionOperations(req.payload.config, collection, apiRoute),
+        ),
       )),
-      ...(await Promise.all(req.payload.globals.config.map(generateGlobalOperations))),
+      ...(await Promise.all(globals.map(global => generateGlobalOperations(global, apiRoute)))),
     ),
     components: {
-      securitySchemes: generateSecuritySchemes(options.authEndpoint),
+      securitySchemes: generateSecuritySchemes(options.authEndpoint, apiRoute),
       schemas: await mapValuesAsync(jsonSchemaToOpenapiSchema, schemas),
       requestBodies: await mapValuesAsync(
         async requestBody => ({
@@ -762,7 +864,14 @@ export const generateV31Spec = async (
   req: Pick<PayloadRequest, 'payload' | 'protocol' | 'headers'>,
   options: SanitizedPluginOptions,
 ): Promise<OpenAPIV3_1.Document> => {
-  const { schemas, requestBodies, responses } = generateComponents(req)
+  const { schemas, requestBodies, responses } = generateComponents(req, options)
+
+  const filters = options.filters ?? {}
+  const collections = Object.values(req.payload.collections).filter(collection =>
+    shouldIncludeCollection(collection, filters),
+  )
+  const globals = req.payload.globals.config.filter(global => shouldIncludeGlobal(global, filters))
+  const apiRoute = options.apiBasePath ?? req.payload.config.routes.api
 
   const spec = {
     openapi: '3.1.0',
@@ -771,12 +880,14 @@ export const generateV31Spec = async (
     paths: Object.assign(
       {},
       ...(await Promise.all(
-        Object.values(req.payload.collections).map(generateCollectionOperations),
+        collections.map(collection =>
+          generateCollectionOperations(req.payload.config, collection, apiRoute),
+        ),
       )),
-      ...(await Promise.all(req.payload.globals.config.map(generateGlobalOperations))),
+      ...(await Promise.all(globals.map(global => generateGlobalOperations(global, apiRoute)))),
     ),
     components: {
-      securitySchemes: generateSecuritySchemes(options.authEndpoint),
+      securitySchemes: generateSecuritySchemes(options.authEndpoint, apiRoute),
       schemas: schemas as Record<string, OpenAPIV3_1.SchemaObject>,
       requestBodies,
       responses,
