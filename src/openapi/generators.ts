@@ -16,7 +16,7 @@ import type {
   SanitizedGlobalConfig,
   SelectField,
 } from 'payload'
-import { entityToJSONSchema } from 'payload'
+import { configToJSONSchema, entityToJSONSchema } from 'payload'
 import type { SanitizedPluginOptions } from '../types.js'
 import { isHiddenField } from '../utils/fields.js'
 import { shouldIncludeCollection, shouldIncludeGlobal } from '../utils/filters.js'
@@ -39,12 +39,37 @@ async function jsonSchemaToOpenapiSchema(schema: JSONSchema4): Promise<OpenAPIV3
   return await (_jsonSchemaToOpenapiSchema as any)(schema)
 }
 
+const definitionRef = /^#\/definitions\/(.*)/
+
+const definitionRefNames = (subject: Record<string, unknown>): Array<string> => {
+  const names: Array<string> = []
+
+  visitObjectNodes(subject, (_subject, key, value) => {
+    if (key !== '$ref' || typeof value !== 'string') {
+      return
+    }
+
+    const match = definitionRef.exec(value)
+
+    if (match !== null) {
+      names.push(match[1] as string)
+    }
+  })
+
+  return names
+}
+
+const isEntityRef = (payload: PayloadRequest['payload'], name: string): boolean =>
+  name === 'supportedTimezones' ||
+  payload.collections[name] !== undefined ||
+  payload.globals.config.some(({ slug }) => slug === name) ||
+  payload.blocks?.[name] !== undefined
+
 const adjustRefTargets = (
   payload: PayloadRequest['payload'],
+  liftedDefinitions: ReadonlySet<string>,
   spec: Record<string, unknown>,
 ): void => {
-  const search = /^#\/definitions\/(.*)/
-
   visitObjectNodes(spec, (subject, key, value) => {
     const isRef = key === '$ref' && typeof value === 'string'
 
@@ -52,7 +77,7 @@ const adjustRefTargets = (
       return
     }
 
-    subject[key] = value.replace(search, (_match, name: string) => {
+    subject[key] = value.replace(definitionRef, (_match, name: string) => {
       if (name === 'supportedTimezones') {
         return '#/components/schemas/supportedTimezones'
       }
@@ -70,6 +95,10 @@ const adjustRefTargets = (
 
       if (payload.blocks?.[name] !== undefined) {
         return `#/components/schemas/${componentName('schemas', name)}`
+      }
+
+      if (liftedDefinitions.has(name)) {
+        return `#/components/schemas/${name}`
       }
 
       throw new Error(`Unknown reference: ${name}`)
@@ -663,6 +692,43 @@ const defineSchemas = (
   }
 }
 
+/**
+ * Plugins and user code can add `#/definitions/*` entries through `config.typescript.schema` and
+ * point field-level `typescriptSchema` at them. Payload only assembles those definitions while
+ * generating types, so the referenced ones have to be lifted into components here - inventing a
+ * shape instead would publish a contract the API does not honor.
+ */
+const defineReferencedDefinitions = (
+  payload: PayloadRequest['payload'],
+  schemas: Record<string, JSONSchema4>,
+  components: Record<string, unknown>,
+): ReadonlySet<string> => {
+  const lifted = new Set<string>()
+  const pending = definitionRefNames(components).filter(name => !isEntityRef(payload, name))
+
+  if (pending.length === 0) {
+    return lifted
+  }
+
+  const definitions = (configToJSONSchema(payload.config, payload.config.db.defaultIDType)
+    .definitions ?? {}) as Record<string, JSONSchema4>
+
+  for (let name = pending.pop(); name !== undefined; name = pending.pop()) {
+    const definition = definitions[name]
+
+    // Names with no definition behind them stay unresolved, so `adjustRefTargets` reports them
+    if (lifted.has(name) || definition === undefined) {
+      continue
+    }
+
+    defineSchemas(schemas, { [name]: definition })
+    lifted.add(name)
+    pending.push(...definitionRefNames(definition).filter(ref => !isEntityRef(payload, ref)))
+  }
+
+  return lifted
+}
+
 const generateComponents = (
   req: Pick<PayloadRequest, 'payload'>,
   options: SanitizedPluginOptions,
@@ -728,14 +794,20 @@ const generateComponents = (
     })),
   )
 
-  return { schemas, requestBodies, responses }
+  const liftedDefinitions = defineReferencedDefinitions(req.payload, schemas, {
+    schemas,
+    requestBodies,
+    responses,
+  })
+
+  return { schemas, requestBodies, responses, liftedDefinitions }
 }
 
 export const generateV30Spec = async (
   req: Pick<PayloadRequest, 'payload' | 'protocol' | 'headers'>,
   options: SanitizedPluginOptions,
 ): Promise<OpenAPIV3.Document> => {
-  const { schemas, requestBodies, responses } = generateComponents(req, options)
+  const { schemas, requestBodies, responses, liftedDefinitions } = generateComponents(req, options)
 
   const filters = options.filters ?? {}
   const collections = Object.values(req.payload.collections).filter(collection =>
@@ -795,7 +867,7 @@ export const generateV30Spec = async (
     },
   } satisfies OpenAPIV3.Document
 
-  adjustRefTargets(req.payload, spec)
+  adjustRefTargets(req.payload, liftedDefinitions, spec)
 
   return spec
 }
@@ -804,7 +876,7 @@ export const generateV31Spec = async (
   req: Pick<PayloadRequest, 'payload' | 'protocol' | 'headers'>,
   options: SanitizedPluginOptions,
 ): Promise<OpenAPIV3_1.Document> => {
-  const { schemas, requestBodies, responses } = generateComponents(req, options)
+  const { schemas, requestBodies, responses, liftedDefinitions } = generateComponents(req, options)
 
   const filters = options.filters ?? {}
   const collections = Object.values(req.payload.collections).filter(collection =>
@@ -834,7 +906,7 @@ export const generateV31Spec = async (
     },
   } satisfies OpenAPIV3_1.Document
 
-  adjustRefTargets(req.payload, spec)
+  adjustRefTargets(req.payload, liftedDefinitions, spec)
 
   return spec
 }
