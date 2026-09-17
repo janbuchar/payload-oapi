@@ -384,51 +384,113 @@ describe('openapi generators', () => {
     )
   })
 
-  // `payload-phone-number-plugin` injects a `#/definitions/PhoneNumber` ref it never defines.
-  const Contacts: CollectionConfig = {
-    slug: 'contacts',
-    fields: [
-      {
-        type: 'text',
-        name: 'phone',
-        typescriptSchema: [() => ({ $ref: '#/definitions/PhoneNumber' })],
+  describe('definitions added through `typescript.schema`', () => {
+    // Mirrors `payload-phone-number-plugin`: the field refers to a definition the plugin registers
+    // separately, and accepts a plain string on write.
+    const Contacts: CollectionConfig = {
+      slug: 'contacts',
+      fields: [
+        {
+          type: 'text',
+          name: 'phone',
+          typescriptSchema: [
+            () => ({ anyOf: [{ type: 'string' }, { $ref: '#/definitions/PhoneNumber' }] }),
+          ],
+        },
+      ],
+    }
+
+    const phoneNumberSchema = (definitions: Record<string, unknown>): Config['typescript'] => ({
+      autoGenerate: false,
+      schema: [
+        ({ jsonSchema }) => {
+          jsonSchema.definitions = { ...jsonSchema.definitions, ...definitions }
+          return jsonSchema
+        },
+      ],
+    })
+
+    const phoneNumber = {
+      title: 'PhoneNumber',
+      type: 'object',
+      properties: {
+        e164: { type: 'string' },
+        regionCode: { type: 'string' },
       },
-    ],
-  }
+      required: ['e164', 'regionCode'],
+      additionalProperties: false,
+    }
 
-  test('defines the PhoneNumber schema when a field references it', async () => {
-    const payload = await buildPayload({ collections: [Contacts] })
+    const generate = async (payload: Payload, filters = {}): Promise<OpenAPIV3.Document> =>
+      await generateV30Spec(
+        { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
+        {
+          openapiVersion: '3.0',
+          authEndpoint: '/auth',
+          metadata: { title: 'Test API', version: '1.0' },
+          filters,
+          apiBasePath: null,
+        },
+      )
 
-    const spec = await generateV30Spec(
-      { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
-      {
-        openapiVersion: '3.0',
-        authEndpoint: '/auth',
-        metadata: { title: 'Test API', version: '1.0' },
-        filters: {},
-        apiBasePath: null,
-      },
-    )
+    test('lifts a referenced definition into components verbatim', async () => {
+      const payload = await buildPayload({
+        collections: [Contacts],
+        typescript: phoneNumberSchema({ PhoneNumber: phoneNumber }),
+      })
 
-    expect(spec.components?.schemas?.PhoneNumber).toBeDefined()
-    expect(JSON.stringify(spec)).toContain('#/components/schemas/PhoneNumber')
-  })
+      const spec = await generate(payload)
 
-  test('omits the PhoneNumber schema when its only referent is filtered out', async () => {
-    const payload = await buildPayload({ collections: [Contacts] })
+      expect(spec.components?.schemas?.PhoneNumber).toEqual({
+        title: 'PhoneNumber',
+        type: 'object',
+        properties: { e164: { type: 'string' }, regionCode: { type: 'string' } },
+        required: ['e164', 'regionCode'],
+        additionalProperties: false,
+      })
 
-    const spec = await generateV30Spec(
-      { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload },
-      {
-        openapiVersion: '3.0',
-        authEndpoint: '/auth',
-        metadata: { title: 'Test API', version: '1.0' },
-        filters: { excludeCollections: ['contacts'] },
-        apiBasePath: null,
-      },
-    )
+      const contact = spec.components?.schemas?.Contact as OpenAPIV3.SchemaObject
+      expect(contact.properties?.phone).toEqual({
+        anyOf: [{ type: 'string' }, { $ref: '#/components/schemas/PhoneNumber' }],
+      })
+    })
 
-    expect(JSON.stringify(spec)).not.toContain('PhoneNumber')
+    test('follows refs nested inside a lifted definition', async () => {
+      const payload = await buildPayload({
+        collections: [Contacts],
+        typescript: phoneNumberSchema({
+          PhoneNumber: {
+            type: 'object',
+            properties: { region: { $ref: '#/definitions/PhoneRegion' } },
+          },
+          PhoneRegion: { type: 'string', enum: ['NO', 'CZ'] },
+        }),
+      })
+
+      const spec = await generate(payload)
+
+      expect(spec.components?.schemas?.PhoneRegion).toEqual({ type: 'string', enum: ['NO', 'CZ'] })
+      expect(
+        (spec.components?.schemas?.PhoneNumber as OpenAPIV3.SchemaObject).properties?.region,
+      ).toEqual({ $ref: '#/components/schemas/PhoneRegion' })
+    })
+
+    test('omits a definition once nothing references it', async () => {
+      const payload = await buildPayload({
+        collections: [Contacts],
+        typescript: phoneNumberSchema({ PhoneNumber: phoneNumber }),
+      })
+
+      const spec = await generate(payload, { excludeCollections: ['contacts'] })
+
+      expect(JSON.stringify(spec)).not.toContain('PhoneNumber')
+    })
+
+    test('rejects a ref with no definition behind it', async () => {
+      const payload = await buildPayload({ collections: [Contacts] })
+
+      await expect(generate(payload)).rejects.toThrow('Unknown reference: PhoneNumber')
+    })
   })
 
   describe('collection filtering', () => {
