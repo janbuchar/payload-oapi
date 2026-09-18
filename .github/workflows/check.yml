@@ -13,7 +13,7 @@ jobs:
     name: Check code style
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Install dependencies
         shell: bash
@@ -30,7 +30,7 @@ jobs:
     name: Check if build works
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Install dependencies
         shell: bash
@@ -47,7 +47,7 @@ jobs:
     name: Run tests
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Install dependencies
         shell: bash
