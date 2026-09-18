@@ -147,6 +147,42 @@ Write these in OpenAPI 3.1 syntax whatever `openapiVersion` you configured — a
 out. `$ref` pointers to generated components work as shown; to add schemas of your own, declare them through Payload's
 `typescript.schema` and reference them the same way.
 
+## 6. Adjust the finished document (optional)
+
+`adjustGeneratedSpec` gets the last word on the spec. Use it for anything the plugin does not model —
+paths Payload does not serve, extra components, or removing a generated operation that you'd like to exclude from the spec:
+
+```typescript
+openapi({
+  metadata: { title: 'Dev API', version: '0.0.1' },
+  adjustGeneratedSpec: (spec, req) => {
+    spec.paths['/external/health'] = {
+      get: { summary: 'Health check', responses: { 200: { description: 'ok' } } },
+    }
+
+    delete spec.paths['/api/posts'].post
+  },
+})
+```
+
+- it always receives a **3.1** document, even with `openapiVersion: '3.0'` — write 3.1 syntax and it
+  is down-converted afterwards, exactly like `custom.openapi`
+- mutate the argument or return a replacement; it may be `async`
+- it runs per request and gets `req`, so the spec can depend on the locale or the current user
+- `$ref` targets are already resolved, so generated components can be reused by pointer
+
+Component names derive from `labels.singular`, so they are not a stable contract — a collection you
+declare yourself gets `Post`, while the same slug can yield `Posts` elsewhere. Copy a `$ref` the
+generator produced instead of assembling one:
+
+```typescript
+adjustGeneratedSpec: spec => {
+  const posts = spec.paths['/api/posts'].get.responses['200'] // { $ref: '…/PostListResponse' }
+
+  spec.paths['/external/latest'] = { get: { responses: { 200: posts } } }
+}
+```
+
 # Auth endpoints
 
 Collections with `auth` get their login, logout, refresh, verification and password-reset operations documented
