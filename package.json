@@ -31,6 +31,9 @@
     "dev:payload": "cross-env PAYLOAD_CONFIG_PATH=./dev/payload.config.ts TSX_TSCONFIG_PATH=./dev/tsconfig.json payload",
     "test": "vitest run"
   },
+  "engines": {
+    "node": "^18.20.2 || >=20.9.0"
+  },
   "peerDependencies": {
     "payload": "^3.0.0"
   },
@@ -38,13 +41,11 @@
     "@openapi-contrib/json-schema-to-openapi-schema": "^4.1.0",
     "@types/json-schema": "^7.0.15",
     "mutative": "^1.2.0",
-    "openapi-types": "^12.1.3",
-    "util": "^0.12.5"
+    "openapi-types": "^12.1.3"
   },
   "files": [
     "dist",
-    "*.js",
-    "*.d.ts"
+    "src"
   ],
   "devDependencies": {
     "@biomejs/biome": "^2.2.2",
