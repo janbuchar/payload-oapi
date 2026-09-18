@@ -15,15 +15,22 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24.x'
+          cache: pnpm
+
       - name: Install dependencies
         shell: bash
         run: |
-          yarn install
+          pnpm install --frozen-lockfile
 
       - name: Check format
         shell: bash
         run: |
-          yarn ci
+          pnpm run ci
 
   build:
     runs-on: ubuntu-latest
@@ -32,15 +39,22 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24.x'
+          cache: pnpm
+
       - name: Install dependencies
         shell: bash
         run: |
-          yarn install
+          pnpm install --frozen-lockfile
 
       - name: Build
         shell: bash
         run: |
-          yarn build
+          pnpm run build
 
   test:
     runs-on: ubuntu-latest
@@ -49,12 +63,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24.x'
+          cache: pnpm
+
       - name: Install dependencies
         shell: bash
         run: |
-          yarn install
+          pnpm install --frozen-lockfile
 
       - name: Test
         shell: bash
         run: |
-          yarn test
+          pnpm run test

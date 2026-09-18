@@ -1,0 +1,4 @@
+allowBuilds:
+  esbuild: true
+  mongodb-memory-server: true
+  sharp: true
