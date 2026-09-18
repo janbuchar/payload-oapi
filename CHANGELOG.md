@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.0] - 2026-09-18
+
+### 🚀 Features
+
+- Add simple filters for globals, collections and internal collections (#75)
+- Respect default ID type from db adapter (#68)
+- Handle overridden api route (#76)
+- Add blockReferences support (#60)
+- Add Phone Number Plugin field support. (#74)
+- Add authentication endpoints (#52)
+- *(openapi)* Documented custom endpoints from an operation object (#53)
+
+### 🐛 Bug Fixes
+
+- Don't include hidden fields (#51)
+- Nested doc entity on pathc request. Fixes #70 (#71)
+- SpecEndpoint correct handling (#67)
+
+### ⚙️ Miscellaneous Tasks
+
+- Update actions and use OIDC to publish npm packages (#81)
+- Remove stale access token
+- *(release)* 0.2.6-b.0 [skip ci]
+- Migrate to pnpm
+- *(release)* 0.2.7-b.0 [skip ci]
+- Clean up npm package
+
 ## [0.2.5] - 2025-09-11
 
 ### 🚀 Features
@@ -18,6 +45,7 @@ All notable changes to this project will be documented in this file.
 - Update dependencies (#63)
 - Only commit changes to package.json and changelog on release (#66)
 - Fix release.yml syntax
+- *(release)* 0.2.5 [skip ci]
 
 ## [0.2.4] - 2025-07-21
 
