@@ -2,8 +2,11 @@
   "name": "payload-oapi",
   "description": "An OpenAPI plugin for Payload CMS",
   "version": "0.2.5",
-  "homepage:": "https://github.com/janbuchar/payload-oapi",
-  "repository:": "https://github.com/janbuchar/payload-oapi",
+  "homepage": "https://github.com/janbuchar/payload-oapi",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/janbuchar/payload-oapi.git"
+  },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
