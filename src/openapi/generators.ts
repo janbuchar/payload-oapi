@@ -895,62 +895,6 @@ const generatePaths = async (
   return paths
 }
 
-export const generateV30Spec = async (
-  req: Pick<PayloadRequest, 'payload' | 'protocol' | 'headers'>,
-  options: SanitizedPluginOptions,
-): Promise<OpenAPIV3.Document> => {
-  const { schemas, requestBodies, responses, liftedDefinitions } = generateComponents(req, options)
-
-  const apiRoute = options.apiBasePath ?? req.payload.config.routes.api
-
-  const spec = {
-    openapi: '3.0.3',
-    info: options.metadata,
-    servers: [{ url: `${req.protocol}//${req.headers.get('host')}` }],
-    paths: (await convertInlineSchemas(await generatePaths(req, options))) as OpenAPIV3.PathsObject,
-    components: {
-      securitySchemes: generateSecuritySchemes(options.authEndpoint, apiRoute),
-      schemas: await mapValuesAsync(jsonSchemaToOpenapiSchema, schemas),
-      requestBodies: await mapValuesAsync(
-        async requestBody => ({
-          ...requestBody,
-          content: (await mapValuesAsync(
-            async contentItem => ({
-              ...contentItem,
-              schema: contentItem.schema
-                ? await jsonSchemaToOpenapiSchema(contentItem.schema as JSONSchema4)
-                : undefined,
-            }),
-            requestBody.content,
-          )) as Record<string, OpenAPIV3.MediaTypeObject>,
-        }),
-        requestBodies,
-      ),
-      responses: await mapValuesAsync(async response => {
-        return {
-          ...response,
-          content:
-            response.content !== undefined
-              ? ((await mapValuesAsync(
-                  async contentItem => ({
-                    ...contentItem,
-                    schema: contentItem.schema
-                      ? await jsonSchemaToOpenapiSchema(contentItem.schema as JSONSchema4)
-                      : undefined,
-                  }),
-                  response.content,
-                )) as Record<string, OpenAPIV3.MediaTypeObject>)
-              : {},
-        }
-      }, responses),
-    },
-  } satisfies OpenAPIV3.Document
-
-  adjustRefTargets(req.payload, liftedDefinitions, spec)
-
-  return spec
-}
-
 export const generateV31Spec = async (
   req: Pick<PayloadRequest, 'payload' | 'protocol' | 'headers'>,
   options: SanitizedPluginOptions,
@@ -974,5 +918,39 @@ export const generateV31Spec = async (
 
   adjustRefTargets(req.payload, liftedDefinitions, spec)
 
-  return spec
+  // Adjusted last, so the hook sees resolved refs and can be the final word on the document.
+  return (await options.adjustGeneratedSpec?.(spec, req)) ?? spec
+}
+
+/**
+ * A 3.0 document is the 3.1 one down-converted, so everything reaching the spec - generated
+ * schemas, `custom.openapi` operations and whatever `adjustGeneratedSpec` added - is written in one
+ * dialect and converted in one place.
+ */
+export const generateV30Spec = async (
+  req: Pick<PayloadRequest, 'payload' | 'protocol' | 'headers'>,
+  options: SanitizedPluginOptions,
+): Promise<OpenAPIV3.Document> => {
+  const spec = await generateV31Spec(req, options)
+
+  return {
+    ...spec,
+    openapi: '3.0.3',
+    paths: (await convertInlineSchemas(spec.paths)) as OpenAPIV3.PathsObject,
+    components: {
+      ...spec.components,
+      schemas: await mapValuesAsync(
+        jsonSchemaToOpenapiSchema,
+        (spec.components?.schemas ?? {}) as Record<string, JSONSchema4>,
+      ),
+      requestBodies: (await convertInlineSchemas(spec.components?.requestBodies)) as Record<
+        string,
+        OpenAPIV3.RequestBodyObject
+      >,
+      responses: (await convertInlineSchemas(spec.components?.responses)) as Record<
+        string,
+        OpenAPIV3.ResponseObject
+      >,
+    },
+  } as OpenAPIV3.Document
 }

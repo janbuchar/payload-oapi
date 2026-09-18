@@ -3,7 +3,7 @@ import { sqliteAdapter } from '@payloadcms/db-sqlite'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { MongoMemoryServer } from 'mongodb-memory-server'
 import mongoose from 'mongoose'
-import type { OpenAPIV3 } from 'openapi-types'
+import type { OpenAPIV3, OpenAPIV3_1 } from 'openapi-types'
 import {
   BasePayload,
   buildConfig,
@@ -14,7 +14,7 @@ import {
 } from 'payload'
 import { afterEach, beforeAll, beforeEach, describe, expect, test } from 'vitest'
 import { generateV30Spec, generateV31Spec } from '../src/openapi/generators'
-import type { CustomEndpointDocumentation } from '../src/types'
+import type { CustomEndpointDocumentation, PluginOptions } from '../src/types'
 
 const Posts: CollectionConfig = {
   slug: 'posts',
@@ -685,6 +685,108 @@ describe('openapi generators', () => {
 
       expect(spec.paths['/api/access']?.get).toBeDefined()
       expect(spec.paths['/api/admins/access']).toBeUndefined()
+    })
+  })
+
+  describe('adjustGeneratedSpec', () => {
+    const specs = async (adjustGeneratedSpec: PluginOptions['adjustGeneratedSpec']) => {
+      const payload = await buildPayload({ collections: [Posts] })
+      const req = { protocol: 'https', headers: new Headers({ host: 'localhost' }), payload }
+      const options = {
+        authEndpoint: '/auth',
+        metadata: { title: 'Test API', version: '1.0' },
+        filters: { hideInternalCollections: true },
+        apiBasePath: null,
+        adjustGeneratedSpec,
+      }
+
+      return {
+        v30: await generateV30Spec(req, { ...options, openapiVersion: '3.0' }),
+        v31: await generateV31Spec(req, { ...options, openapiVersion: '3.1' }),
+      }
+    }
+
+    test('mutating the argument is enough', async () => {
+      const { v30 } = await specs(spec => {
+        spec.paths!['/external/health'] = { get: { responses: { 200: { description: 'ok' } } } }
+      })
+
+      expect(v30.paths['/external/health']?.get?.responses['200']).toEqual({ description: 'ok' })
+    })
+
+    test('returning a replacement also works, and may be async', async () => {
+      const { v30 } = await specs(async spec => {
+        await Promise.resolve()
+
+        return { ...spec, info: { ...spec.info, title: 'Replaced' } }
+      })
+
+      expect(v30.info.title).toBe('Replaced')
+    })
+
+    test('receives a 3.1 document even when generating 3.0', async () => {
+      const seen: string[] = []
+      const { v30, v31 } = await specs(spec => {
+        seen.push(spec.openapi)
+      })
+
+      expect(seen).toEqual(['3.1.0', '3.1.0'])
+      expect(v30.openapi).toBe('3.0.3')
+      expect(v31.openapi).toBe('3.1.0')
+    })
+
+    test('injected 3.1 schemas are down-converted for 3.0', async () => {
+      const inject = (spec: OpenAPIV3_1.Document) => {
+        spec.paths!['/external/thing'] = {
+          get: {
+            responses: {
+              200: {
+                description: 'ok',
+                content: {
+                  'application/json': {
+                    schema: { type: 'object', properties: { note: { type: ['string', 'null'] } } },
+                  },
+                },
+              },
+            },
+          },
+        }
+      }
+
+      const { v30, v31 } = await specs(inject)
+
+      const noteOf = (spec: OpenAPIV3.Document) =>
+        (
+          (spec.paths['/external/thing']?.get?.responses['200'] as OpenAPIV3.ResponseObject)
+            .content?.['application/json'].schema as OpenAPIV3.NonArraySchemaObject
+        ).properties?.note
+
+      expect(noteOf(v30)).toEqual({ type: 'string', nullable: true })
+      expect(noteOf(v31 as unknown as OpenAPIV3.Document)).toEqual({ type: ['string', 'null'] })
+    })
+
+    test('sees resolved refs, so generated components can be reused', async () => {
+      const { v30 } = await specs(spec => {
+        const listed = spec.paths!['/api/posts']?.get?.responses?.['200']
+
+        spec.paths!['/external/latest'] = {
+          get: { responses: { 200: listed as OpenAPIV3_1.ReferenceObject } },
+        }
+      })
+
+      expect(v30.paths['/external/latest']?.get?.responses['200']).toEqual({
+        $ref: '#/components/responses/PostListResponse',
+      })
+      expect(v30.components?.responses?.PostListResponse).toBeDefined()
+    })
+
+    test('can remove a generated operation', async () => {
+      const { v30 } = await specs(spec => {
+        delete spec.paths!['/api/posts']?.post
+      })
+
+      expect(v30.paths['/api/posts']?.post).toBeUndefined()
+      expect(v30.paths['/api/posts']?.get).toBeDefined()
     })
   })
 

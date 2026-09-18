@@ -11,6 +11,7 @@ const openapi =
     enabled = true,
     filters = {},
     apiBasePath = null,
+    adjustGeneratedSpec,
   }: PluginOptions): Plugin =>
   ({ endpoints = [], ...config }) => {
     if (!enabled) {
@@ -30,6 +31,7 @@ const openapi =
             authEndpoint,
             filters,
             apiBasePath,
+            adjustGeneratedSpec,
           }),
         },
         {
