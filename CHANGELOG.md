@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.1] - 2026-10-03
+
+### 🚀 Features
+
+- Add the adjustGeneratedSpec hook (#82)
+
 ## [0.3.0] - 2026-09-18
 
 ### 🚀 Features
@@ -28,6 +34,7 @@ All notable changes to this project will be documented in this file.
 - Migrate to pnpm
 - *(release)* 0.2.7-b.0 [skip ci]
 - Clean up npm package
+- *(release)* 0.3.0 [skip ci]
 
 ## [0.2.5] - 2025-09-11
 
