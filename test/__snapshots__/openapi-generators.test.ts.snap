@@ -661,7 +661,6 @@ exports[`openapi generators > converts empty config correctly 1`] = `
         "description": "List of Payload Locked Documents",
       },
       "PayloadLockedDocumentNotFoundResponse": {
-        "content": {},
         "description": "Payload Locked Document not found",
       },
       "PayloadLockedDocumentResponse": {
@@ -734,7 +733,6 @@ exports[`openapi generators > converts empty config correctly 1`] = `
         "description": "List of Payload Migrations",
       },
       "PayloadMigrationNotFoundResponse": {
-        "content": {},
         "description": "Payload Migration not found",
       },
       "PayloadMigrationResponse": {
@@ -807,7 +805,6 @@ exports[`openapi generators > converts empty config correctly 1`] = `
         "description": "List of Payload Preferences",
       },
       "PayloadPreferenceNotFoundResponse": {
-        "content": {},
         "description": "Payload Preference not found",
       },
       "PayloadPreferenceResponse": {
@@ -900,7 +897,6 @@ exports[`openapi generators > converts empty config correctly 1`] = `
         "description": "The currently authenticated users, if any",
       },
       "UsersNotFoundResponse": {
-        "content": {},
         "description": "users not found",
       },
       "UsersRefreshTokenResponse": {
@@ -4169,7 +4165,6 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         "description": "List of Pages",
       },
       "PageNotFoundResponse": {
-        "content": {},
         "description": "Page not found",
       },
       "PageResponse": {
@@ -4242,7 +4237,6 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         "description": "List of Payload Locked Documents",
       },
       "PayloadLockedDocumentNotFoundResponse": {
-        "content": {},
         "description": "Payload Locked Document not found",
       },
       "PayloadLockedDocumentResponse": {
@@ -4315,7 +4309,6 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         "description": "List of Payload Migrations",
       },
       "PayloadMigrationNotFoundResponse": {
-        "content": {},
         "description": "Payload Migration not found",
       },
       "PayloadMigrationResponse": {
@@ -4388,7 +4381,6 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         "description": "List of Payload Preferences",
       },
       "PayloadPreferenceNotFoundResponse": {
-        "content": {},
         "description": "Payload Preference not found",
       },
       "PayloadPreferenceResponse": {
@@ -4481,7 +4473,6 @@ exports[`openapi generators > handles block editor fields correctly 1`] = `
         "description": "The currently authenticated users, if any",
       },
       "UsersNotFoundResponse": {
-        "content": {},
         "description": "users not found",
       },
       "UsersRefreshTokenResponse": {
@@ -8065,7 +8056,6 @@ exports[`openapi generators > handles blocks referenced from the config 1`] = `
         "description": "List of Pages",
       },
       "PageNotFoundResponse": {
-        "content": {},
         "description": "Page not found",
       },
       "PageResponse": {
@@ -8138,7 +8128,6 @@ exports[`openapi generators > handles blocks referenced from the config 1`] = `
         "description": "List of Payload Locked Documents",
       },
       "PayloadLockedDocumentNotFoundResponse": {
-        "content": {},
         "description": "Payload Locked Document not found",
       },
       "PayloadLockedDocumentResponse": {
@@ -8211,7 +8200,6 @@ exports[`openapi generators > handles blocks referenced from the config 1`] = `
         "description": "List of Payload Migrations",
       },
       "PayloadMigrationNotFoundResponse": {
-        "content": {},
         "description": "Payload Migration not found",
       },
       "PayloadMigrationResponse": {
@@ -8284,7 +8272,6 @@ exports[`openapi generators > handles blocks referenced from the config 1`] = `
         "description": "List of Payload Preferences",
       },
       "PayloadPreferenceNotFoundResponse": {
-        "content": {},
         "description": "Payload Preference not found",
       },
       "PayloadPreferenceResponse": {
@@ -8377,7 +8364,6 @@ exports[`openapi generators > handles blocks referenced from the config 1`] = `
         "description": "The currently authenticated users, if any",
       },
       "UsersNotFoundResponse": {
-        "content": {},
         "description": "users not found",
       },
       "UsersRefreshTokenResponse": {
@@ -11651,7 +11637,6 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         "description": "List of Events",
       },
       "EventNotFoundResponse": {
-        "content": {},
         "description": "Event not found",
       },
       "EventResponse": {
@@ -11959,7 +11944,6 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         "description": "List of Payload Locked Documents",
       },
       "PayloadLockedDocumentNotFoundResponse": {
-        "content": {},
         "description": "Payload Locked Document not found",
       },
       "PayloadLockedDocumentResponse": {
@@ -12032,7 +12016,6 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         "description": "List of Payload Migrations",
       },
       "PayloadMigrationNotFoundResponse": {
-        "content": {},
         "description": "Payload Migration not found",
       },
       "PayloadMigrationResponse": {
@@ -12105,7 +12088,6 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         "description": "List of Payload Preferences",
       },
       "PayloadPreferenceNotFoundResponse": {
-        "content": {},
         "description": "Payload Preference not found",
       },
       "PayloadPreferenceResponse": {
@@ -12198,7 +12180,6 @@ exports[`openapi generators > handles datetime field with timezones correctly 1`
         "description": "The currently authenticated users, if any",
       },
       "UsersNotFoundResponse": {
-        "content": {},
         "description": "users not found",
       },
       "UsersRefreshTokenResponse": {
@@ -15776,7 +15757,6 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
         "description": "List of Payload Locked Documents",
       },
       "PayloadLockedDocumentNotFoundResponse": {
-        "content": {},
         "description": "Payload Locked Document not found",
       },
       "PayloadLockedDocumentResponse": {
@@ -15849,7 +15829,6 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
         "description": "List of Payload Migrations",
       },
       "PayloadMigrationNotFoundResponse": {
-        "content": {},
         "description": "Payload Migration not found",
       },
       "PayloadMigrationResponse": {
@@ -15922,7 +15901,6 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
         "description": "List of Payload Preferences",
       },
       "PayloadPreferenceNotFoundResponse": {
-        "content": {},
         "description": "Payload Preference not found",
       },
       "PayloadPreferenceResponse": {
@@ -16015,7 +15993,6 @@ exports[`openapi generators > handles interfaceName correctly 1`] = `
         "description": "The currently authenticated User, if any",
       },
       "UserNotFoundResponse": {
-        "content": {},
         "description": "User not found",
       },
       "UserRefreshTokenResponse": {
@@ -19103,7 +19080,6 @@ exports[`openapi generators > handles non-default api route 1`] = `
         "description": "List of Payload Locked Documents",
       },
       "PayloadLockedDocumentNotFoundResponse": {
-        "content": {},
         "description": "Payload Locked Document not found",
       },
       "PayloadLockedDocumentResponse": {
@@ -19176,7 +19152,6 @@ exports[`openapi generators > handles non-default api route 1`] = `
         "description": "List of Payload Migrations",
       },
       "PayloadMigrationNotFoundResponse": {
-        "content": {},
         "description": "Payload Migration not found",
       },
       "PayloadMigrationResponse": {
@@ -19249,7 +19224,6 @@ exports[`openapi generators > handles non-default api route 1`] = `
         "description": "List of Payload Preferences",
       },
       "PayloadPreferenceNotFoundResponse": {
-        "content": {},
         "description": "Payload Preference not found",
       },
       "PayloadPreferenceResponse": {
@@ -19322,7 +19296,6 @@ exports[`openapi generators > handles non-default api route 1`] = `
         "description": "List of Posts",
       },
       "PostNotFoundResponse": {
-        "content": {},
         "description": "Post not found",
       },
       "PostResponse": {
@@ -19415,7 +19388,6 @@ exports[`openapi generators > handles non-default api route 1`] = `
         "description": "The currently authenticated users, if any",
       },
       "UsersNotFoundResponse": {
-        "content": {},
         "description": "users not found",
       },
       "UsersRefreshTokenResponse": {
@@ -22910,7 +22882,6 @@ exports[`openapi generators > handles non-default collection 1`] = `
         "description": "List of Payload Locked Documents",
       },
       "PayloadLockedDocumentNotFoundResponse": {
-        "content": {},
         "description": "Payload Locked Document not found",
       },
       "PayloadLockedDocumentResponse": {
@@ -22983,7 +22954,6 @@ exports[`openapi generators > handles non-default collection 1`] = `
         "description": "List of Payload Migrations",
       },
       "PayloadMigrationNotFoundResponse": {
-        "content": {},
         "description": "Payload Migration not found",
       },
       "PayloadMigrationResponse": {
@@ -23056,7 +23026,6 @@ exports[`openapi generators > handles non-default collection 1`] = `
         "description": "List of Payload Preferences",
       },
       "PayloadPreferenceNotFoundResponse": {
-        "content": {},
         "description": "Payload Preference not found",
       },
       "PayloadPreferenceResponse": {
@@ -23129,7 +23098,6 @@ exports[`openapi generators > handles non-default collection 1`] = `
         "description": "List of Posts",
       },
       "PostNotFoundResponse": {
-        "content": {},
         "description": "Post not found",
       },
       "PostResponse": {
@@ -23222,7 +23190,6 @@ exports[`openapi generators > handles non-default collection 1`] = `
         "description": "The currently authenticated users, if any",
       },
       "UsersNotFoundResponse": {
-        "content": {},
         "description": "users not found",
       },
       "UsersRefreshTokenResponse": {
@@ -26717,7 +26684,6 @@ exports[`openapi generators > respects default ID type from db adapter 1`] = `
         "description": "List of Payload Locked Documents",
       },
       "PayloadLockedDocumentNotFoundResponse": {
-        "content": {},
         "description": "Payload Locked Document not found",
       },
       "PayloadLockedDocumentResponse": {
@@ -26790,7 +26756,6 @@ exports[`openapi generators > respects default ID type from db adapter 1`] = `
         "description": "List of Payload Migrations",
       },
       "PayloadMigrationNotFoundResponse": {
-        "content": {},
         "description": "Payload Migration not found",
       },
       "PayloadMigrationResponse": {
@@ -26863,7 +26828,6 @@ exports[`openapi generators > respects default ID type from db adapter 1`] = `
         "description": "List of Payload Preferences",
       },
       "PayloadPreferenceNotFoundResponse": {
-        "content": {},
         "description": "Payload Preference not found",
       },
       "PayloadPreferenceResponse": {
@@ -26936,7 +26900,6 @@ exports[`openapi generators > respects default ID type from db adapter 1`] = `
         "description": "List of Posts",
       },
       "PostNotFoundResponse": {
-        "content": {},
         "description": "Post not found",
       },
       "PostResponse": {
@@ -27029,7 +26992,6 @@ exports[`openapi generators > respects default ID type from db adapter 1`] = `
         "description": "The currently authenticated users, if any",
       },
       "UsersNotFoundResponse": {
-        "content": {},
         "description": "users not found",
       },
       "UsersRefreshTokenResponse": {
